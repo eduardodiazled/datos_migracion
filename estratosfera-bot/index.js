@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
-const AUTH_DIR = 'auth_info_baileys';
+const AUTH_DIR = 'auth_session_v2';
 
 // Basic logger mock if pino is not installed, to prevent crash if Baileys requires it
 // Note: Baileys usually requires 'pino'. If it fails, please install pino: npm install pino
