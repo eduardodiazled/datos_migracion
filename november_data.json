@@ -1,0 +1,2711 @@
+[
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Maria Ochoa Nfx",
+    "description": "1 Disney+ 2 Pantallas, 1 Max Cuenta Completa, 1 Netflix Cuenta Completa, 1 Paramount+ 1 Pantalla, 1 Prime Cuenta Completa",
+    "method": "BANCOLOMBIA",
+    "amount": 95000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Alex Bárcenas Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Camilo Cruz Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Liliana Durán Nfx",
+    "description": "1 Combo Trío (Netflix, Disney+ y Max)",
+    "method": "BANCOLOMBIA",
+    "amount": 31000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Issac Baq Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 37000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Karencita Mda",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Yendri Romero Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Alejandra Chará Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 43000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Juan Carlos Orjuela Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Antonio Villalba",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Hector Rizo Nfx",
+    "description": "1 Combo #2",
+    "method": "BANCOLOMBIA",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Gasto",
+    "client": "Alex Rojas Socio Netflix",
+    "description": "YouTube x2",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Gustavo Acevedo Rueda Nfx",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Esneider Amado Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Jose Paredes Nfx",
+    "description": "1 Crunchyroll, 1 Paramount+ 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "Netflix",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga página",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Nómina",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Fabián Carrillo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Blanca Shirley Nfx",
+    "description": "1 Max 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Jisela Carpio Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Víctor Julio Vásquez Fernández Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-01",
+    "type": "Venta",
+    "client": "Rafael Angulo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Víctor Julio Vásquez Fernández Nfx",
+    "description": "1 YouTube 1 Mes",
+    "method": "BANCOLOMBIA",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Derly Nfx",
+    "description": "1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Ruben Coronado HuQui Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Andrea Angulo Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Claudia Cabrera Nfx",
+    "description": "1 Combo Dúo (Netflix y Max)",
+    "method": "BANCOLOMBIA",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Isabel Regardiz Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Judith Johanna Guillén Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Luis Palomino Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Venta",
+    "client": "Laura García Nfx",
+    "description": "1 Combo Dúo (Netflix y Max)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-02",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Leidy Bohórquez Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Betty Orejuela Moreno Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Jennifer Flaka Nfx",
+    "description": "1 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "Netflix",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Eliana Santiago Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Uriel Baute Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Heyler 5 Nfx",
+    "description": "1 Crunchyroll",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Wilman anguila Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Karen Angulo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Víctor Julio Vásquez Fernández Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Manuela Jiménez Nfx",
+    "description": "1 Netflix 2 Pantallas",
+    "method": "NEQUI",
+    "amount": 28000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Diana Jurado Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Venta",
+    "client": "Marlon Palacio Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-03",
+    "type": "Gasto",
+    "client": "Alex Rojas Socio Netflix",
+    "description": "Streaming",
+    "method": "NEQUI",
+    "amount": 65000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Carlos Pedroza Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Encho",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Mireya Coy Nfx",
+    "description": "1 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Sara Vásquez Nfx",
+    "description": "1 Combo Dúo (Netflix y Max)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "William Sarmiento Nfx",
+    "description": "1 Netflix 2 Pantallas",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Luis Pérez Uac 2 Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Milton Cuadrado Flash Nfx",
+    "description": "1 ChatGPT",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Stefany Goenaga Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-04",
+    "type": "Venta",
+    "client": "Luz Cala Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1 Netflix 2 Pantallas, 1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 45000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Lily López Nfx",
+    "description": "1 Netflix 1 Pantalla, 1 Prime 1 Pantalla, 1 Vix",
+    "method": "NEQUI",
+    "amount": 27000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Karen Rocha Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Jhon Hernández Nfx",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Natalia Romero",
+    "description": "1 Netflix Privado 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Leidy Fernández Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 37000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Yoryanis Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Enma Rosa Sarmiento Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Venta",
+    "client": "Angie Ferrer Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Gasto",
+    "client": "Fabián Méndez Proveedor",
+    "description": "Streaming",
+    "method": "NEQUI",
+    "amount": 115000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-05",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "Netflix",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Jaime Cuadro Nfx",
+    "description": "1 Netflix 2 Pantallas",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Hugo Xavier Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario dos días",
+    "method": "NEQUI",
+    "amount": 40000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Juan Pablo Torres Nfx",
+    "description": "1 Netflix Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Nicol González Nfx",
+    "description": "1 Spotify 2 Meses",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Jaime Darío Aldana Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Himer Torres Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Daniel Rubiano Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "José Angel Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "Netkix",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-06",
+    "type": "Venta",
+    "client": "Jorge Arias Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-07",
+    "type": "Venta",
+    "client": "Ricardo Martínez 2 Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-07",
+    "type": "Venta",
+    "client": "Nakis Marquez Nfx",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-07",
+    "type": "Venta",
+    "client": "Yakelin Sánchez Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Ramón Torres TD",
+    "description": "1 Combo #1",
+    "method": "BANCOLOMBIA",
+    "amount": 37000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Carolina Rayo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Heidy Sarabia Castillo nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Eliana Peñates Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Juliana González Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Stiven Barón Nfx",
+    "description": "1 Max 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Nicolas NC Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diarios",
+    "method": "NEQUI",
+    "amount": 40000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-08",
+    "type": "Venta",
+    "client": "Jorge Pereira Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Stephany Nfx",
+    "description": "1 Combo Dúo (Netflix y Max)",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "José Angel Nfx",
+    "description": "1 Crunchyroll",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Joel Moscote Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Leidy Fernández Nfx",
+    "description": "1 Paramount+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Angie Mafla Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Carlos Martínez Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Leo Primo Alas bravas",
+    "description": "1 Paramount+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Adalberto Aragón Nfx",
+    "description": "1 YouTube 3 meses",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Alejandra Arias Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Laura Rodríguez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga plataforma",
+    "method": "NEQUI",
+    "amount": 48000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Margarita Escop Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 17000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Gasto",
+    "client": "Cuentas URBAN",
+    "description": "Spoti x3 meses",
+    "method": "Daviplata",
+    "amount": 12000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-09",
+    "type": "Venta",
+    "client": "Javier forero Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Franklin Santiago López Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Jaime Marín Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Laurent Díaz Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Yessi Bayona",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Agustín Carreño nfx",
+    "description": "1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Javier Vargas Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-10",
+    "type": "Venta",
+    "client": "Keylin Rico B Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Migue",
+    "description": "1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Xiu Ling Correa Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Leidy Fernández Nfx",
+    "description": "1 Vix",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Maria del pilar cavadia Nfx",
+    "description": "1 Spotify 1 Mes",
+    "method": "BANCOLOMBIA",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 60000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Gasto",
+    "client": "Angie Proveedora",
+    "description": "Streaming",
+    "method": "NEQUI",
+    "amount": 22000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "ivan del toro Nfx",
+    "description": "1 Combo #2",
+    "method": "BANCOLOMBIA",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Meraris Nfx",
+    "description": "1 Crunchyroll",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Angel González Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-11",
+    "type": "Venta",
+    "client": "Marcela 2 Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Venta",
+    "client": "Vanessa 3b Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Venta",
+    "client": "Felipe pachon Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Venta",
+    "client": "Paola Naranjo Nfx",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Venta",
+    "client": "Soto",
+    "description": "1 IPTV Estratósfera+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 12000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Venta",
+    "client": "Laura Parejo Nfx",
+    "description": "1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Venta",
+    "client": "Stanlee Camargo Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Gasto",
+    "client": "Andrés Proveedor Net",
+    "description": "30 Netflix",
+    "method": "BANCOLOMBIA",
+    "amount": 990000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-12",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "BANCOLOMBIA",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Lina Zuleta Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Jaime Iván Gáfaro Martínez Nfx",
+    "description": "1 Spotify 1 Mes",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Wendy Lisette Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Tío Ger",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Rosa Salcedo Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Mary Tobón Nfx",
+    "description": "1 ChatGPT",
+    "method": "BANCOLOMBIA",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Juan Jose Senior Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Veronica Loaiza Nfx",
+    "description": "1 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 12000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Marilin Vanegas Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Andreina Rico Nfx",
+    "description": "1 Combo Trío (Netflix, Disney+ y Max)",
+    "method": "NEQUI",
+    "amount": 32000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Germán Junior Meza Valera Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Victoria Fontalvo Nfx",
+    "description": "1 Combo Dúo (Netflix y Max)",
+    "method": "NEQUI",
+    "amount": 28000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Venta",
+    "client": "Felipe Mejía Nfx",
+    "description": "1 Combo #2",
+    "method": "NEQUI",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-13",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga página",
+    "method": "NEQUI",
+    "amount": 49000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Jorge Mda",
+    "description": "1 Netflix 1 Pantalla 3 Meses",
+    "method": "NEQUI",
+    "amount": 38000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Jorge Menco Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Karina Torres Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1 Netflix Cuenta Completa",
+    "method": "BANCOLOMBIA",
+    "amount": 52000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Mr Nuñez Nfx",
+    "description": "1 DirecTV",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Yiniris Ávila Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Leo Primo Alas bravas",
+    "description": "2 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Shawnny Gómez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga plataforma",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Gasto",
+    "client": "Jonathan FOX MC GREEN",
+    "description": "2 Disney",
+    "method": "NEQUI",
+    "amount": 50000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-14",
+    "type": "Venta",
+    "client": "Yisell Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Nelsy Mendoza Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Luis Alberto Calderón Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Kerwin Herrera",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Jenoba María Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Angelys Villanueva Nfx",
+    "description": "1 Netflix 2 Pantallas, 1 Prime 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 32000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Meraris Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Venta",
+    "client": "Andres Otalora Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-15",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 40000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Jonatan Benavides Nfx",
+    "description": "1 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Jose Antonio Lora Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "-",
+    "description": "1 Netflix 2 Pantallas",
+    "method": "NEQUI",
+    "amount": 28000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Hebert Lerma 2 Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Gloria Suarez Nfx",
+    "description": "1 Netflix Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "-",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "BANCOLOMBIA",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Stiven Barón Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "María Angélica Vásquez Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Luis Ruiz Primo",
+    "description": "1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Yenifer Quintana Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Danna Guillén Nfx",
+    "description": "1 ChatGPT",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-16",
+    "type": "Venta",
+    "client": "Andrés Hernández Nfx",
+    "description": "1 ChatGPT",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Sebastián Salinas Nfx",
+    "description": "1 Combo Trío (Netflix, Disney+ y Max)",
+    "method": "NEQUI",
+    "amount": 32000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Andrés Hernández Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Nicolás Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Marcos Vidrioautos Nfx",
+    "description": "1 Netflix Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Henry Fontalvo Nfx",
+    "description": "1 Mega Combo",
+    "method": "NEQUI",
+    "amount": 130000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Juan Carlos Orjuela Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Leidy Samira cossio Nfx",
+    "description": "1 Netflix 1 Pantalla Priv 6 Meses",
+    "method": "Daviplata",
+    "amount": 75000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Rubén Darío Ferreira Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-17",
+    "type": "Venta",
+    "client": "Viviana García Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Elkin Sánchez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Guillermo Esquibel Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Xiu Ling Correa Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Nilson Molina Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "Daviplata",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Bertha Gallego Nfx",
+    "description": "1 Netflix 3 Pantallas",
+    "method": "BANCOLOMBIA",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Diego Vergara Rodríguez Nfx",
+    "description": "1 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Gasto",
+    "client": "Jonathan FOX MC GREEN",
+    "description": "Disney",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 60000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Gasto",
+    "client": "Andrés Proveedor Net",
+    "description": "5 Netflix",
+    "method": "NEQUI",
+    "amount": 150000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Juliana Rangel Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Marcos Cervantes Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Norany Polo Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Daniela Fontecha Nfx",
+    "description": "1 Netflix Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Nathaly Bayona Nfx",
+    "description": "1 Combo Trío (Netflix, Disney+ y Prime)",
+    "method": "NEQUI",
+    "amount": 32000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "Netflix x2",
+    "method": "NEQUI",
+    "amount": 70000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Katherine Cuello 2 Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Mary Perez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Kerwin Herrera",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-18",
+    "type": "Venta",
+    "client": "Juan Chavarria Nfx",
+    "description": "1 Spotify 1 Mes",
+    "method": "BANCOLOMBIA",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-19",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga plataforma",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-19",
+    "type": "Venta",
+    "client": "Carlos Parodi Nfx",
+    "description": "1 ChatGPT",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-19",
+    "type": "Venta",
+    "client": "Carolina Murillo Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-19",
+    "type": "Venta",
+    "client": "Eliana Peñates Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-19",
+    "type": "Venta",
+    "client": "Luisa Cavadia Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-20",
+    "type": "Venta",
+    "client": "Vanessa Rodríguez2 Nfx",
+    "description": "1 Paramount+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-20",
+    "type": "Venta",
+    "client": "Arianis Pertuz Nfx",
+    "description": "1 Combo #2",
+    "method": "BANCOLOMBIA",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-20",
+    "type": "Gasto",
+    "client": "Jonathan FOX MC GREEN",
+    "description": "Disney",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-20",
+    "type": "Venta",
+    "client": "Victor Villanueva Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Ángela Piedrahíta Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Luisa Palacio USA 3 Nfx",
+    "description": "1 Netflix Privado 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 18000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Liceth Arias Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Yoleidis Fonseca Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Juan Diego Rocha Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 60000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Guillermo Esquibel Nfx",
+    "description": "1 ChatGPT",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-21",
+    "type": "Venta",
+    "client": "Jaiver Martínez Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "BANCOLOMBIA",
+    "amount": 22000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Gasto",
+    "client": "Jonathan FOX MC GREEN",
+    "description": "Disney",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Venta",
+    "client": "Irina Miranda Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Venta",
+    "client": "Dania Barreto Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Venta",
+    "client": "Lusianna Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Venta",
+    "client": "Wilmer Mejía Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Venta",
+    "client": "Valeria Giraldo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-22",
+    "type": "Venta",
+    "client": "Lissy Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Leidy Barón Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Gustavo Lozano Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Netflix 2 Pantallas, 1 Prime 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 42000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Christian Nfx",
+    "description": "1 Combo Trío (Netflix, Max y Prime)",
+    "method": "BANCOLOMBIA",
+    "amount": 31000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Aliris Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Diana Rincón C Nfx",
+    "description": "1 Netflix 1 Pantalla, 1 Plex 1 Pantalla, 1 Prime 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 23000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Valentina Hernández Espitia Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Norany Polo Nfx",
+    "description": "1 Crunchyroll",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Cristian Roa Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Luz Cala Nfx",
+    "description": "2 Crunchyroll",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Marlon Palacio Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Luz Cala Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 14000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Felipe Mejía Nfx",
+    "description": "1 DirecTV",
+    "method": "NEQUI",
+    "amount": 28000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Venta",
+    "client": "Encho",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "Daviplata",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-23",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "BANCOLOMBIA",
+    "amount": 40000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "Diana Rincón B Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "Mr Nuñez Nfx",
+    "description": "1 Crunchyroll 4 Meses",
+    "method": "NEQUI",
+    "amount": 40000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "María Cuello 2 Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "Veronica Loaiza Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "Gail Brugés Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "Darry Castro Nfx",
+    "description": "1 Crunchyroll, 1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1 Netflix Privado 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 40000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Gasto",
+    "client": "Angie Proveedora",
+    "description": "Streaming",
+    "method": "NEQUI",
+    "amount": 34000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-24",
+    "type": "Venta",
+    "client": "Carlos Pedroza Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Yoider Nfx",
+    "description": "1 Disney+ 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Agustín Carreño nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Patricia Palencia 2 Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Yoeric Prada Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga página",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Gasto",
+    "client": "Andrés Proveedor Net",
+    "description": "Netflix",
+    "method": "NEQUI",
+    "amount": 30000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Wilman Guerrero Robles Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Samantha Martínez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-25",
+    "type": "Venta",
+    "client": "Andrés Gutiérrez Nfx",
+    "description": "1 Combo Dúo (Netflix y Disney+)",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Stefany Goenaga Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Roberto Castro Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Isabel Murillo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Leidys vizcaíno Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Fernando Alonso Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Marlon Palacio Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Asly Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Jose Paredes Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Venta",
+    "client": "Luis Ruiz Primo",
+    "description": "1 DirecTV",
+    "method": "NEQUI",
+    "amount": 38000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-26",
+    "type": "Gasto",
+    "client": "Jonathan FOX MC GREEN",
+    "description": "Dgo",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Venta",
+    "client": "Sergio Sánchez Nfx",
+    "description": "1 DirecTV",
+    "method": "Daviplata",
+    "amount": 38000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Venta",
+    "client": "Wilman Guerrero Robles Nfx",
+    "description": "1 Spotify 3 Meses",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Venta",
+    "client": "Juan Pablo Torres Nfx",
+    "description": "1 Max 1 Pantalla, 1 Prime Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Venta",
+    "client": "Johana Laverde Nfx",
+    "description": "1 Combo #1",
+    "method": "NEQUI",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 80000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Gasto",
+    "client": "Andrés Proveedor Net",
+    "description": "Netflix",
+    "method": "NEQUI",
+    "amount": 90000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Gasto",
+    "client": "Fabián Méndez Proveedor",
+    "description": "Streaming",
+    "method": "NEQUI",
+    "amount": 36000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "Netflix",
+    "method": "NEQUI",
+    "amount": 35000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Venta",
+    "client": "Sara Vásquez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-27",
+    "type": "Venta",
+    "client": "Sandra Coronado Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "BANCOLOMBIA",
+    "amount": 27000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Venta",
+    "client": "Ricardo Samsung 2",
+    "description": "1 Netflix Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 37000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Venta",
+    "client": "Marcos Vidrioautos Nfx",
+    "description": "1 Prime Cuenta Completa",
+    "method": "NEQUI",
+    "amount": 15000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Venta",
+    "client": "Luis Daniel Rodriguez Nfx",
+    "description": "1 ChatGPT",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Venta",
+    "client": "Diana Sierra 2 Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Venta",
+    "client": "Javier forero Nfx",
+    "description": "1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 11000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Gasto",
+    "client": "Cuentas URBAN",
+    "description": "Spotify x3 meses",
+    "method": "NEQUI",
+    "amount": 12000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-28",
+    "type": "Venta",
+    "client": "Stefany Goenaga Nfx",
+    "description": "1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 10000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Gasto",
+    "client": "Sir Premium",
+    "description": "Recarga plataforma",
+    "method": "NEQUI",
+    "amount": 25000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Gasto",
+    "client": "Jonathan FOX MC GREEN",
+    "description": "Dgo",
+    "method": "NEQUI",
+    "amount": 23000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Gasto",
+    "client": "-",
+    "description": "Diario",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Venta",
+    "client": "Yilian Verdugo Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Venta",
+    "client": "Roxana Romero Nfx",
+    "description": "1 Netflix 1 Pantalla, 1 YouTube 1 Mes",
+    "method": "NEQUI",
+    "amount": 26000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Venta",
+    "client": "Johan Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1 Netflix 2 Pantallas, 1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 46000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Venta",
+    "client": "Lucero Nfx",
+    "description": "1 Netflix 2 Pantallas",
+    "method": "BANCOLOMBIA",
+    "amount": 28000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-29",
+    "type": "Venta",
+    "client": "Andrea Martínez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "BANCOLOMBIA",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Carolina Restrepo Nfx",
+    "description": "1 Netflix 2 Pantallas, 1 Prime 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 32000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Ernesto de Moya Nfx",
+    "description": "1 Combo Dúo (Netflix y Prime)",
+    "method": "NEQUI",
+    "amount": 21000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Jhon Ríos Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Nelsy Rentería Nfx",
+    "description": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 20000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Nakis Marquez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Gasto",
+    "client": "Danext",
+    "description": "2 Netflix",
+    "method": "NEQUI",
+    "amount": 70000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Pepi",
+    "description": "1 Netflix 1 Pantalla 3 Meses",
+    "method": "NEQUI",
+    "amount": 38000.0,
+    "status": "Pagada"
+  },
+  {
+    "date": "2025-11-30",
+    "type": "Venta",
+    "client": "Yurany Ordóñez Nfx",
+    "description": "1 Netflix 1 Pantalla",
+    "method": "NEQUI",
+    "amount": 16000.0,
+    "status": "Pagada"
+  }
+]

@@ -1,0 +1,714 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Enero</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="16b15917-8b3d-8071-8470-db4d66a6fdab" class="page sans"><header><div class="page-header-icon undefined"><span class="icon">⭕</span></div><h1 class="page-title">Enero</h1><p class="page-description"></p></header><div class="page-body"><ul id="16b15917-8b3d-8065-b289-e50bfdcba6d3" class="toggle"><li><details open=""><summary>1.</summary><p id="17415917-8b3d-807e-8445-f02d437681bd" class=""><mark class="highlight-red">Inversión: 5k Sir </mark></p><p id="fd089901-6aca-4247-857e-7df90ab2defc" class=""><mark class="highlight-yellow">2/2 Netflix y Disney 36k Davi Paola Sarmiento (1p) 0_piscinazos_ambas@icloud.com</mark></p><p id="1effeca3-a125-4a85-a968-bb0e10b322db" class=""><mark class="highlight-yellow">2/3 Sporify 25k Nequi Willian Ramos Chacón</mark></p><p id="67aaed3e-9322-49f8-b972-82380b3bb175" class=""><mark class="highlight-yellow">Netflix, Disney DN, Max, Prime y Paramount 54k Bank Maria Ochoa (2p) </mark><mark class="highlight-yellow"><a href="mailto:karolayrojas1371@hotmail.com">karolayrojas1371@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx44+auto55@gmail.com">ldznnfx44+auto55@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="cf8580a0-52d4-46b6-9509-a773841a113e" class=""><mark class="highlight-yellow">Netflix , Prime, Max, Disney y Paramount 42k Nequi Héctor Rizo (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx41+auto22@gmail.com">ldznnfx41+auto22@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="9aca2bbc-3929-452f-8c20-6dba0b77166b" class=""><mark class="highlight-yellow">Netflix y Prime 19k Nequi María Fernanda Grisales (1p) julianherrera901@hotmail.com</mark></p><p id="6450e8dc-b1e2-44e8-889e-39d4c88eba7f" class=""><mark class="highlight-blue">Netflix y Max 20k Nequi Paola Atala (1p) angieortiz4526@hotmail.com</mark></p><p id="f5c3bc96-2942-4653-850d-49d1f9287f3e" class=""><mark class="highlight-yellow">Netflix 15k Nequi Ricardo Martínez (1p) merycastillo1375@hotmail.com</mark></p><p id="42f0cc81-e00e-4d7f-95b9-c21bd08d5485" class=""><mark class="highlight-blue">Netflix CC 35k Davi Oriana Bustos (4p) karensofia9014@hotmail.com</mark></p><p id="e4ca1812-3d1e-488b-8d9e-3eadd77c011f" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Jhon Navarro (1p) marlonvelazco5641@hotmail.com</mark></p><p id="dc757b4c-b76e-459e-80ed-a657d50549e2" class=""><mark class="highlight-blue">Vix 10k Bank Elizabeth Vega</mark></p><p id="4f441cf1-66b0-4c4f-8d64-f285677fcef7" class=""><mark class="highlight-blue">Netflix, Disney DN y Prime 30k Nequi Andrés Penagos (1p) campus.paletas_0x@icloud.com</mark></p><p id="09c85498-74db-4c02-be9a-9e1cb959c992" class=""><mark class="highlight-yellow">Netflix y Disney 25k Davi Liliana Durán (1p) lornabravo8980@hotmail.com</mark></p></details></li></ul><ul id="e0fae7e2-f3a0-4eb7-bbe8-b32f0f576bb1" class="toggle"><li><details open=""><summary>2.</summary><p id="17415917-8b3d-80a2-a746-d2664133b436" class=""><mark class="highlight-red">Inversión: 3k Sir </mark></p><p id="984d88c8-343d-4825-9ef7-6fc71d2550bc" class=""><mark class="highlight-yellow">1/6 70k Bank Lisbeth Gómez Escalante (1p) </mark><mark class="highlight-yellow"><a href="mailto:neidermartinez7146@hotmail.com">neidermartinez7146@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="d1e0e2a0-862a-40a9-9073-4620e10bd22c" class=""><mark class="highlight-yellow">1/3 Netflix 36k Bank Tía Ludys (1p) baba8425@motmam.com</mark></p><p id="1c2feaff-d618-4919-99d3-57bd2b9da819" class=""><mark class="highlight-yellow">Netflix y Max 20k Bank Claudia Cabrera (1p) ldznnfx44+auto55@gmail.com</mark></p><p id="e61af13d-476d-4f05-b67d-eaa35173c447" class=""><mark class="highlight-blue">Netflix 15k Nequi Jeffer Ariza (1p) juliancamargo784@hotmail.com</mark></p><p id="ec269881-9272-4fe7-aad9-1b918f630813" class=""><mark class="highlight-yellow">Max, Prime y Disney DN 25k Nequi Jonathan Lázaro</mark> </p><p id="974c06f0-b027-4338-baec-908d3061b376" class=""><mark class="highlight-yellow">Netflix 15k Nequi Liena Rios (1p) </mark><mark class="highlight-yellow"><a href="mailto:Laurasofia0932@hotmail.com">Laurasofia0932@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="44c9b16e-e2a2-4958-8b91-7a379ea1044f" class=""><mark class="highlight-blue">Disney DN 15k Bank Lisbeth Gómez Escalante</mark></p><p id="159e8dc4-ab3b-4bca-855a-1c1257d6ea00" class=""><mark class="highlight-yellow">Netflix y Disney 25k Nequi Rodolfo Ruíz (1p) neidermartinez7146@hotmail.com</mark></p><p id="1c9d1e3d-7474-4e6b-9fe6-a1096f003c33" class=""><mark class="highlight-blue">Netflix 15k Bank Paula Rodríguez (1p) neidermartinez7146@hotmail.com</mark></p><p id="f04f8511-fade-47c8-b283-910c789be052" class=""><mark class="highlight-blue">Disney 15k Bank Marinly Morillo 2</mark> </p><p id="f1fa9e1b-a39e-4970-b58c-afc9c25af157" class=""><mark class="highlight-yellow">Disney y Max 20k Davi Marlon Cantillo TD</mark></p><p id="5c80081a-aafc-46e3-ab00-0f85d36b0fce" class=""><mark class="highlight-yellow">Netflix 15k Bank Laurent Díaz (1p) brayancampos15896@hotmail.com</mark></p><p id="0b055d78-a67a-452c-80bf-52c31771554c" class=""><mark class="highlight-yellow">Netflix CC 37k Bertha Blanco (4p) </mark><mark class="highlight-yellow"><a href="mailto:albeirojose4567@hotmail.com">albeirojose4567@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="c8240481-995d-4386-aa8d-dd6839066dac" class=""><mark class="highlight-yellow">Netflix 25k Bank Carolina Restrepo (2p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx44+auto55@gmail.com">ldznnfx44+auto55@gmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:Laurasofia0932@hotmail.com">Laurasofia0932@hotmail.com</a></mark> </p></details></li></ul><ul id="7e4cefa9-475f-4a3d-a275-b4bed76fadcd" class="toggle"><li><details open=""><summary>3.</summary><p id="17415917-8b3d-80d3-b237-d5e303cce124" class=""><mark class="highlight-red">Inversión: 180k Andrés, 31k Fabián </mark></p><p id="b9fe266d-5bb7-46d9-96fc-dc50481ddb92" class=""><mark class="highlight-blue">3/3 Netflix, Disney DN y Max 75k Nequi Indira Olivo (1p) cristiancastillo6789@hotmail.com</mark></p><p id="216a11ad-1cdb-4e3e-b24f-462b2874918d" class=""><mark class="highlight-blue">Disney 15k Nequi Ángela Piedrahíta</mark> </p><p id="b23b94d4-2152-44c6-ac18-ac8cdd7c7105" class=""><mark class="highlight-blue">Netflix Priv 15k Bank Jaider (1p) 07.baipas_usos@icloud.com</mark></p><p id="e1e0ee8a-4de6-41f5-b5d1-526fb5ea4e00" class=""><mark class="highlight-yellow">Netflix 15k Nequi Angie Ferrer (1p) sautedsound+fd34@gmail.com</mark></p><p id="17383cfd-e444-4440-b1c3-e825ee7046c1" class=""><mark class="highlight-yellow">Netflix 15k Bank Cristina Cantillo (1p) marthahernandez41651@hotmail.com</mark></p><p id="189ff30b-b825-4a40-b009-d2c859a2493e" class=""><mark class="highlight-yellow">Netflix 15k Nequi Salvador (1p) domingomorales1379@hotmail.com</mark></p><p id="d57665ac-8e0e-4084-b611-66893058b330" class=""><mark class="highlight-blue">Netflix 15k Bank Chelsy Salazar Solórzano (1p) Rubiela24sanchez@outlook.com</mark></p><p id="0d52b550-93e4-44cd-a6d2-0d7a20ba0f75" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Shawnny Gómez (1p) diegomanrique24544@hotmail.com</mark></p><p id="5fc79977-9671-47d0-bb10-67e5152cadc6" class=""><mark class="highlight-blue">Netflix 15k Nequi Wilian Mendoza Barragán (1p) ximenacampos4952@hotmail.com</mark></p><p id="ff10dc59-53a8-428d-979b-aa47d2b7c40c" class=""><mark class="highlight-yellow">Max, Disney, Vix, Paramount y Prime 35k Bank Karen Mendoza </mark></p><p id="009f02a5-e634-4376-901c-84b11754a41a" class=""><mark class="highlight-yellow">Netflix y Prime 20k Davi Enelvis (1p) andersonbuitrago12357@hotmail.com</mark></p><p id="5dc7c4f2-3257-4eb9-9787-c093daf06b80" class=""><mark class="highlight-blue">Netflix, Prime y Disney 30k Nequi Ricardo Ahumada (1p) juliancamargo784@hotmail.com</mark></p><p id="1e714216-bb87-41fc-94f9-a98ac53de6fb" class=""><mark class="highlight-blue">Netflix 15k Nequi keylin Rico (1p) auto+hMR4@estratosfera.net</mark></p><p id="e4cea757-f5bc-4953-9b20-7b6dbb68be63" class=""><mark class="highlight-yellow">Disney y Max 20k Nequi Alejandro Bárcenas</mark></p><p id="c5b849cd-0972-4fb2-b45d-c47aff3dfb05" class=""><mark class="highlight-yellow">Disney, Max y Prime 25k Nequi Francisco Castillo</mark></p></details></li></ul><ul id="4fe7ce35-165f-43e4-9d26-fbfdb4f25012" class="toggle"><li><details open=""><summary>4.</summary><p id="17415917-8b3d-80ba-af09-ca65a7198a92" class=""><mark class="highlight-red">Inversión:19k angie, 46k URBAN</mark></p><p id="ed07718b-4c0f-424b-bfaf-aa887fe87140" class=""><mark class="highlight-yellow">5/6 Netflix y Max 2p 240k Bank Luz Yadira (4p) michelleacevedo21@aol.com</mark></p><p id="4b483450-7362-4ae1-bd09-ae232d60072d" class=""><mark class="highlight-yellow">7/12 Netflix Priv Elvia Amariz (1p) Luisaobeso63s+CARVA52@outlook.com</mark></p><p id="aebf568c-30f1-4f64-b6ca-9f6881671fc5" class=""><mark class="highlight-blue">4/4 YouTube 30k Nequi Freddy Mateus</mark></p><p id="4f769c7f-8728-4c23-ab8b-66cbc0bd6b6f" class=""><mark class="highlight-yellow">3/6 Netflix 84k Bank Jorge Khalilieh (1p) director-hidratar0w@icloud.com</mark></p><p id="ef63aac2-2aca-45e0-be93-1f80a54ecb65" class=""><mark class="highlight-yellow">Netflix 15k Nequi Maybellien Gazabon (1p) martinmaraiano15896@hotmail.com</mark></p><p id="01bd3a98-74b8-4b07-a2cb-f097b321214d" class=""><mark class="highlight-yellow">Netflix, Max, Disney y Prime 45k Nequi Luz Cala (2p) </mark><mark class="highlight-yellow"><a href="mailto:davidoswaldo3647@hotmail.com">davidoswaldo3647@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:sofiarestrepo12341@hotmail.com">sofiarestrepo12341@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="7806dc22-41f8-4147-ae47-a6f9c1a15802" class=""><mark class="highlight-blue">Netflix 15k Nequi Claudia Duque (1p) ursulasoto23456@hotmail.com</mark></p><p id="fef5af3a-0848-4472-8455-d4eb0a92e064" class=""><mark class="highlight-yellow">Netflix 35k Nequi Andrey León (4p) miccebhadur@hotmail.com</mark></p><p id="8f337a39-e628-4995-966a-fd82cf4c1301" class=""><mark class="highlight-blue">Netflix, Disney y Crunchyroll 30k Nequi Yeison (1p) nowrotsdessa@hotmail.com</mark></p><p id="96b5c59c-8a65-43e4-9a38-1970c6a67b6a" class=""><mark class="highlight-blue">Netflix 15k Nequi Claudia Herrera (1p) nowrotsdessa@hotmail.com</mark></p><p id="1bfcf37f-edb8-4f4a-8966-0b65d96ee772" class=""><mark class="highlight-blue">Netflix 15k Nequi Luz Puello (1p) nowrotsdessa@hotmail.com</mark></p><p id="2f2f1125-ecf3-4bb7-9dd2-021c74171e46" class=""><mark class="highlight-yellow">Netflix 15k Nequi Liliana 2 (1p) Katherine03linares@outlook.com</mark></p><p id="4c707902-2cae-4858-a7b8-f42d3fbbdb30" class=""><mark class="highlight-blue">Netflix 15k Bank Daniela Torres (1p) Katherine03linares@outlook.com</mark></p><p id="1ff21dee-4734-4a20-89a4-13226ffcbf0c" class=""><mark class="highlight-blue">Prime 18k Bank Analeidy Maldonado </mark></p><p id="a1a215db-2bb9-4ea1-9af2-cac009638684" class=""><mark class="highlight-blue">Netflix 15k Nequi Emma Rosa Sarmiento (1p) Katherine03linares@outlook.com</mark></p></details></li></ul><ul id="4cdd8047-e9f3-4d87-b710-5e8c01130914" class="toggle"><li><details open=""><summary>5.</summary><p id="17415917-8b3d-8085-809e-f8240175ba07" class=""><mark class="highlight-red">Inversión:69k Fabián</mark> </p><p id="13c68544-5ab6-45ce-957c-cfcd15dc9dd0" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Maria Angélica Vásquez (1p) Rubiela24sanchez@outlook.com</mark></p><p id="cc3dacd8-5750-49a5-b61e-dfea260d6485" class=""><mark class="highlight-blue">Netflix y Prime 47k Nequi Andrey León (4p) Trigos03alex@outlook.com</mark></p><p id="2309b9f5-2cab-4df0-9cee-b2831b393fb5" class=""><mark class="highlight-blue">Netflix 15k Nequi Ana Ospino (1p) Katherine03linares@outlook.com</mark></p><p id="74e7423c-7928-4953-b4b9-8e0edacf17d5" class=""><mark class="highlight-yellow">Netflix, Prime y Crunchyroll 25k Davi Jose Paredes (1p) ramirojaramillo45678@hotmail.com</mark></p><p id="61e16f27-7b65-40ab-aa86-984ee9b0ead8" class=""><mark class="highlight-yellow">Netflix 15k Nequi Lina Zuleta (1p) Katherine03linares@outlook.com</mark></p><p id="c34f4dfd-e153-4d89-acfa-e54c11393278" class=""><mark class="highlight-blue">Netflix 15k Nequi Rubén Darío Ferreira (1p) paulasoto2345@hotmail.com</mark></p><p id="147dda79-52e7-4a8b-b446-aa8136c3eb28" class=""><mark class="highlight-blue">Netflix 35k Nequi Andrey León (4p) </mark><mark class="highlight-blue"><a href="mailto:Karen25ortiz@outlook.com">Karen25ortiz@outlook.com</a></mark><mark class="highlight-blue"> </mark></p><p id="7bb47176-c4da-445f-9a5e-6e73291ea39e" class=""><mark class="highlight-blue">Netflix 15k Nequi Yessica Blanco (1p) ldznnfx41+auto22@gmail.com</mark></p><p id="70b27617-24a7-4a39-b14c-1feb4ce8587c" class=""><mark class="highlight-blue">Netflix 15k Bank Jeimy Bautista (1p) auto+hMR4@estratosfera.net</mark></p><p id="fd66611b-f173-4cbf-bb71-49f8ca373c8c" class=""><mark class="highlight-blue">Vix, Max y Paramount 15k Nequi Yina</mark> </p><p id="90106ecc-7fed-4cda-9664-646dba5c6a70" class=""><mark class="highlight-blue">Combo 1 35k Nequi Andrea Romero (1p) Katherine03linares@outlook.com</mark></p><p id="15579c72-d07c-4955-a3ae-fa68c2b6e551" class=""><mark class="highlight-yellow">Netflix y YouTube 22k Nequi Luis Ruíz Primo (1p) julianherrera901@hotmail.com</mark></p></details></li></ul><ul id="04fce75e-853f-4fd4-9ffb-e9da8f44d727" class="toggle"><li><details open=""><summary>6. </summary><p id="17415917-8b3d-806d-bb79-fe547f042af9" class=""><mark class="highlight-red">Inversión: 14k harold </mark></p><p id="3fb4c457-988c-4622-955f-0063997d92ae" class=""><mark class="highlight-yellow">2/2 Max y Prime 35k Bank Leidy Bohórquez</mark></p><p id="c37e39dd-2e4a-4995-ba2b-153800afde50" class=""><mark class="highlight-blue">4/4 YouTube 27k Nequi Jeimy Maria Ariza</mark></p><p id="b0af1e23-c180-4b58-9215-18a3f35edbb8" class=""><mark class="highlight-yellow">6/6 Netflix 200k Nequi Mr Nuñez (4p) lira.orza0k@icloud.com</mark></p><p id="76b16176-f4b6-4866-8887-177253e97238" class=""><mark class="highlight-yellow">Netflix 40k Nequi Juan Pablo Torres (4p) carlosconsuelo8@hotmail.com</mark></p><p id="5b08a198-9b44-452e-8011-8b04727520e3" class=""><mark class="highlight-blue">YouTube 10k Bank Leo Alas bravas</mark></p><p id="9dd9e615-04fd-47d8-9636-3707430c7220" class=""><mark class="highlight-blue">Disney 15k Bank Marlon Palacio</mark> </p><p id="5a122cbe-b0ac-4fbe-a185-830b27745715" class=""><mark class="highlight-blue">Combo 1 DN 35k Bank Simón Oramas (1p) mareados.disfrutar.0k@icloud.com</mark></p><p id="c74afb90-6fbe-4d66-bd55-6c4de0e13944" class=""><mark class="highlight-blue">Netflix 15k Nequi Diana Carolina (1p) Mariafernanda6321@hotmail.com</mark></p><p id="3ab5e0f0-0867-4056-a1ba-e11d5dab91d2" class=""><mark class="highlight-yellow">Netflix y Prime 20k Davi Sara (1p) agathasiachique3874@hotmail.com </mark></p><p id="3aaf7556-b07e-41d3-b5e0-40e74f44f0eb" class=""><mark class="highlight-yellow">Netflix 15k Nequi Yoryanis (1p) Andreina27correa@outlook.com</mark></p><p id="5b34bd0d-740a-465a-9a44-1aeb5417559f" class=""><mark class="highlight-blue">Netflix 25k Bank Juank Castro (2p) </mark><mark class="highlight-blue"><a href="mailto:merycastillo1375@hotmail.com">merycastillo1375@hotmail.com</a></mark><mark class="highlight-blue"> y </mark><mark class="highlight-blue"><a href="mailto:julianherrera901@hotmail.com">julianherrera901@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="644303f2-1204-4562-b41e-256138c05b0b" class=""><mark class="highlight-yellow">Combo 1 DN 35k Nequi Silfri (1p) </mark><mark class="highlight-yellow"><a href="mailto:marlonvelazco5641@hotmail.com">marlonvelazco5641@hotmail.com</a></mark> </p><p id="8c600d0c-920a-4986-8bbb-aff7acf01616" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Alas Bravas (1p) Andreina27correa@outlook.com</mark></p><p id="baf3dc25-47d0-4810-8024-0c221ef77b3f" class=""><mark class="highlight-blue">Netflix 15k Bank Carolina Vélez (1p) auto+hMR4@estratosfera.net</mark></p><p id="f283655f-0f3a-4114-93c6-aa38e09f7412" class=""><mark class="highlight-yellow">Netflix 15k Bank Karen Angulo (1p) silviacharry4567@hotmail.com</mark></p><p id="8a6140f7-76f1-462e-b8db-1bcf1fafd83f" class=""><mark class="highlight-blue">Combo 1 DN 35k Davi José Bertel (1p) lilianamorales1379@hotmail.com</mark></p><p id="58c7eef8-3343-4a34-8712-b150ffa45891" class=""><mark class="highlight-blue">Netflix 15k Bank Jaime Darío Aldana (1p) paulasoto2345@hotmail.com </mark></p><p id="16da4909-9b08-455a-8e9e-81514de26a83" class=""><mark class="highlight-blue">Max y Prime 24k Nequi Andrey León </mark></p><p id="3dae5136-1f5c-46b6-b4f3-4d0d37cc352b" class=""><mark class="highlight-blue">Netflix 15k Nequi Gustavo Acevedo (1p) Andreina27correa@outlook.com</mark></p><p id="d6bde8fa-2875-4fd2-ab4f-836a111f1c35" class=""><mark class="highlight-blue">Netflix 15k Nequi Alejandra Pinto (1p) Andreina27correa@outlook.com</mark></p><p id="39af9f2c-d9f7-4d32-90ab-e5f7e47e73d6" class=""><mark class="highlight-yellow">Combo 1 35k Nequi Jose Angel (1p) abdullaxx1122@blossen.com</mark></p><p id="5a4d4580-6e72-4f67-b726-0c51d58a085b" class=""><mark class="highlight-yellow">Netflix, Max y Prime 30k Nequi Christian (1p) claracristancho18596@hotmail.com</mark></p><p id="f3f19462-c416-4f47-a8a1-f7c16aafaaf7" class=""><mark class="highlight-yellow">Netflix, Disney y Crunchyroll 35k Nequi Kerwin (1p) cfdrd@zaramy.com</mark></p></details></li></ul><ul id="2077e85a-1fae-4af0-80d1-5afe87a1b3b6" class="toggle"><li><details open=""><summary>7.</summary><p id="17a15917-8b3d-8025-8e83-ed53e5237efb" class=""><mark class="highlight-red">Inversión: 4,5k sir</mark></p><p id="e28f51e8-8072-44f8-95a0-16d77bc06d1e" class=""><mark class="highlight-yellow">4/6 Netflix 192k Nequi Marinly Morillo 2 (4p) ordenes_caliz0s@icloud.com</mark></p><p id="cb98e302-58cd-4fe2-996e-cbbc8fc357d4" class=""><mark class="highlight-yellow">Netflix 15k Bank Alex Ospino (1p) diegomanrique24544@hotmail.com</mark></p><p id="50c7633b-2466-48d1-ac9f-25d2e2651cc4" class=""><mark class="highlight-yellow">Netflix 15k Nequi Margarita Escop (1p) abdullaxx1122@blossen.com</mark></p><p id="e129e1c7-dbd8-48b1-a711-c8885fba40e8" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Jenny Karolina Carrillo (1p) Katherine03linares@outlook.com</mark></p><p id="a9cf9822-5ff4-4005-82f5-82159074381e" class=""><mark class="highlight-yellow">Disney, Max y Prime 25k Nequi Javier Forero </mark></p><p id="7df75102-dada-49e7-88a3-3a19adcb4036" class=""><mark class="highlight-blue">Netflix, Disney y Max 30k Bank Elizabeth Vega (1p) lilianamorales1379@hotmail.com</mark></p><p id="c670cb4e-bd36-4452-9643-01dd25831eb8" class=""><mark class="highlight-blue">Netflix 15k Nequi Felo (1p) marlonvelazco5641@hotmail.com</mark></p><p id="0d272a68-3072-4855-8488-9f19369269e3" class=""><mark class="highlight-blue">Netflix 15k Nequi Daris Sánchez (1p) ldznnfx41+auto22@gmail.com</mark></p><p id="b9a5e5e4-0519-4f22-8472-91180790a1bf" class=""><mark class="highlight-yellow">Disney y Prime 20k Nequi Nandito Silva</mark> </p><p id="19d5812b-3ae6-4529-8962-ec0dc7704a9e" class=""><mark class="highlight-blue">Combo 1 DN 35k Nequi Gustavo Lozano (1p) cristiancastillo6789@hotmail.com</mark></p><p id="2cf69125-bc0f-4111-8ae6-5a4c006a6c0a" class=""><mark class="highlight-blue">Netflix 15k Nequi Manuel Sarmiento (1p) nowrotsdessa@hotmail.com</mark></p></details></li></ul><ul id="3c839a25-5173-4abc-86f3-a43336574f39" class="toggle"><li><details open=""><summary>8.</summary><p id="17a15917-8b3d-804b-8821-e90da79a5232" class=""><mark class="highlight-red">Inversión: 15k Oscar </mark></p><p id="5f959cc1-23a6-47ed-b45a-e3d804de5f31" class=""><mark class="highlight-yellow">1/6 Spotify 45k Bank Seba Primo</mark> </p><p id="9cbff6c8-34b0-40e4-9e9d-558ff0b71f12" class=""><mark class="highlight-yellow">Netflix 15k Nequi Maria A. Bernal (1p) marthahernandez41651@hotmail.com</mark></p><p id="797f5528-fd10-4122-8051-6dbce73b30a9" class=""><mark class="highlight-yellow">Netflix 15k Bank Maria Fernanda Villalobos (1p) julianherrera901@hotmail.com</mark></p><p id="6428a66e-9bec-46b3-a5a3-d5cb48a2e901" class=""><mark class="highlight-yellow">Netflix y Disney DN 25k Bank Paola Zapata (1p) lilianamorales1379@hotmail.com</mark></p><p id="68950699-39cf-45cf-b341-c4944334a63b" class=""><mark class="highlight-yellow">Netflix 30k Nequi Yenny Rodríguez (2p) </mark><mark class="highlight-yellow"><a href="mailto:Rubiela24sanchez@outlook.com">Rubiela24sanchez@outlook.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:julianherrera901@hotmail.com">julianherrera901@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="eb547396-c4dd-4c70-92c2-e9072113ae70" class=""><mark class="highlight-yellow">Netflix y Vix 21k Nequi Eliana Peñates (1p) merycastillo1375@hotmail.com</mark></p><p id="9cbbb998-fb48-4180-9efc-33dd1b95ff49" class=""><mark class="highlight-blue">Netflix 15k Bank Luz Meri (1p) lilianamorales1379@hotmail.com</mark></p><p id="879d7b7e-aacc-40fa-a726-47fdbc307e78" class=""><mark class="highlight-yellow">Netflix 15k Nequi Heidy Sarabia Cantillo (1p) auto+hMR4@estratosfera.net</mark></p><p id="b9fa436c-8561-470a-91f1-57793347b9a5" class=""><mark class="highlight-blue">Netflix, Vix, Paramount, Max y Prime 35k Bank Carlos Martínez (1p) marthahernandez41651@hotmail.com</mark></p><p id="4720f95d-a5b1-4722-baf0-1a1d6bf8eb98" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Natalia Zuluaga (1p) abilfonseca2345@hotmail.com</mark></p><p id="cc381c62-4520-488c-ac10-71320d013af2" class=""><mark class="highlight-blue">YouTube 10k Nequi William Mejía</mark> </p><p id="55bc96d4-ec73-4e4a-8ee8-f5d32ac7d799" class=""><mark class="highlight-blue">IPTV 10k Nequi Andrey León</mark> </p></details></li></ul><ul id="60d88479-0faa-4fa5-ac9b-11ca1368fe4b" class="toggle"><li><details open=""><summary>9.</summary><p id="028cdd6c-a4a3-4e41-86c5-9dc92260b8f5" class=""><mark class="highlight-yellow">2/3 Spotify 24k Nequi Eder Arteaga</mark></p><p id="6744b901-88a9-44f2-8bb0-5b79697fc720" class=""><mark class="highlight-yellow">Disney, Prime, Param y Max 35k Nequi Carlos del Toro</mark></p><p id="4ba0ed52-e3de-4b09-a53a-9555df532c3d" class=""><mark class="highlight-blue">Netflix 15k Nequi Geidis (1p) marialeonor1379@hotmail.com</mark></p><p id="56d8558b-1d6e-4f0b-9603-5596416d2168" class=""><mark class="highlight-yellow">YouTube 10k Bank Lilibeth López 2</mark></p><p id="04394d99-b6b3-4f64-b446-a663f66ffd4c" class=""><mark class="highlight-blue">Netflix, Max y Paramount 25k Bank Andrea Valderrama (1p) cristiancastillo6789@hotmail.com</mark></p><p id="14c5825d-f22f-4032-a9b0-148a4263147b" class=""><mark class="highlight-yellow">Disney y Max 20k Nequi Camilo Carrillo </mark></p><p id="adccba35-5e41-4f29-859c-f851c39724b6" class=""><mark class="highlight-yellow">Netflix 15k Nequi Maria Moscote (1p) vernalsara@hotmail.com</mark></p><p id="a55c24ca-b99e-47b5-b287-3d34406c39e0" class=""><mark class="highlight-blue">Netflix 15k Nequi Wilman Anguila (1p) martinmaraiano15896@hotmail.com</mark></p><p id="7cb531f0-0e86-4dcb-8853-2a5700afad12" class=""><mark class="highlight-yellow">Netflix 15k Bank Osnaider (1p) karolayrojas1371@hotmail.com</mark></p><p id="08dbf657-50af-4857-80a4-9e067540609c" class=""><mark class="highlight-yellow">Netflix y Prime 20k Davi Nilson Molina (1p) merycastillo1375@hotmail.com</mark></p><p id="a35364e1-a6e7-4a01-8192-0b91b171d782" class=""><mark class="highlight-blue">Crunchyroll 10k Nequi Jesús Pineda</mark> </p><p id="fc639c4f-0cf5-4c0d-b47c-03334c76e3f0" class=""><mark class="highlight-yellow">Netflix, Prime y Disney 30k Nequi Orelis Pianneta (1p) martincapera9830@outlook.es</mark></p><p id="a7a3d153-1541-4755-8298-47590a6a46b8" class=""><mark class="highlight-yellow">YouTube 10k Nequi Jacky Castillo</mark></p></details></li></ul><ul id="7852894c-0fad-4854-a0a3-f4ccf725dcab" class="toggle"><li><details open=""><summary>10.</summary><p id="96af16b8-9066-409e-9c45-1db95bca546e" class=""><mark class="highlight-blue">Netflix Priv 18k Nequi Jhonny Alexander Guerrero (1p) ldznnfx100+jpauto@gmail.com</mark></p><p id="c0188997-b804-4d1e-a340-4fdf990f9cc9" class=""><mark class="highlight-yellow">Netflix 15k Nequi Lezlith (1p) Yesidruiz192+03822@gmail.com</mark></p><p id="72954707-be91-4ff0-8f9c-35af59c4816a" class=""><mark class="highlight-yellow">Netflix 25k Nequi Germán Junior Meza Valera (2p) </mark><mark class="highlight-yellow"><a href="mailto:ximenacampos4952@hotmail.com">ximenacampos4952@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:elfredoramos3627@hotmail.com">elfredoramos3627@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="0c5086bb-3a26-45c4-bdad-0c21c6797dc8" class=""><mark class="highlight-blue">Netflix y Max 20k Davi Ana Karina Bertel (1p) smithjesid1379@hotmail.com</mark></p><p id="6d635aac-f523-431c-96ef-fb8330c84215" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Diego Mejía (1p) lilianamorales1379@hotmail.com </mark></p><p id="2d29189b-bb79-467a-8cd9-dc480dc04b54" class=""><mark class="highlight-blue">Netflix 15k Nequi Jennifer Simanca (1p) auto+hMR4@estratosfera.net</mark></p><p id="e885829c-ac85-4603-9cf4-65f0bcb0841d" class=""><mark class="highlight-blue">Prime 10k Davi Lina Saavedra </mark></p><p id="55b2df0c-9495-4b3b-8da7-aa901c18f42d" class=""><mark class="highlight-blue">Netflix, Disney y Prime 30k Bank Wilber Martínez (1p) jacksonmiguel7865@hotmail.com</mark></p><p id="12a25b5c-4096-491e-8759-67ce00d0133c" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Aleja Calderón (1p) diegomanrique24544@hotmail.com</mark></p></details></li></ul><ul id="6627a2fb-84ac-40d6-acd3-d586969f5ae3" class="toggle"><li><details open=""><summary>11.</summary><p id="fb1cec92-425e-4219-981d-1e1fca9a9f52" class=""><mark class="highlight-yellow">2/3 YouTube 22k Davi Oriana Bustos</mark></p><p id="3daa0025-9a08-405f-873d-5a92159bd31f" class=""><mark class="highlight-yellow">Disney 15k Nequi Carlos Martínez</mark></p><p id="bc7410d2-dc49-49da-b35b-e24e94fab97a" class=""><mark class="highlight-yellow">Disney, Paramount y Prime 24k Nequi Diego Martínez</mark></p><p id="5d184bd9-34ec-4f4c-b09e-3a0f52f60c3b" class=""><mark class="highlight-yellow">Netflix y Disney DN 25k Nequi Yeijosé (1p) cachimba_mesones_0z@icloud.com </mark></p><p id="2fd512a0-483d-4624-97dd-173aaa3f3b3d" class=""><mark class="highlight-yellow">Netflix 15k Bank Leidy Barón (1p) diegomanrique24544@hotmail.com</mark></p><p id="77c28249-0c06-488b-83d1-d1594790efd3" class=""><mark class="highlight-yellow">Max, Prime y Paramount 25k Nequi Jose Antonio Lora</mark></p><p id="1fb0b440-f4c7-4256-a070-915bae828931" class=""><mark class="highlight-blue">Netflix 15k Nequi Yuli Marín (1p) jacobmontrial234@hotmail.com</mark></p><p id="52f2209b-f725-4f07-bff9-d06635d62e8d" class=""><mark class="highlight-yellow">Netflix 15k Nequi Maria Cuello 2 (1p) sofiarestrepo12341@hotmail.com</mark></p><p id="9f9289fc-ccbc-43c0-9ea0-bd5d0fb795b9" class=""><mark class="highlight-yellow">Disney, Max y Paramount 25k Bank Carlo Merce</mark> </p><p id="2344c357-4816-4795-95d8-e9d73948a11e" class=""><mark class="highlight-yellow">Netflix, Disney DN, Paramount, Prime y Max 45k Nequi Ivan del Toro (1p) </mark><mark class="highlight-yellow"><a href="mailto:ramirojaramillo45678@hotmail.com">ramirojaramillo45678@hotmail.com</a></mark> </p><p id="cf03cdbf-a994-45a5-995e-b4eca6ad604a" class=""><mark class="highlight-yellow">DirecTV 40k Nequi Yenis Arrieta </mark></p><p id="5e0efb07-9f8a-43ba-8d57-a5a156e02466" class=""><mark class="highlight-yellow">Netflix y Disney 25k Bank Astrid Rodríguez (1p) lornabravo8980@hotmail.com</mark></p><p id="bb2c73a2-50f2-47b0-be51-e47ef7245e5d" class=""><mark class="highlight-yellow">Disney DN 15k Bank Xiu Ling Correa</mark></p></details></li></ul><ul id="4d77d7fd-aa6f-47b2-aa1f-21249a6731cc" class="toggle"><li><details open=""><summary>12.</summary><p id="5a9d2295-518d-4e41-bfd9-90fb52224459" class=""><mark class="highlight-yellow">1/3 Spotify 24k Nequi Héctor Fabio</mark> </p><p id="8bc32aba-c753-4d22-bec3-3a00d0973c16" class=""><mark class="highlight-yellow">2/4 YouTube 30k Nequi Héctor Rizo</mark></p><p id="3c360406-b6c4-4619-954d-ef316064bba5" class=""><mark class="highlight-blue">Combo 1 35k Nequi Lina Aguas (1p) marthahernandez41651@hotmail.com</mark></p><p id="0bde6c01-521b-4c0c-a2cc-beb0006fd7d0" class=""><mark class="highlight-yellow">Disney 15k DN Nequi Maria Blanco</mark></p><p id="a122ff6a-9551-4dc2-ad18-f868ce563cbe" class=""><mark class="highlight-blue">Paramount y Prime 15k Nequi Alexander Benjumea </mark></p><p id="60435ae1-2b2c-4b7a-b820-1b514a3ee0e4" class=""><mark class="highlight-blue">Netflix 15k Nequi Tatiana (1p) cfdrd@zaramy.com</mark></p><p id="d0f163e2-f433-429b-a853-e13d6cdbad00" class=""><mark class="highlight-yellow">Netflix y Disney 35k Nequi Yara Rodríguez (2p) </mark><mark class="highlight-yellow"><a href="mailto:silviacharry4567@hotmail.com">silviacharry4567@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:andersonbuitrago12357@hotmail.com">andersonbuitrago12357@hotmail.com</a></mark> </p><p id="dd4df608-2961-411a-8f92-9244edd65d17" class=""><mark class="highlight-yellow">Netflix y Max 20k Nequi Jhordi Piña (1p) silviacharry4567@hotmail.com</mark></p><p id="3c8505ab-f252-419e-9106-fa74d0ae450b" class=""><mark class="highlight-yellow">Disney, Max, Paramount y Max 30k Bank James Naranjo</mark></p></details></li></ul><ul id="705b14c8-2832-4705-8a08-6cd76480468d" class="toggle"><li><details open=""><summary>13.</summary><p id="17a15917-8b3d-803a-90d1-fa4a109c08cc" class=""><mark class="highlight-red">Inversión: 24k angie, 178k URBAN, 137.5k Fabián </mark></p><p id="bb0baf7d-d341-46a8-80ce-7ff8e35c788f" class=""><mark class="highlight-yellow">1/3 Spotify 21k Nequi Felo</mark></p><p id="ea3fc26f-bdf4-4ba1-aadd-c66d64b75b38" class=""><mark class="highlight-yellow">5/12 Disney EST y Plex 320k Nequi Ander Moya</mark></p><p id="53abaaa8-5712-41a4-9f12-85bf7d8a863d" class=""><mark class="highlight-yellow">5/6 YouTube 80k Nequi Ander Moya (2 cuentas)</mark></p><p id="0f521522-5c89-4be3-b5ea-ec2984d85d2d" class=""><mark class="highlight-yellow">2/3 Netflix 40k Nequi Elvia Amariz (1p) ramirojaramillo45678@hotmail.com</mark></p><p id="5895ecfc-935c-424e-9f26-132a23f39ba5" class=""><mark class="highlight-blue">Disney 15k Nequi Carolina Restrepo</mark></p><p id="b0646e9d-5876-4a75-af24-a3c662ebbbed" class=""><mark class="highlight-yellow">Mega Combo 110k Bank Dani Bermúdez (4p) ldznnfx46+auto777@gmail.com</mark></p><p id="514a8a24-e111-4fa1-9bbb-d24e2fec8cd5" class=""><mark class="highlight-blue">Netflix 15k Nequi Yulibeth (1p) net+170171@neastreaming.com</mark></p><p id="512ea0d1-6f6c-4ba2-aba3-48a500c446bb" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Luz Cala (1p) claracristancho18596@hotmail.com</mark></p><p id="a74af284-a7e1-46d6-8897-94f7cdb901f2" class=""><mark class="highlight-blue">Netflix 15k Bank Angie Espitia (1p) ximenacampos4952@hotmail.com</mark></p><p id="cd62340c-7d36-42da-9dac-e1fa94c61fb9" class=""><mark class="highlight-blue">Plex, Prime y Disney est 50k Davi Oriana Bustos</mark></p><p id="e1566dd8-1e02-417d-92e9-ca61567d77b0" class=""><mark class="highlight-blue">Netflix 15k Davi Daniela Baquiro (1p) maritzalupitaaa@hotmail.com</mark></p><p id="ca974294-19e1-4164-b5e5-f28e20f759e8" class=""><mark class="highlight-blue">Disney DN 15k Nequi Jaider </mark></p><p id="dd783ee4-3c5e-4286-90ca-c5987ea8234b" class=""><mark class="highlight-yellow">Disney y Prime 25k Nequi Jennifer Simanca</mark></p><p id="b7fe7c83-3b7f-4ea6-9cdd-35e16366f143" class=""><mark class="highlight-yellow">Netflix, Max y Disney 30k Bank Lina León (1p) presad32@rxkwa.com</mark></p><p id="71877559-38fb-4b27-ba1d-512863250de6" class=""><mark class="highlight-blue">Netflix 15k Nequi Daniel Montealegre (1p) maritzalupitaaa@hotmail.com</mark></p><p id="18edf3ca-f559-465e-bc5d-31bd544e9171" class=""><mark class="highlight-blue">Netflix y Prime 47k Nequi Andrey León (4p) jeffersonlay@sspple.com</mark></p><p id="403477fe-d374-42f9-b9cc-0ca3d173a338" class=""><mark class="highlight-yellow">Netflix, Prime y Max 25k Nequi Sebastián Salinas (1p) net+170171@neastreaming.com</mark></p></details></li></ul><ul id="1897d41d-17c5-48f0-9e42-cba2dc1c8f4a" class="toggle"><li><details open=""><summary>14.</summary><p id="dee54f20-eb81-4976-9bc1-812d4fb01a10" class=""><mark class="highlight-yellow">1/3 Spotify 24k Nequi Mariana Ocampo</mark></p><p id="f7ab1529-ba55-49b9-9cb0-37972490e4fe" class=""><mark class="highlight-yellow">3/3 Spotify 24k Bank Héctor Fabio</mark></p><p id="aafe3fad-baaf-4298-aeac-16c31d4f7cd8" class=""><mark class="highlight-yellow">3/3 Spotify 30k Nequi Mr Nuñez</mark></p><p id="59bb28fc-53fd-4f48-8cef-6fad4b6f859c" class=""><mark class="highlight-yellow">2/3 Spotify 24k Bank Maria del Pilar Cavadia</mark></p><p id="6199b64e-4625-460a-a71e-3dff9d2bbfec" class=""><mark class="highlight-yellow">Netflix CC, Max y Disney 50k Nequi Karina Torres (4p) alvarotovar56451@hotmail.com</mark></p><p id="f31962d0-53df-4d9f-b7cb-abb1e893ad6f" class=""><mark class="highlight-blue">Max 10k Nequi Nicol González </mark></p><p id="22208da5-316f-489d-9e7e-8e10d8436812" class=""><mark class="highlight-blue">Disney 15k Nequi Omar Guzmán </mark></p><p id="e1070b93-856a-4a68-845c-e487cd3505b6" class=""><mark class="highlight-yellow">Netflix, Max, Disney, Prime y Paramount 40k Nequi Felipe Mejía (1p) Yesidruiz192+03822@gmail.com</mark></p><p id="ee46eea8-db31-4877-b631-3dd329968e07" class=""><mark class="highlight-blue">Netflix 38k Nequi Luisa Fernanda Rodríguez (4p) GoogleChromett@outlook.com</mark></p><p id="19f9f084-b5e7-4992-8a8e-189006a0660e" class=""><mark class="highlight-blue">Netflix 15k Davi Carlos Freites (1p) negimah@broondo.com</mark></p><p id="0e893578-6434-4f9c-8c95-54c2638ce097" class=""><mark class="highlight-blue">Netflix 15k Nequi Ledys Monsalve (1p) negimah@broondo.com</mark></p><p id="3d37dce2-7008-4cd2-8369-9c2871e2399c" class=""><mark class="highlight-blue">Netflix 15k Nequi Jesús Palencia (1p) negimah@broondo.com</mark></p><p id="e762d95a-046a-4478-888c-d25a6e46f7ec" class=""><mark class="highlight-blue">Max CC y Disney 42k Bank Juan Jose Senior</mark></p><p id="4f5e58cc-6229-4dc8-ae07-6e92ba15cf40" class=""><mark class="highlight-blue">Disney 15k Bank Oscar Pardo </mark></p><p id="27bb3220-9440-4550-9698-73212994f018" class=""><mark class="highlight-blue">Netflix 15k Nequi Yomaira Amaris (1p) jacobmontrial234@hotmail.com</mark></p><p id="2f4c7333-8d3b-4875-8452-26fa3f0673a1" class=""><mark class="highlight-blue">Netflix 15k Nequi Stephany (1p) maritzalupitaaa@hotmail.com</mark></p><p id="79dd2d16-afae-41ec-973d-f258c4402bbd" class=""><mark class="highlight-blue">Vix 10k Nequi Alejandra Muñóz</mark></p><p id="5a55abe8-1db1-4f98-853f-917b897ba417" class=""><mark class="highlight-yellow">Netflix y Disney 25k Bank Yisell (1p) natalia18-88@neastreaming.com</mark></p><p id="19915917-8b3d-8008-8474-e5b96f1a990e" class=""><mark class="highlight-yellow">Netflix 15k Bank Maria José Escobar (1p) maritzalupitaaa@hotmail.com</mark></p></details></li></ul><ul id="4120d54b-0a1b-4e26-9d71-ada145573a38" class="toggle"><li><details open=""><summary>15.</summary><p id="7dc1a315-d6fe-4215-a127-a75f0cc6bc1b" class=""><mark class="highlight-yellow">1/6 Netflix 84k PayPal Nelson USA (1p) ldznnfx100+segundo@gmail.com</mark></p><p id="ecc8c69e-50be-43da-9368-09070acaeed7" class=""><mark class="highlight-yellow">3/3 Spotify 25k Nequi Danilo Romero</mark></p><p id="aa846feb-5d1e-4fa7-a2d8-f2d7a1f7d93f" class=""><mark class="highlight-yellow">Netflix Priv, Max y Prime 25k Nequi Mariana Ocampo (1p) garantizan_vocal0y@icloud.com</mark></p><p id="571769f9-b006-40f5-8320-0b33fffec338" class=""><mark class="highlight-blue">Netflix 15k Bank Jorge Arias (1p) natalia18-88@neastreaming.com</mark></p><p id="9829a0ef-c19a-451d-8ec2-053a6c64fcd5" class=""><mark class="highlight-blue">Netflix y Disney 30k Nequi Cindy Cataño (1p) natalia18-88@neastreaming.com</mark></p><p id="5bad6a93-031d-404b-97fb-72cac7cb76c9" class=""><mark class="highlight-blue">Disney DN, Max y Paramount 23k Nequi Laura Rocca</mark> </p><p id="a8d5ec7b-38e1-4f21-b466-6f86194e95f7" class=""><mark class="highlight-yellow">Netflix 25k Nequi Annie Vásquez (2p) Torres69933@hotmail.com</mark></p><p id="77c78b5b-a9e8-481d-82a7-45b1f21c7858" class=""><mark class="highlight-yellow">Max 10k Davi Lina Araujo </mark></p><p id="0472608b-bba8-43e1-bb77-62de14c28bee" class=""><mark class="highlight-blue">Prime y Max 24k Nequi Andrey León </mark></p><p id="eb3bfab9-890b-49d0-937b-2299982a17e9" class=""><mark class="highlight-yellow">Netflix 15k Nequi Geraldine Rodríguez (1p) marthahernandez41651@hotmail.com</mark></p><p id="00726c4a-b4a0-4413-8b57-75d837ce0812" class=""><mark class="highlight-blue">Netflix 15k Nequi Tatiana Cms (1p) jacksonmiguel7865@hotmail.com</mark></p><p id="cced45db-7b53-4114-ae78-babe9b3aead9" class=""><mark class="highlight-blue">Disney 15k Nequi Mauricio Rodríguez</mark></p><p id="7cd24f24-694b-4f2b-9bf3-ede37b3b5a0b" class=""><mark class="highlight-blue">IPTV 15k Bank Andelibeth 2</mark></p><p id="c5c498c2-516c-49e8-acf7-26bdb1eff023" class=""><mark class="highlight-blue">Combo 1 35k Nequi Luis Palomino (1p) natalia18-88@neastreaming.com</mark></p><p id="655b7e4c-81a2-4114-a607-1c369b13d978" class=""><mark class="highlight-blue">Netflix 15k Nequi Luis David Torres (1p) abdullaxx1122@blossen.com</mark></p></details></li></ul><ul id="6b32e78f-b785-442b-a5eb-368de827df83" class="toggle"><li><details open=""><summary>16.</summary><p id="0ea2fa36-dd4b-4541-a236-52a35a8a1f3f" class=""><mark class="highlight-yellow">3/3 Netflix 35k Bank Jorge Mda (1p) </mark><mark class="highlight-yellow"><a href="mailto:marialeonor1379@hotmail.com">marialeonor1379@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="8bce8766-c84e-45ca-b48c-39909ee190a2" class=""><mark class="highlight-yellow">Netflix 40k Nequi Gloria Suarez (4p) </mark><mark class="highlight-yellow"><a href="mailto:fp6znbltf5@boximail.com">fp6znbltf5@boximail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:cachimba_mesones_0z@icloud.com">cachimba_mesones_0z@icloud.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="1da0b620-c723-419c-bf00-04409937ddaa" class=""><mark class="highlight-blue">Netflix 15k Nequi Yaela Payares (1p) jacksonmiguel7865@hotmail.com</mark></p><p id="fa244b33-58b7-4268-87a3-133b407765a2" class=""><mark class="highlight-yellow">Combo 1 35k Nequi Jacky Castillo (1p) santiacocarreno@hotmail.com</mark></p><p id="75b33bc5-21b8-4b0c-8da9-239bd72497c4" class=""><mark class="highlight-yellow">Netflix 15k Bank Nelcy Bayona (1p) abilfonseca2345@hotmail.com</mark></p><p id="efd6002a-3ade-4115-b377-0625064f5fc3" class=""><mark class="highlight-blue">Netflix 15k Bank Jean Carlos Aguilar (1p) martinmaraiano15896@hotmail.com</mark></p><p id="bbb18912-fccb-4333-a29c-221eb5180cbe" class=""><mark class="highlight-yellow">Netflix, Max, Prime y Disney 95k Bank Anthony Posada (4p) Jesusdavisbh@outlook.com</mark></p><p id="dad7c92b-debb-4997-bf37-01d0fde97978" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Karen Polo (1p) 08-estuco-complicado@icloud.com</mark></p><p id="889f8e82-6607-4ae8-830b-a0e04d94461f" class=""><mark class="highlight-blue">Netflix 15k Nequi Jose González (1p) santiacocarreno@hotmail.com</mark></p><p id="d22b79d5-9ea5-4ae5-9d92-fbdc664d3ba7" class=""><mark class="highlight-yellow">Netflix 15k Bank Karen Sánchez (1p) ldznnfx41+auto22@gmail.com</mark></p><p id="df364fd9-a722-45d1-9354-ab822e7c35be" class=""><mark class="highlight-blue">Netflix 15k Nequi Norys Pastrana (1p) marialeonor1379@hotmail.com</mark></p><p id="4f2c580b-9355-4127-a863-53897c58f7b1" class=""><mark class="highlight-blue">Prime 10k Nequi Osmaida </mark></p><p id="37e4590a-000e-433a-a77d-62afe68b7395" class=""><mark class="highlight-blue">Netflix, Max y Disney 30k Nequi Sarami (1p) 08-estuco-complicado@icloud.com</mark></p><p id="b055faac-79af-4cb8-88fa-a7e616f22779" class=""><mark class="highlight-yellow">Netflix y Prime 20k Bank Manuela Jiménez (1p) paulasoto2345@hotmail.com</mark></p><p id="71fdb88c-eb62-40f8-8f2c-900fb92f228d" class=""><mark class="highlight-blue">Prime 10k Davi Claudia Jula</mark> </p></details></li></ul><ul id="6eb7cde5-8503-46f1-9785-7eb2ab9893bc" class="toggle"><li><details open=""><summary>17.</summary><p id="18f15917-8b3d-8016-ba25-e2330401f3a4" class=""><mark class="highlight-red">Inversión: 29k Danext</mark></p><p id="dbf9aace-d75e-4bb1-98dc-0f6bfc7c64d0" class=""><mark class="highlight-yellow">3/6 Netflix 75k Davi Leidy Samira (1p) despertar-crosses.0i@icloud.com</mark></p><p id="449f88d5-b5fe-4ea7-93ca-f31139a45489" class=""><mark class="highlight-blue">Netflix 15k Nequi Deiwis Martínez (1p) amaratatis8239@hotmail.com</mark></p><p id="58b7a969-62ae-4041-9bec-14655ced50d2" class=""><mark class="highlight-blue">Netflix, Max, Prime y Disney est 30k Nequi Carolina Murillo (1p) davidoswaldo3647@hotmail.com</mark></p><p id="1e51b078-854b-4bfa-8b01-714cc648a1e7" class=""><mark class="highlight-blue">Netflix 15k Nequi Yoleidis Fonseca (1p) sofiarestrepo12341@hotmail.com</mark></p><p id="67c1b7fe-2917-48af-a72a-58868508e801" class=""><mark class="highlight-yellow">YouTube 10k Bank Héctor Fabio</mark></p><p id="efd55b6f-b50c-4cc5-b880-3d58ec7eac20" class=""><mark class="highlight-yellow">Mega Combo 110k Nequi Henry Fontalvo (4p) </mark><mark class="highlight-yellow"><a href="mailto:angiearagon3702@hotmail.com">angiearagon3702@hotmail.com</a></mark> </p><p id="a85854b4-2a1b-4906-b84c-eb3682a3aeab" class=""><mark class="highlight-blue">Max 10k Nequi Juan Alejandro</mark> </p><p id="12d3b682-e8e8-432c-ad65-eec6b3955e17" class=""><mark class="highlight-blue">Prime 10k Nequi Natalia Zuluaga</mark> </p><p id="ad7b3c4c-c6cc-4430-bd9a-704ef577d664" class=""><mark class="highlight-yellow">Combo 1 35k Nequi Johan (1p) estratosfera+tecla05@sauted.co  </mark></p><p id="5f75c2ee-505c-4705-9f54-8c4a79e6cc04" class=""><mark class="highlight-blue">Netflix 25k Bank Hilda Aguilar (2p) d5fv@bojackh.com</mark></p><p id="73194d71-62e5-4414-a793-93db8b562de7" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Jharyma Santana (1p) abdullaxx1122@blossen.com</mark></p><p id="17db1015-99a7-40e3-a3b2-2123f6650158" class=""><mark class="highlight-yellow">Netflix 15k Nequi Víctor Vargas (1p) paulasoto2345@hotmail.com</mark></p><p id="587d94ef-e911-4c10-b5e7-d4c69fc71805" class=""><mark class="highlight-yellow">Netflix 15k Nequi Marta Angulo (1p) d5fv@bojackh.com</mark></p><p id="07e7db1a-8324-45e4-b603-7f1e40f9792b" class=""><mark class="highlight-blue">Prime 10k Nequi Sarah Contreras </mark></p><p id="3b682c6a-6898-4b3e-8527-c2678beda52e" class=""><mark class="highlight-yellow">Netflix 35k Nequi Marcos Vidrioautos (4p) auto+hpc02@estratosfera.net</mark></p><p id="d792bd8f-98e6-429b-a39a-760f42b5fd97" class=""><mark class="highlight-blue">Netflix y Disney 25k Nequi Johan López (1p) diegomanrique24544@hotmail.com</mark></p></details></li></ul><ul id="96166226-5aaf-45de-a9ab-6e08b02e4acf" class="toggle"><li><details open=""><summary>18.</summary><p id="18f15917-8b3d-80a3-8210-d0d7b432b9ac" class=""><mark class="highlight-red">Inversión: 8k spc, 58k Danext</mark></p><p id="dfd7c768-714a-44e8-a314-3cb6a469fe38" class=""><mark class="highlight-yellow">Netflix 15k Nequi Jaime Marín (1p) angieortiz4526@hotmail.com</mark></p><p id="072ebe57-0a2d-4687-aa45-881b5a974e5e" class=""><mark class="highlight-blue">Netflix 15k Nequi Alex Salas (1p) account1h3@logitcs.com</mark></p><p id="781a310a-cc9c-4c59-a746-8bf9d7686236" class=""><mark class="highlight-yellow">Netflix y Disney 50k Bank Daniela Fontecha (4p) karensofia9014@hotmail.com</mark></p><p id="e6661a9b-7e5e-45b8-907f-e655cae81b4b" class=""><mark class="highlight-yellow">Netflix y Prime 20k Bank Xiu Ling Correa (1p) </mark><mark class="highlight-yellow"><a href="mailto:Torres69933@hotmail.com">Torres69933@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="7fcc4273-6a01-4f7c-b3a2-0adffc8e3284" class=""><mark class="highlight-blue">Netflix, Prime, Disney y Paramount 35k Nequi Jesús Vásquez (1p) account1h3@logitcs.com</mark></p><p id="81cc5a32-c709-42f8-85e5-d06cc240df0f" class=""><mark class="highlight-yellow">Netflix 25k Bank Deisy Johanna Rodríguez (2p) </mark><mark class="highlight-yellow"><a href="mailto:marlonvelazco5641@hotmail.com">marlonvelazco5641@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:thiago_tapajos@ppuuma.com">thiago_tapajos@ppuuma.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="2a862906-d05f-48c4-86c2-a67b0a867931" class=""><mark class="highlight-blue">Netflix y Paramount 22k Nequi Vanessa Rodríguez 3 (1p) 08-estuco-complicado@icloud.com</mark></p><p id="592fba22-fcc1-45d8-9601-e5cf8353f6fc" class=""><mark class="highlight-blue">Prime 10k Nequi Diego Mejía</mark> </p><p id="459c752a-85e8-4c17-bb13-5e51ed73d2fa" class=""><mark class="highlight-yellow">Prime 10k Bank Antonio Villalba</mark> </p></details></li></ul><ul id="c590690d-714f-494e-8496-edddd7b6b237" class="toggle"><li><details open=""><summary>19.</summary><p id="18f15917-8b3d-800f-8aa5-d758f509b617" class=""><mark class="highlight-red">Inversión:58k Danext</mark></p><p id="19a316cc-9faf-444f-8d8b-c49e96fbe05b" class=""><mark class="highlight-blue">Disney y Prime 20k Nequi Iván Andrés Martínez</mark></p><p id="6c2a6764-8fa2-4b4f-abad-61fc0ab8d7ad" class=""><mark class="highlight-yellow">Combo 1 DN 35k Davi Gustavo Restrepo (1p) d5fv@bojackh.com</mark></p><p id="e712cc73-741c-4039-beeb-c8fd936d318e" class=""><mark class="highlight-yellow">Prime 10k Nequi Nidia Rivas </mark></p><p id="4d4614fd-84e4-4352-a392-4e46e30396e4" class=""><mark class="highlight-blue">Netflix 15k Bank Jany Vega (1p) Lorena04quintero@outlook.com</mark></p><p id="71c75ec1-44a6-4f1f-a7e7-9d2b738af540" class=""><mark class="highlight-blue">Netflix 15k Bank Lissy (1p) Lorena04quintero@outlook.com</mark></p><p id="8337e904-492c-4800-a356-cca3914f131d" class=""><mark class="highlight-yellow">Disney y Max 20k Nequi Jose Rentería</mark> </p><p id="b4ce5aab-4cb8-4f08-b9fc-00d6d8bcff30" class=""><mark class="highlight-blue">Netflix 15k Nequi Jaime Blanco (1p) martingomez6758@hotmail.com</mark></p><p id="f11df996-19f1-47a4-ba59-afae77699fc7" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Natalia Fernández (1p) martingomez6758@hotmail.com</mark></p><p id="783ce7f3-7699-4540-8da6-7a247073a180" class=""><mark class="highlight-blue">Prime 10k Nequi Katerin Martínez</mark> </p><p id="a039711d-73a8-416c-a90f-40e961be2137" class=""><mark class="highlight-blue">Netflix y Disney 25k Nequi Cristian Pájaro (1p) Lorena04quintero@outlook.com</mark></p><p id="40cff5d1-1d35-4a9e-8a84-3453de40a4ae" class=""><mark class="highlight-yellow">Combo 1 36k Nequi Issac baq (1p) martingomez6758@hotmail.com</mark></p></details></li></ul><ul id="09a6ce30-a09f-42d2-97a5-8d8323ce9756" class="toggle"><li><details open=""><summary>20.</summary><p id="18f15917-8b3d-802f-ba8d-e17a89e8cb1c" class=""><mark class="highlight-red">Inversión:8k spc, 80k Angie</mark></p><p id="3adf7b12-ca72-4643-8fa0-5d22dc284df0" class=""><mark class="highlight-yellow">1/3 YouTube 24k Bank Carlos Cadena</mark> </p><p id="ae6a4452-4d02-4e58-a983-3e10818f05ba" class=""><mark class="highlight-yellow">1/2 Netflix 25k Nequi Francisco Sánchez (1p) martingomez6758@hotmail.com</mark></p><p id="f026052c-7b84-47a6-8b49-8ccf3c3ff338" class=""><mark class="highlight-blue">Netflix 15k Nequi Alejandra Muñóz (1p) ursulasoto23456@hotmail.com</mark></p><p id="81b04454-79ae-4c0b-a8db-706994b038ea" class=""><mark class="highlight-yellow">Combo 2 40k Bank Ramón Torres TD (1p) ldznnfx41+ggttb3@gmail.com</mark></p><p id="627b120a-7e7b-4fe0-adde-0b5e62643a75" class=""><mark class="highlight-yellow">Combo 1 DN 35k Nequi Víctor Villanueva (1p) cfdrd@zaramy.com</mark></p><p id="56e47764-6dfc-423e-a33e-2b301f85296c" class=""><mark class="highlight-blue">Disney DN 15k Nequi Tania Cantillo</mark></p><p id="ab003eae-f904-4c63-b1f6-00908b0fe631" class=""><mark class="highlight-blue">Netflix 35k Nequi Andrey León (4p) catalinaurtado32456@hotmail.com</mark></p><p id="a10dc9a5-edb7-41af-89d7-56804794af82" class=""><mark class="highlight-yellow">Combo 2 40k Bank Arianis Pertuz (1p) amaratatis8239@hotmail.com</mark></p></details></li></ul><ul id="8a5688ab-2631-412f-94f5-ac4ed859b194" class="toggle"><li><details open=""><summary>21.</summary><p id="18f15917-8b3d-80cf-b8ea-ebc5855f3bc5" class=""><mark class="highlight-red">Inversión: 58k Danext</mark></p><p id="a8fe16a0-74cb-4676-8824-7123d3296ba0" class=""><mark class="highlight-yellow">1/6 Netflix 120k Nequi Jaime Dueñas (2p) mareados.disfrutar.0k@icloud.com</mark></p><p id="1d62e3d0-f328-4548-a56e-96a8d73b3aca" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Mario Toscano (1p) karolinaviviana7@hotmail.com</mark></p><p id="1e383de9-7178-44d5-82b4-c11bfb4844b8" class=""><mark class="highlight-yellow">Netflix y Prime 20k Bank Carlos Julián Álvarez (1p) malawid@elpradi.com</mark></p><p id="20627770-6a60-4a61-9bb2-c9f1e1931c46" class=""><mark class="highlight-yellow">Netflix 15k Davi Nicolás Díaz (1p) malawid@elpradi.com</mark></p><p id="5e874407-76b0-4fd9-9b6d-6d0b1fa356f1" class=""><mark class="highlight-blue">Netflix 15k Bank Danilo Cuqui (1p) malawid@elpradi.com</mark></p><p id="bf560ce7-3f1f-4bb0-b740-a9bfad5656c1" class=""><mark class="highlight-yellow">Netflix Priv 18k Bank Luisa Palacio USA 3 (1p) ldznnfx100+payauto@gmail.com</mark></p></details></li></ul><ul id="b178b415-e3c4-40e3-99d1-f19baccd6c3e" class="toggle"><li><details open=""><summary>22.</summary><p id="18f15917-8b3d-8076-9040-eaeadab8c519" class=""><mark class="highlight-red">Inversión: 72k Fabián </mark></p><p id="09c60877-31d3-4dc7-ba2b-22faaa5b8130" class=""><mark class="highlight-yellow">2/6 Netflix Priv 60k Davi Leidy Samira Cossío (1p) rosarios_subarrenda_0m@icloud.com</mark></p><p id="f4dc0979-0e8b-485d-b002-31531379f5a4" class=""><mark class="highlight-yellow">Netflix 15k Nequi Lizeth Pianneta (1p) agathasiachique3874@hotmail.co</mark></p><p id="de6fad60-8e07-43c8-965a-02c4c4530d3d" class=""><mark class="highlight-yellow">Netflix y Disney 25k Nequi Sara Vasquez (1p) martingomez6758@hotmail.com</mark></p><p id="2138d0c4-d602-48cc-9641-5b9793913ff4" class=""><mark class="highlight-yellow">Prime 10k Nequi Geraldine </mark></p><p id="e8877142-9964-4d69-8c14-57b6cd82e654" class=""><mark class="highlight-blue">YouTube 10k Nequi Wilmer Mejía</mark></p><p id="7f1a287e-88b5-4c58-8706-746cacf34d55" class=""><mark class="highlight-yellow">Netflix, Max y Disney DN 60k Davi Juan Barrios (3p) </mark><mark class="highlight-yellow"><a href="mailto:Andreina27correa@outlook.com">Andreina27correa@outlook.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:Jaime07jacomes@outlook.com">Jaime07jacomes@outlook.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="2558f721-8c5f-4444-a50f-807c0f64f88c" class=""><mark class="highlight-blue">Netflix 15k Bank Ruben Coronado HuQui (1p) Berta04aguilar@outlook.com</mark></p><p id="9c0bed4c-ab9e-40cb-a80b-c4ae3aac8668" class=""><mark class="highlight-blue">Disney est 12k Nequi Andrey León </mark></p><p id="46cd58b5-a6e4-4d54-9db3-87f8e6149d83" class=""><mark class="highlight-yellow">Netflix , Prime y Disney DN 30k Nequi Karen Rocha (1p) 24oct_x32@pragiani.com</mark></p></details></li></ul><ul id="bb549a73-3d28-4f78-a322-cd158945cca4" class="toggle"><li><details open=""><summary>23.</summary><p id="18f15917-8b3d-80c6-9dbc-cdd96ea93073" class=""><mark class="highlight-red">Inversión:20k Harold</mark></p><p id="d8b431c4-46af-446f-bab3-c86a87218bf4" class=""><mark class="highlight-yellow">1/3 Spotify 24k Víctor Vargas</mark> </p><p id="fc5d906c-6573-4101-a6d9-fb8efaf24f77" class=""><mark class="highlight-blue">Paramount 10k Nequi Adolfo Lora</mark> </p><p id="265187b2-a5ec-4782-a804-989542acc565" class=""><mark class="highlight-yellow">Netflix y Disney 25k Nequi Roberto Castro (1p) domingomorales1379@hotmail.com</mark></p><p id="816cd8a2-8539-4214-967f-d6e3ddbafa07" class=""><mark class="highlight-blue">Netflix 15k Bank Salome Molano (1p) Laurasofia0932@hotmail.com</mark></p><p id="65e7fb2e-d173-480e-9f16-70dfe95c0a63" class=""><mark class="highlight-yellow">Netflix y Max 20k Nequi Luis Palomino (1p) karolayrojas1371@hotmail.com</mark></p><p id="930cbf09-6b8f-46f2-82a0-0b32ddc3a01a" class=""><mark class="highlight-yellow">Netflix 15k Bank Verónica Loaiza (1p) Laurasofia0932@hotmail.com</mark></p></details></li></ul><ul id="c6f264c6-9f3e-454d-ad6b-d43f4a586a84" class="toggle"><li><details open=""><summary>24.</summary><p id="18f15917-8b3d-8026-a785-d4160adb0684" class=""><mark class="highlight-red">Inversión:58k Danext </mark></p><p id="b6b341ff-1f04-4341-a585-7f51d8cfd482" class=""><mark class="highlight-yellow">Netflix 15k Davi Karine Jiménez (1p) sofiarestrepo12341@hotmail.com</mark></p><p id="57720ef0-0e6b-4759-b699-bc8797c76dcd" class=""><mark class="highlight-yellow">Netflix 15k Bank Gail Brugés (1p) merycastillo1375@hotmail.com</mark></p><p id="408dfd4d-3b9f-402d-9f16-66483300cb15" class=""><mark class="highlight-blue">Max y Prime 16k Nequi Michael Visbal</mark></p><p id="a32c4408-87fc-4267-93af-246b4aaecba5" class=""><mark class="highlight-yellow">Combo 2 40k Davi Armando López Gómez (1p) 24oct_x32@pragiani.com</mark></p></details></li></ul><ul id="1cbb6f71-21c5-4454-afc5-1793741409b1" class="toggle"><li><details open=""><summary>25.</summary><p id="352abb43-6538-4130-9fd9-1f15334ff758" class=""><mark class="highlight-blue">2/2 Netflix Priv 32k Bank Jennifer Flaka (1p) luka.rehel@outlook.com</mark></p><p id="21704b2a-841f-4a36-87a6-8410a99e608d" class=""><mark class="highlight-yellow">4/4 Youtube 30k Nequi Francisco Sanchez</mark></p><p id="cfb6c646-1676-4fa7-8146-b56d56c3badb" class=""><mark class="highlight-yellow">4/4 Youtube 30k Nequi Mr Nuñez</mark></p><p id="6ad761f5-8ee3-4adb-88ea-3b5f9cd4adbb" class=""><mark class="highlight-yellow">Prime 10k Nequi Luis Alberto Calderón</mark></p><p id="be9771a1-cc9f-4346-88e9-73fd5f1e6f53" class=""><mark class="highlight-yellow">Netflix, Max, Prime y Disney 45k Julián Velázquez (2p) Jaime07jacomes@outlook.com</mark></p><p id="559ecd37-b8ff-44ad-a28a-c809cc46eb86" class=""><mark class="highlight-blue">Netflix y Prime 20k Nequi Gladys Adiela (1p) vernalsara@hotmail.com</mark></p><p id="6c5ab4e8-f2ab-4567-a017-f5baba4dbeb3" class=""><mark class="highlight-blue">YouTube 10k Bank Jennifer Flaka</mark></p><p id="cb4ceee7-8402-4011-93ae-bdfaecfd8c8e" class=""><mark class="highlight-blue">Disney DN 25k Nequi Carlos Martínez (2p)</mark></p><p id="ead863e5-59b3-4788-a78f-a29f381e2a95" class=""><mark class="highlight-blue">Prime 10k Nequi Jhon Redondo</mark> </p><p id="50fe541a-7cb3-4f2f-8ba4-b0e1a73f962e" class=""><mark class="highlight-yellow">Netflix, Max y Disney 30k Nequi Stefany Goenaga (1p) auto+hMR4@estratosfera.net</mark></p><p id="cda454cc-cf88-43bc-b4c2-b331daa5b8a5" class=""><mark class="highlight-blue">Netflix 15k Nequi Luisa Fernanda (1p) account1h3@logitcs.com</mark></p><p id="be7c012f-e08f-49b5-b506-3363d1225f68" class=""><mark class="highlight-yellow">Netflix y Prime 20k Nequi Andrés Gutiérrez (1p) lilianamorales1379@hotmail.com</mark></p><p id="61f9d320-052c-4860-81a6-310a35da6eee" class=""><mark class="highlight-yellow">Netflix 15k Bank Eilen Peñaloza (1p) matisse-batisse@portdd.com</mark></p><p id="6335f83a-230a-4592-9690-07dc5110e26a" class=""><mark class="highlight-blue">Max y Paramount 30k Davi Oriana Bustos</mark> </p><p id="df85ec72-887a-46ab-9b9b-cede2de69986" class=""><mark class="highlight-yellow">Netflix y Disney 25k Nequi Eder Arteaga (1p) cristiancastillo6789@hotmail.com</mark></p></details></li></ul><ul id="163f327d-00bb-4370-907f-c13e6e9c3cc7" class="toggle"><li><details open=""><summary>26.</summary><p id="adb4e4b9-f569-4bb2-9a6d-3b6f22ee29a1" class=""><mark class="highlight-yellow">1/6 Disney DN CC 72k Nequi Jaime Dueñas</mark></p><p id="f72aad7e-63a0-40b8-a6da-62bf8377116d" class=""><mark class="highlight-yellow">6/6 IPTV 130k Nequi Mr Nuñez</mark></p><p id="a826a013-c394-40c3-855a-a855ba0941e9" class=""><mark class="highlight-yellow">11/12 Netflix 336k Nequi Natalia (4p) estratosfera+auto015@sauted.co</mark></p><p id="93d9296a-1af1-4bd3-98b1-fff6d53d39b8" class=""><mark class="highlight-blue">Prime 10k Nequi Maryoris </mark></p><p id="30afe38b-3303-454c-930c-10073f0b2b5e" class=""><mark class="highlight-blue">Netflix 15k Nequi Yilian Verdugo (1p) jacobmontrial234@hotmail.com</mark></p><p id="14902152-fa4a-4185-8c5c-c521ea86b841" class=""><mark class="highlight-blue">Disney 15k Bank Andrés Domínguez</mark> </p><p id="2936d916-6e8b-4690-8e8b-5e83f5320086" class=""><mark class="highlight-blue">Netflix 15k Nequi Daniela Parra (1p) santiacocarreno@hotmail.com</mark></p><p id="576ab763-acd0-4e12-9764-594ba05ef537" class=""><mark class="highlight-yellow">DirecTV y Crunchyroll 40k Nequi Mr Núñez</mark></p><p id="ce0814bd-86fb-4ff2-97d7-7feae75e377d" class=""><mark class="highlight-yellow">Max y Disney DN 20k Nequi Santiago Morales</mark></p><p id="1ab15917-8b3d-80c1-a1ee-fa8a27762370" class=""><mark class="highlight-blue">Netflix 15k Bank Marinelsy Perales (1p) claracristancho18596@hotmail.com</mark></p></details></li></ul><ul id="71f6e729-f73d-49e0-a367-ffd96f7bf8ea" class="toggle"><li><details open=""><summary>27.</summary><p id="fe11f5e9-3c08-4917-944c-5be0c0cbf7e8" class=""><mark class="highlight-yellow">2/3 Netflix 35k Nequi Isidro Jose (1p) Laurasofia0932@hotmail.com</mark></p><p id="84ca974c-73c7-4ba3-8cfa-9a3baf244c7f" class=""><mark class="highlight-yellow">4/6 Netflix Priv 110k Nequi Jaime Cuadro (2p) descensos.cierto-0h@icloud.com y </mark><mark class="highlight-yellow"><a href="mailto:lavar.escrupulos-0q@icloud.com">lavar.escrupulos-0q@icloud.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="e7354055-603d-4e19-8ac9-be43cdfc13e9" class=""><mark class="highlight-yellow">Combo 1 35k Nequi Johana Laverde (1p) 08-estuco-complicado@icloud.com</mark> </p><p id="efdddf8f-c65a-4c4a-abd1-f4c44894e4f0" class=""><mark class="highlight-yellow">Apple TV y Prime 30k Bank Ivan Perpiñan</mark> </p><p id="11de0dd3-b69e-4298-bf6e-a1913b492eee" class=""><mark class="highlight-yellow">Max, Param y Prime CC 30k Nequi Juan Pablo Torres</mark></p><p id="2ed5a832-eaeb-4bf7-a2f3-e1ed480d2708" class=""><mark class="highlight-yellow">Netflix 15k Nequi Felipe Peña (1p) matisse-batisse@portdd.com</mark></p><p id="fb5c2e81-75b1-406c-a2e6-1d7b03cf9b7b" class=""><mark class="highlight-blue">Netflix y Spotify 24k Nequi Yoni Tarapuez (1p) diegomanrique24544@hotmail.com</mark></p><p id="fdff0866-a880-4794-8289-bebdf6e8dcc7" class=""><mark class="highlight-blue">Netflix 15k Nequi Jeison Ceballos (1p) Yesidruiz192+03822@gmail.com</mark></p><p id="38ced90e-3bb7-4ac4-ad47-ea74ddda967e" class=""><mark class="highlight-yellow">Netflix CC 35k Davi Oriana Bustos (4p) Goticaddretyy@hotmail.com</mark></p><p id="19615917-8b3d-8091-93f9-c919857fcbbf" class=""><mark class="highlight-blue">Netflix 15k Nequi Daniela Parra (1p) santiacocarreno@hotmail.com</mark></p></details></li></ul><ul id="ba1295b7-36d8-4276-9040-448b595c3701" class="toggle"><li><details open=""><summary>28.</summary><p id="18f15917-8b3d-807c-aaa2-f8f38d9a00bf" class=""><mark class="highlight-red">Inversión:15k Oscar, 40k Angie </mark></p><p id="d2bc7851-ee2b-4696-801b-ce9ea9f94a08" class=""><mark class="highlight-yellow">1/2 Disney DN y Prime 35k Bank Luz Yadira</mark></p><p id="4dd47f08-5557-499a-ad63-fcf432223b3e" class=""><mark class="highlight-yellow">5/6 Netflix y Max 100k Bank Luis Hernandez 3 (1p) ldznnfx41+auto22@gmail.com</mark></p><p id="1d3dc8d2-6af8-4a51-af54-9460f0cd7bf8" class=""><mark class="highlight-blue">Netflix 16k Nequi Doralys Rojas (1p) martinmaraiano15896@hotmail.com</mark></p><p id="f2e14609-d91c-4027-bada-1d4e3c274603" class=""><mark class="highlight-blue">Disney 15k Nequi Juan Pablo Torres </mark></p><p id="feb094b9-9f3d-438a-afcd-fd1838b6ebd2" class=""><mark class="highlight-yellow">Netflix 25k Nequi Karencita (1p) </mark><mark class="highlight-yellow"><a href="mailto:ursulasoto23456@hotmail.com">ursulasoto23456@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx44+auto55@gmail.com">ldznnfx44+auto55@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="cb2363f0-c4db-4ebe-a8a8-f843426eb778" class="toggle"><li><details open=""><summary>29.</summary><p id="18f15917-8b3d-806a-a003-f311dc71e2c8" class=""><mark class="highlight-red">Inversión:430k Andrés </mark></p><p id="ebb7d711-4997-4865-9070-605035842aa4" class=""><mark class="highlight-yellow">2/3 Netflix 40k Bank Yina Mozo (1p) ursulasoto23456@hotmail.com</mark></p><p id="74ea26f8-8f80-4302-9dee-08d846a58f85" class=""><mark class="highlight-yellow">1/3 Disney CC, Max CC y Prime CC 180k Nequi Mr Nuñez</mark> </p><p id="972185fe-48ae-4ecf-8c12-7e0885da5e33" class=""><mark class="highlight-yellow">1/3 Netflix Priv 38k Nequi Pepi (1p) rosarios_subarrenda_0m@icloud.com</mark></p><p id="d648578c-7e2a-48c2-b530-1e1c36748b8c" class=""><mark class="highlight-yellow">Netflix 15k Nequi Marli Contreras (1p) Mariafernanda6321@hotmail.com</mark></p><p id="0623dc63-ea0e-4a27-b547-0c78d31f249b" class=""><mark class="highlight-blue">Prime 10k Nequi Sara Vázquez </mark></p><p id="6f20ba4a-6dfa-4d99-a146-0919b6682918" class=""><mark class="highlight-yellow">Combo 1 36k Nequi Ernesto de Moya (1p) ursulasoto23456@hotmail.com</mark></p><p id="d2c81bd0-9185-4fb2-87b2-32afcf452012" class=""><mark class="highlight-blue">Netflix y Disney 25k Nequi Mohamed (1p) domingomorales1379@hotmail.com</mark></p><p id="baea4e57-e4a1-42d2-8f7a-291b1a5a4772" class=""><mark class="highlight-blue">Netflix 16k Nequi Francisco Camaño (1p) Yesidruiz192+03822@gmail.com</mark></p><p id="d1988bf0-4df1-4991-a7b5-7d645b0fe207" class=""><mark class="highlight-blue">Prime 12k Nequi Andrey León</mark> </p><p id="7d77221f-da5d-48ae-b820-996af4a84082" class=""><mark class="highlight-blue">Netflix 15k Bank Damaris (1p) amaratatis8239@hotmail.com</mark></p><p id="0151326f-e9bd-4aad-9997-bf9d43b89a2a" class=""><mark class="highlight-yellow">Prime CC 15k Nequi Marcos Vidrioautos</mark></p><p id="23cd97ff-0176-42ad-b4bb-70883e49c0e4" class=""><mark class="highlight-yellow">Netflix 26k Nequi Tío Ger (2p) </mark><mark class="highlight-yellow"><a href="mailto:karolayrojas1371@hotmail.com">karolayrojas1371@hotmail.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:Mariafernanda6321@hotmail.com">Mariafernanda6321@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="df1c861a-5829-4ed7-8c6a-537d7473075c" class=""><mark class="highlight-yellow">Netflix 37k Nequi Ricardo Samsung 2 (4p) haroldjab129624@gmail.com</mark></p><p id="f2cf1a63-a624-4235-a0da-2afac8fa92d1" class=""><mark class="highlight-blue">Netflix y YouTube 25k Nequi David Ramírez (1p) smithjesid1379@hotmail.com</mark></p></details></li></ul><ul id="1b5ba303-90e7-4504-b547-57bd444cf9d8" class="toggle"><li><details open=""><summary>30.</summary><p id="13f91ed1-8aaa-4b07-9027-b32598ac9f74" class=""><mark class="highlight-yellow">Disney 15k Bank Jaime Luis Becerra</mark></p><p id="a3aa5e49-61ed-43b0-baf9-469ab804da9d" class=""><mark class="highlight-yellow">Netflix, Paramount, Disney, Prime y Max 35k Bank Carlos Martínez (1p) smithjesid1379@hotmail.com</mark></p><p id="5f62e9fd-9968-4524-b49f-c452b8d6acc8" class=""><mark class="highlight-blue">Netflix 15k Bank Nelcy Carvajal Bayona (1p) martingomez6758@hotmail.com</mark></p><p id="b3152e25-7e1b-4c17-bfc0-21c6d4511388" class=""><mark class="highlight-blue">Netflix 16k Nequi Jose Zambrano (1p) sofiarestrepo12341@hotmail.com</mark></p><p id="3b5b9516-bfb1-46eb-809b-7b177384e945" class=""><mark class="highlight-blue">Prime 10k Nequi Kelly Marchena </mark></p><p id="5cade593-9e98-47c3-bb77-c7a808034362" class=""><mark class="highlight-yellow">Combo 1 DN 35k Nequi Andrés Camilo Ortíz (1p) mareados.disfrutar.0k@icloud.com</mark></p><p id="f2cff535-ab3c-4565-8e62-7a1de15068b7" class=""><mark class="highlight-blue">Prime 10k Nequi Yiniris </mark></p><p id="74fbd9bc-d136-42d8-b0ab-a17ba574db42" class=""><mark class="highlight-yellow">Netflix 15k Nequi Carolina Rayo (1p) cristiancastillo6789@hotmail.com</mark></p><p id="cbb2fd28-97e3-4139-8c88-230c916e16d1" class=""><mark class="highlight-yellow">Netflix 15k Nequi Diana Sierra 2 (1p) mareados.disfrutar.0k@icloud.com</mark></p><p id="ba194236-f113-47f1-b591-5433e6366222" class=""><mark class="highlight-blue">Netflix 16k Nequi Luisfer Neira (1p) angieortiz4526@hotmail.com</mark></p><p id="9009afee-b48f-4361-8ca3-a1dc2b62f563" class=""><mark class="highlight-yellow">Max y Prime 18k Nequi Julián Rojas</mark></p><p id="eaaa1115-1383-4585-b696-ad7286c728f6" class=""><mark class="highlight-blue">Netflix 15k Nequi Valentina Rico (1p) cristiancastillo6789@hotmail.com</mark></p><p id="e23a998a-c549-4b5a-b62e-25b118c94bec" class=""><mark class="highlight-yellow">Netflix 15k Nequi Lina Torres (1p) ramirojaramillo45678@hotmail.com</mark></p><p id="62ff2303-626b-4a9d-8efe-5c7854f7057c" class=""><mark class="highlight-yellow">Netflix y Disney 34k Nequi Leidys Vizcaíno (1p) davidoswaldo3647@hotmail.com</mark></p></details></li></ul><ul id="a4beb24b-f268-49e1-80b9-48de99452ceb" class="toggle"><li><details open=""><summary>31.</summary><p id="777bb749-0795-45bf-ba72-9a6fc7bf9bf1" class=""><mark class="highlight-yellow">2/2 Spotify 19k Nequi Nicol González (cambiarle contra, es de 3 m)</mark></p><p id="b36cad86-523b-4d91-8c36-8be8f4af1707" class=""><mark class="highlight-yellow">Netflix 15k Nequi Rafael Castro (1p) agathasiachique3874@hotmail.com</mark></p><p id="f094d8c8-35e4-4dad-85e6-5e25dbb3ccce" class=""><mark class="highlight-blue">Disney DN 15k Nequi Lezlith</mark> </p><p id="e225947e-a039-4398-9fab-57db403d4d9b" class=""><mark class="highlight-yellow">Prime 10k Nequi Jean Carlos Aguilar</mark> </p><p id="16cc2e0e-5449-4170-bb95-daea8adcb84e" class=""><mark class="highlight-yellow">Netflix 16k Bank Lilibeth López 2 (1p) jacobmontrial234@hotmail.com</mark></p><p id="251d95f1-ef51-4fe2-85da-494a44a3effb" class=""><mark class="highlight-blue">Netflix 16k Nequi Marcela Mejía (1p) amaratatis8239@hotmail.com </mark></p><p id="6b6d2733-3b3f-4d34-984f-916f27bbb600" class=""><mark class="highlight-yellow">Netflix y Disney 25k Nequi Omar Vianda (1p) ldznnfx44+auto55@gmail.com </mark></p><p id="225d9ff9-6f45-495e-b0a2-023931f1addf" class=""><mark class="highlight-blue">Netflix, Disney y Prime 31k Bank Denis Díaz (1p) vernalsara@hotmail.com</mark></p></details></li></ul><p id="9bbbf416-71e4-4a0f-97f8-d0e8de665961" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

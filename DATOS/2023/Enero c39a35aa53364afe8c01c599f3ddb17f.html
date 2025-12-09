@@ -1,0 +1,714 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Enero</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="c39a35aa-5336-4afe-8c01-c599f3ddb17f" class="page sans"><header><div class="page-header-icon undefined"><span class="icon">⭕</span></div><h1 class="page-title">Enero</h1><p class="page-description"></p></header><div class="page-body"><ul id="c71e0e55-e7b2-4581-b9c1-2444a3f12282" class="toggle"><li><details open=""><summary>1 de enero</summary><p id="d3663b8c-ec95-4a09-9387-ed08b1c946a0" class=""><mark class="highlight-yellow">Comb5 100k bank Maria Ochoa (4p) Yesidruiz192+pro378@gmail.com</mark></p><p id="c4c0cfe6-20af-4c6d-82e3-445e782dff1e" class=""><mark class="highlight-yellow">1 net+amz 17k bankk Leidys Vizcaino (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma1@estratosfera.net">auto+hma1@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="a397a5b8-c99e-4c93-9514-12f417bd1ed5" class="toggle"><li><details open=""><summary>2 de enero</summary><p id="e0ca3a56-09be-49f4-a87f-c34e1d1f9500" class=""><mark class="highlight-blue">Dis + Star 18k Nequi Carlos Franco </mark></p><p id="6e381539-61b7-441f-98ae-b69283539e44" class=""><mark class="highlight-yellow">1 net 14k bank Sandrita Medina (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hMR5@hotmail.com">auto+hMR5@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="9d77d55b-21de-47bd-924c-e9707b380989" class=""><mark class="highlight-blue">1 amz 8k nequi Angelica Fernandez </mark></p><p id="d3589cfa-a0a8-47fb-a256-54a2e9bb315a" class=""><mark class="highlight-blue">1 net 14k bank Dayana Ramos (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hcel3@estratosfera.net">auto+hcel3@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="fabdd0f0-954a-4647-a78c-aba8d15cc41e" class=""><mark class="highlight-yellow">Comb1 27k bank Liliana Duran (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+le1@estratosfera.net">auto+le1@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="ca14cf9b-efd7-40d8-874f-78177ef5d99d" class=""><mark class="highlight-yellow">3 net 36k davi Jhon Mora (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx44+auto55@gmail.com">ldznnfx44+auto55@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="6e215dcd-380d-4d1d-a35f-0474d6e4fcb2" class=""><mark class="highlight-yellow">1 net 40k bank Luz Lopez (4p) </mark><mark class="highlight-yellow"><a href="mailto:soccer344ruiz+vothigjxcchgf@gmail.com">soccer344ruiz+vothigjxcchgf@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="36cc14a1-4bb2-41d9-804e-866ab4f6f4c0" class=""><mark class="highlight-blue">1 dis+parm 14k nequi Dairo Lopez</mark></p><p id="c881e456-5e16-497f-9894-a46a39265eee" class=""><mark class="highlight-yellow">1 net+dis 19k nequi Steven Cuervo (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hMR4@estratosfera.net">auto+hMR4@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="6978f1b0-a034-4fc3-af69-bc09bbd06078" class=""><mark class="highlight-yellow">3 net+amz 130k bank Mario Guarin (4p) </mark><mark class="highlight-yellow"><a href="mailto:zzg4f@bojackh.com">zzg4f@bojackh.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="805cb77b-88a4-4224-964e-6bde0c0425ca" class=""><mark class="highlight-yellow">1 net 14k nequi Jenifer Consuegra (1p) </mark><mark class="highlight-yellow"><a href="mailto:4.yoja@diamondplan.es">4.yoja@diamondplan.es</a></mark><mark class="highlight-yellow"> </mark></p><p id="2ce46233-6988-4dcc-a6d9-990d45f3ea58" class=""><mark class="highlight-yellow">1 net 40k davi Carolina Restrepo (4p) </mark><mark class="highlight-yellow"><a href="mailto:casa12@jbtvmed.com">casa12@jbtvmed.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="316fdc19-ee56-4d54-9a02-b157ae0af8c0" class="">1 net 32k nequi Ricardo Andres Ortiz (4p) </p></details></li></ul><ul id="a89f270a-02a0-4152-95cb-54a82b43799a" class="toggle"><li><details open=""><summary>3 de enero</summary><p id="5156d675-d858-4f08-81d0-2d5dd3ea5de8" class="">Inversion: 104k</p><p id="7e0f9a1c-e7cc-43a2-9fb4-300374ada03f" class=""><mark class="highlight-yellow">2/3 Net Ney Ramírez (1p) gampighad@jvs07.xyz</mark></p><p id="07959cb5-d4b5-411f-ba4b-6bcdbebf298a" class=""><mark class="highlight-blue">Dis + HBO 15k Nequi Jose Rentería</mark></p><p id="8aa59643-1ea5-474b-aed4-c58fd13a3bb2" class=""><mark class="highlight-yellow">Comb2 32k nequi Carlos Cifuentes (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hluz2@estratosfera.net">auto+hluz2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="2a34ec46-53d1-43f2-b7fb-9583178a0424" class=""><mark class="highlight-blue">1 net 14k bank Rosalba (1p) </mark><mark class="highlight-blue"><a href="mailto:Torres69933@hotmail.com">Torres69933@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="e1e6cedb-5a67-4be2-ae17-c1643fc45f98" class=""><mark class="highlight-yellow">1 net 14k bank Liena Rios (1p) </mark><mark class="highlight-yellow"><a href="mailto:cuent5500+2jh87@zohomail.com">cuent5500+2jh87@zohomail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="7d9801c1-a6cb-4493-87d9-b9b24c6ef801" class=""><mark class="highlight-yellow">3 net 32k davi Paola Sarmiento (1p) </mark><mark class="highlight-yellow"><a href="mailto:estratosfera+tecla05@sauted.co">estratosfera+tecla05@sauted.co</a></mark><mark class="highlight-yellow"> </mark></p><p id="bd9d1b0e-f060-4462-9a65-7549608b654a" class=""><mark class="highlight-yellow">4 yt 24k bank Jorge Aramando Molina</mark></p><p id="04a67e54-0554-4bd7-9fda-d59e25f280d4" class=""><mark class="highlight-blue">1 net 14k bank Yina Mozo (1p) </mark><mark class="highlight-blue"><a href="mailto:Yesidruiz652@hotmail.com">Yesidruiz652@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="52652fd4-022c-4dbb-b2d8-1c39ceab4e2d" class=""><mark class="highlight-blue">1 star+ 10k nequi Jose Ricardo</mark></p><p id="9d37dcd1-5488-4997-8c8c-4ff2238aacdb" class=""><mark class="highlight-yellow">1 net 14k bank Alex Ospino (1p) </mark><mark class="highlight-yellow"><a href="mailto:Torres69933@hotmail.com">Torres69933@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="5ccac55b-5b28-4236-afea-bd64c4accd29" class=""><mark class="highlight-blue">1 dis 18k bank Mariangel Pedroza</mark></p><p id="ddd1838d-f4ec-4b36-8b72-9f45604708e1" class=""><mark class="highlight-blue">1 dis 10k bank Keren Numa</mark></p><p id="f388c669-d179-4eec-a86f-51dd4ca6dbb6" class=""><mark class="highlight-blue">1 net 14k nequi Nicolle Pico (1p) sabes_0000@jvs07.xyz </mark></p><p id="18c05f16-fd27-401d-b09a-6ec308c3e0e0" class=""><mark class="highlight-blue">Comb1 27k bank Maria Cuello (1p) </mark><mark class="highlight-blue"><a href="mailto:Yesidruiz652@hotmail.com">Yesidruiz652@hotmail.com</a></mark> </p><p id="07709646-df39-4623-ba26-5ce04f2f46cb" class=""><mark class="highlight-yellow">1 net 14k bank Luz Meri (1p) </mark><mark class="highlight-yellow"><a href="mailto:almendrasmov29nov@elpaisax.com">almendrasmov29nov@elpaisax.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="d0a5d205-f2f3-4c63-bd6b-c9cd718b3989" class=""><mark class="highlight-yellow">1 net 38k bank Oriana Bustos (4p) </mark><mark class="highlight-yellow"><a href="mailto:cine047648@yahoo.com">cine047648@yahoo.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="fecae743-24d2-463d-a7d8-94944b0955f1" class="">1 net 25k bank Ayrton Berrio (2p) <a href="mailto:Yesidruiz652@hotmail.com">Yesidruiz652@hotmail.com</a> </p><p id="e164f348-cb39-43ae-89d6-24ec3e9c9590" class=""><mark class="highlight-blue">1 dis+net 20k nequi Maria Barragan (1p) </mark><mark class="highlight-blue"><a href="mailto:Yesidruiz652@hotmail.com">Yesidruiz652@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="6daf7529-16a2-4c9a-9a2c-1303a664c944" class=""><mark class="highlight-blue">Combespc 30k nequi Armando Lopez Gomez</mark></p></details></li></ul><ul id="0eb91901-b120-4f6b-967c-0b84f2207369" class="toggle"><li><details open=""><summary>4 de enero</summary><p id="ff56b698-1e62-4b0e-87bc-9f4ae534873e" class=""><mark class="highlight-yellow">3 dis 45k bank Marcela Garcia</mark></p><p id="b9335f0b-a310-4450-9321-c6a33ee6291b" class=""><mark class="highlight-blue">1 dis, hbo, starzp,star, prime 70k bank Mr Nuñez </mark></p><p id="bfdb8807-46c8-45aa-aa1c-79e73f671f95" class=""><mark class="highlight-yellow">3 spoty 20k bank Mr Nuñez</mark></p><p id="51b7aee8-89ac-4b22-b7ce-737114a19281" class=""><mark class="highlight-yellow">Comb1+ star 36k nequi Luz Cala (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hMR5@hotmail.com">auto+hMR5@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="a408a2b2-4e77-49b0-8f05-6f05c5fb142c" class=""><mark class="highlight-blue">Comb1 27k davi Dago Arrieta (1p) sabes_0000@jvs07.xyz </mark></p><p id="19ef59c4-f6b8-4d59-a4a2-1f8f242700de" class=""><mark class="highlight-yellow">1 hbo 17k bank Oriana Bustos </mark></p><p id="a36c024a-41b1-4e90-8d5c-1c0d4029584e" class=""><mark class="highlight-blue">comb1 27k bank Jesus Palencia (1p) sabes_0000@jvs07.xyz </mark></p><p id="02951ebb-9970-4bf1-b979-6f4aaac3801c" class=""><mark class="highlight-blue">1 net 14k bank Angela Piedrahita (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hluz2@estratosfera.net">auto+hluz2@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="f5a32eae-e38a-4467-8cbe-a9b5b89c572a" class="toggle"><li><details open=""><summary>5 de enero</summary><p id="2e7da7f9-5af5-4b38-8289-2260ebdc8313" class="">Inversión: 109k</p><p id="ccdca11b-d058-4178-b895-9ff370cd3028" class=""><mark class="highlight-blue">1 net 14k nequi Ledys Monsalve (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hluz12@estratosfera.net">auto+hluz12@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="b8ce3e83-c5df-408f-8eb8-06323307a6a6" class=""><mark class="highlight-blue">1 net 14k bank Ricardo Garcia (1p) </mark><mark class="highlight-blue"><a href="mailto:cuent5500+2jh87@zohomail.com">cuent5500+2jh87@zohomail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="60f47d30-7eba-4e6c-a028-f33a8ed2dde1" class=""><mark class="highlight-blue">1 amaz 8k nequi Harold Bautista </mark></p><p id="57b3a569-cc81-4498-b677-e6460bdfa4de" class=""><mark class="highlight-blue">1 net 14k bank Dalia Zapata (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hMR5@hotmail.com">auto+hMR5@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="917b8add-5bbe-41e4-b4b4-301a2b9ec536" class="toggle"><li><details open=""><summary>6 de enero</summary><p id="9d1bac09-0cb8-48b8-8975-8ed7c1042036" class=""><mark class="highlight-yellow">2/3 Dis cc 48k Bank Luis Hernández3</mark></p><p id="b7733764-1a0c-4da5-81ba-e82ff8f28972" class=""><mark class="highlight-yellow">2/3 Net 36k Nequi Jessica Mendes (1p) auto+hMR4@estratosfera.net</mark></p><p id="3b965961-41fb-4fd0-8d00-8c70c97db76c" class=""><mark class="highlight-yellow">1 net 35k nequi Juan Pablo Torres (4p) </mark><mark class="highlight-yellow"><a href="mailto:fp6znbltf5@boximail.com">fp6znbltf5@boximail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="487e382d-45e0-422f-83a7-af9f7b3160d3" class=""><mark class="highlight-blue">1 net 14k nequi Jorge Ochoa (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+le1@estratosfera.net">auto+le1@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="27a3b113-6a9b-44a7-927d-ea62dbdf8194" class=""><mark class="highlight-yellow">1 net+dis+hbo 25k nequi Sara Vazquez (1p) </mark><mark class="highlight-yellow"><a href="mailto:soccer344ruiz+jzmao6@gmail.com">soccer344ruiz+jzmao6@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="5dd7d892-bc93-4145-a24e-bf3918d3348f" class=""><mark class="highlight-yellow">1 net+dis 22k nequi Lina Salazar (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+le1@estratosfera.net">auto+le1@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="ad0b07f1-4308-4b89-8466-b94fead38aa4" class=""><mark class="highlight-blue">1 hbo 10k bank Caleidys Lopez</mark></p><p id="b333103c-d709-4ca5-872c-90087cd3e55d" class=""><mark class="highlight-yellow">1 net 14k bank Adriana Velazquez (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hluz2@estratosfera.net">auto+hluz2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="63e2a95f-191f-4edb-952a-5820ddb2aa55" class=""><mark class="highlight-blue">1 amz+hbo 18k bank Pabla Niebles</mark></p><p id="77d9997a-6e75-4279-a224-da0b8a0e4804" class=""><mark class="highlight-yellow">1 net 14k bank Jorge Mda (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hcel3@estratosfera.net">auto+hcel3@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="2e5f772c-e3f1-4281-b567-2c10d0ea7c20" class=""><mark class="highlight-yellow">1 net 14k bank Daniela Gonzales (1p) </mark><mark class="highlight-yellow"><a href="mailto:Vestirrrrr@eljhonnapd.com">Vestirrrrr@eljhonnapd.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="ced94e12-a5e0-4234-940e-92725e971ea5" class=""><mark class="highlight-yellow">1 net 14k bank Jineth Martinez (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+h2@estratosfera.net">auto+h2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="fa1649aa-08f3-431f-aa01-dc81989d0442" class=""><mark class="highlight-yellow">comb+star 32k bank Jose Angel (1p) 94X1A@plunmail.xyz COBRAR</mark></p><p id="7023ed12-7ef7-4ae8-bab7-b399b599514a" class=""><mark class="highlight-blue">Comb1 27k bank Melanie Medrano (1p) </mark><mark class="highlight-blue"><a href="mailto:Vestirrrrr@eljhonnapd.com">Vestirrrrr@eljhonnapd.com</a></mark><mark class="highlight-blue"> </mark></p><p id="73535c52-ec57-418c-b92c-f04294dd033c" class=""><mark class="highlight-blue">1 net 14k bank Karen Palmieri2 (1p) </mark><mark class="highlight-blue"><a href="mailto:Vestirrrrr@eljhonnapd.com">Vestirrrrr@eljhonnapd.com</a></mark><mark class="highlight-blue"> </mark></p><p id="17969661-a728-4e88-93f1-7a7daf30b6c5" class=""><mark class="highlight-yellow">Net 14k bank Nataly Rebolledo (1p) TODO14@JBTVMED.COM</mark></p></details></li></ul><ul id="a0039f29-5627-4a17-b27d-d1d68b7c5704" class="toggle"><li><details open=""><summary>7 de Enero</summary><p id="e7c2d7a2-5100-4ed6-995f-0a4a16063cc7" class=""><mark class="highlight-yellow">4/5 net Silfri (1p) </mark><mark class="highlight-yellow"><a href="mailto:blim9091@gmail.com">blim9091@gmail.com</a></mark></p><p id="b3e65a98-7c83-4cdb-af02-a270c52af1aa" class=""><mark class="highlight-yellow">Net + dis 19k Bank Camilo Gascón (1p) auto+h002p@estratosfera.net</mark></p><p id="81b94f9e-471f-4475-849a-391e2b089930" class=""><mark class="highlight-blue">1 net 14k bank Ivon Ramirez Maestre (1p) </mark><mark class="highlight-blue"><a href="mailto:MAUSE16@JBTVMED.COM">MAUSE16@JBTVMED.COM</a></mark><mark class="highlight-blue"> </mark></p><p id="77e09e38-58ce-42f7-8104-982c3339bcc9" class=""><mark class="highlight-blue">1 net 14k bank Frend Yesid (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hluz12@estratosfera.net">auto+hluz12@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="771cee5c-ab4a-439d-bb6e-1cab02a83584" class="toggle"><li><details open=""><summary>8 de enero</summary><p id="f32d5277-38ff-4932-be05-e8eb8e394e82" class="">Inversión: Alexandra 118k, Alexandra 44,5k, Harold 120k, Alexandra 7,5k, Álex 7k   </p><p id="2358c0f6-621a-4800-98e5-6f2bc9b8c875" class=""><mark class="highlight-yellow">1/6 Net 145k Bank Mr Nuñez (4p) rakiytu01@yopmail.com </mark>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             </p><p id="64bc9d81-8578-401c-8378-854e720ee544" class=""><mark class="highlight-blue">Dis, Ama 15k ??? Javier Forero</mark></p><p id="f9a90ca8-a262-4c11-8c41-a8574aa7c797" class=""><mark class="highlight-blue">Comb1 27k Nequi Ariel Gaitán (1p) </mark><mark class="highlight-blue"><a href="mailto:Vestirrrrr@eljhonnapd.com">Vestirrrrr@eljhonnapd.com</a></mark></p><p id="0c00f134-a54a-4890-bca5-5641247704dc" class=""><mark class="highlight-yellow">Comb1 27k Bank Julián Rojas (1p) auto+hMR4@estratosfera.net</mark></p><p id="ca98ca6f-aa03-4b9b-8729-a02a667e7f63" class=""><mark class="highlight-blue">1 net 14k bank Jennifer Simanca (1p) </mark><mark class="highlight-blue"><a href="mailto:ldznnfx41+auto22@gmail.com">ldznnfx41+auto22@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="8d8126ba-f2df-4bda-ba38-ce3c0995d0df" class=""><mark class="highlight-yellow">2 net 76k bank Oriana Bustos (8p) </mark><mark class="highlight-yellow"><a href="mailto:grandnase33@wanko.be">grandnase33@wanko.be</a></mark><mark class="highlight-yellow">  </mark><mark class="highlight-yellow"><a href="mailto:jose12fgf+1@gmail.com">jose12fgf+1@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="ab27226d-a10a-4d09-84e3-3e342726f7b2" class=""><mark class="highlight-yellow">1 net 40k nequi Nelson Aguilera (4p) </mark><mark class="highlight-yellow"><a href="mailto:adela2022ct+COL19JUN@gmail.com">adela2022ct+COL19JUN@gmail.com</a></mark><mark class="highlight-yellow">  </mark></p></details></li></ul><ul id="707e8012-7287-487b-a783-dce55bda374b" class="toggle"><li><details open=""><summary>9 de enero</summary><p id="9f7587eb-0615-40c2-88d9-773753b2558a" class="">Inversión: Álex 7k</p><p id="7a42ec0d-bfeb-4670-8ab6-2a37a126794b" class=""><mark class="highlight-yellow">2/6 Net 70k Bank Edubio (1p) estratosfera+tecla05@sauted.co</mark></p><p id="f048afe4-17b0-49a1-a606-0e72f65b2c82" class=""><mark class="highlight-yellow">2/3 Spotify 25k Bank Alexandra Nava</mark></p><p id="3b6bd9fb-b664-4b68-abfb-fb73d1265702" class=""><mark class="highlight-yellow">2/3 Net 94k Luz Yadira (4p) Ldznnfx42+auto3@gmail.com</mark></p><p id="3d3f9713-e7fb-47b8-b72b-5d7826e51a41" class=""><mark class="highlight-yellow">1/2 net 28k bank Evelio Rodriguez (1p) </mark><mark class="highlight-yellow"><a href="mailto:cruz45@jbtvmed.com">cruz45@jbtvmed.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="432cf4b2-393b-4223-9796-ec376675aa15" class=""><mark class="highlight-blue">3/3 spoty 25k davi Alveiro Ramirez </mark></p><p id="d562d849-4e22-40b2-aec0-2bd5377a90ce" class=""><mark class="highlight-yellow">3/3 net 38k nequi Padro Lozano (1p) </mark><mark class="highlight-yellow"><a href="mailto:Net.pre.miu.m1294@gmail.com">Net.pre.miu.m1294@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="d162dc87-e862-4e18-aa87-f344bc045ecd" class=""><mark class="highlight-yellow">1/3 Spotify 25k Bank Willian Ramos </mark></p><p id="8c7ab681-59b1-46df-901e-029af20bc83b" class=""><mark class="highlight-yellow">Comb1+star 32k bank Jose Angel (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx44+auto55@gmail.com">ldznnfx44+auto55@gmail.com</a></mark><mark class="highlight-yellow"> COBRAR</mark></p><p id="84adf924-4458-420c-963c-fc5e1f0021b6" class=""><mark class="highlight-yellow">Net 14k davi Freddy Mateus (1p) auto+hma1@estratosfera.net </mark></p><p id="e24b5e8b-2525-4dd2-ad10-e9f95579b4f3" class=""><mark class="highlight-blue">Comb1 27k Nequi Gabriel Puello (1p) auto+hMR4@estratosfera.net</mark></p><p id="e75a27c6-1e3d-44ac-9e6c-b2f38ead8439" class=""><mark class="highlight-yellow">Net 14k Bank Luis Quintana (1p) TODO14@JBTVMED.COM</mark></p><p id="57fe0fb1-6f7e-4a21-8ae7-362ec6a5740a" class=""><mark class="highlight-yellow">Net + amz 18k nequi Jharyma Santana (1p) cruz45@jbtvmed.com </mark></p><p id="d188be04-d8e6-413e-abef-f0ca626598ec" class=""><mark class="highlight-yellow">1 net+dis 40k bank Derly (3p) </mark><mark class="highlight-yellow"><a href="mailto:estratosfera+hugo1x@sauted.co">estratosfera+hugo1x@sauted.co</a></mark><mark class="highlight-yellow"> </mark></p><p id="378e7342-1df8-41e7-ae4a-e30fc624faa0" class=""><mark class="highlight-yellow">Comb1 27k bank Karen Diaz (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hluz2@estratosfera.net">auto+hluz2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="8f6e224e-65cd-472b-aa81-d6ec5f3d547c" class=""><mark class="highlight-yellow">Comb1 27k bank Alba Lida Rodriguez (1p) </mark><mark class="highlight-yellow"><a href="mailto:cuent5500+2jh87@zohomail.com">cuent5500+2jh87@zohomail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="4791a501-8670-46e2-9761-627354fcc742" class=""><mark class="highlight-yellow">1 net 14k nequi Majo Zapata (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+h002p@estratosfera.net">auto+h002p@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="df25548d-3577-42e1-b7df-49833f9c0ade" class="toggle"><li><details open=""><summary>10 de enero </summary><p id="5250f260-528f-4e48-aa01-2b1bbd87d6f7" class=""><mark class="highlight-yellow">2/3 Spotify 25k Davi Javier Vergara </mark></p><p id="9079db99-ad43-47a0-a168-618ecb92339d" class=""><mark class="highlight-yellow">1 net 14k bank Leyner Perea (1p) </mark><mark class="highlight-yellow"><a href="mailto:Vestirrrrr@eljhonnapd.com">Vestirrrrr@eljhonnapd.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="8b149202-ed86-457e-9c91-e5576c053ff6" class=""><mark class="highlight-yellow">1/4 dis+hbo 110k bank y davi Luz Yadira</mark></p><p id="a8617bfb-d7dd-47e1-bcf1-74ccee4e98aa" class=""><mark class="highlight-blue">1 dis+hbo+amz 22k bank Frank Gamez </mark></p><p id="5c99119d-c4c4-401e-a849-f229be2a6b45" class=""><mark class="highlight-yellow">Comb1 27k Bank Luis Daniel Rodríguez (1p) </mark><mark class="highlight-yellow"><a href="mailto:criscordinternacional+blanca@gmail.com">criscordinternacional+blanca@gmail.com</a></mark></p><p id="36f68248-832c-4c53-b383-14272f96a594" class=""><mark class="highlight-yellow">Comb3 espc 44k bank Yara Rodriguez (2p) </mark><mark class="highlight-yellow"><a href="mailto:TODO14@JBTVMED.COM">TODO14@JBTVMED.COM</a></mark><mark class="highlight-yellow"> </mark></p><p id="c657b2c5-dacd-43ab-935e-5f57f5234370" class=""><mark class="highlight-yellow">Comb5 100k nequi Henry Fontalvo (4p) </mark><mark class="highlight-yellow"><a href="mailto:Louisvuitton013@solutionsjvs.com">Louisvuitton013@solutionsjvs.com</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="a120ed41-753e-4771-92fc-28ac105df05f" class="toggle"><li><details open=""><summary>11 de enero</summary><p id="c25ef8bd-3892-4d6f-a1db-0d66a6e5a0a7" class="">Inversión: Harold 46k, Álex 13k</p><p id="6cedc3f1-8cce-4ab8-843b-f289914eca82" class=""><mark class="highlight-yellow">5/6 net Clara ines Velandia (1p) ldznnfx44+auto55@gmail.com</mark></p><p id="bf775cc6-fbc9-4452-be91-4bf5a9ce30b3" class=""><mark class="highlight-blue">4/4 YT Leidys Vizcaino</mark></p><p id="7de13fcb-9adc-43b3-b26a-c469833cadbb" class=""><mark class="highlight-blue">Net 14k Davi Franklin Fabián Nárvaez (1p) </mark><mark class="highlight-blue"><a href="mailto:laura12frfgt+9a@gmail.com">laura12frfgt+9a@gmail.com</a></mark></p><p id="50a09f08-0b41-4ddb-8dc2-bf70c297ec16" class=""><mark class="highlight-blue">Net + Dis 17k Nequi Luis Pérez uac (1p) </mark><mark class="highlight-blue"><a href="mailto:casa12@jbtvmed.com">casa12@jbtvmed.com</a></mark></p><p id="b16fa901-3333-4494-8499-011239b2c051" class=""><mark class="highlight-blue">Net 14k Bank Verónica Rojas2 (1p) 4.yoja@diamondplan.es</mark></p><p id="43db0d75-52ce-4c8a-a015-1a02427e4df9" class=""><mark class="highlight-blue">1 net 40k bank Daniel Strux (4p) </mark><mark class="highlight-blue"><a href="mailto:samanta5645565+NUE1AGO@hotmail.com">samanta5645565+NUE1AGO@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="9807779f-dfca-4abc-bdf5-7cb839cf0e1d" class=""><mark class="highlight-blue">1 net + hbo 20k bank Hector Guerra </mark></p><p id="b538d462-0baa-4029-b293-a4cfccadcc88" class=""><mark class="highlight-yellow">1 net 14k bank Caleidys Lopez (1p) </mark><mark class="highlight-yellow"><a href="mailto:PESO17@JBTVMED.COM">PESO17@JBTVMED.COM</a></mark><mark class="highlight-yellow"> </mark></p><p id="f7ac67c5-7116-4ecb-830f-4e1adbf265d2" class=""><mark class="highlight-blue">1 net 14k nequi Marcela2 (1p) </mark><mark class="highlight-blue"><a href="mailto:blim9091@gmail.com">blim9091@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="258bf3a3-3082-4a7e-9b78-785aa838befd" class=""><mark class="highlight-yellow">1 net 35k nequi Manuela Jimenez (3p) </mark><mark class="highlight-yellow"><a href="mailto:casa12@jbtvmed.com">casa12@jbtvmed.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="4640c7c9-6b5f-4255-a619-01d9a859b636" class=""><mark class="highlight-blue">Comb1 27k bank Jorge Travecedo (1p) </mark><mark class="highlight-blue"><a href="mailto:casa12@jbtvmed.com">casa12@jbtvmed.com</a></mark><mark class="highlight-blue"> </mark></p><p id="bf36e5f9-4be0-413b-aaa2-4790a93aaa83" class=""><mark class="highlight-blue">Comb1 27k Davi Sebastian Penagos (1p) </mark><mark class="highlight-blue"><a href="mailto:net.net624@yahoo.com">net.net624@yahoo.com</a></mark></p><p id="22733a21-c551-45fe-8f28-c1982379a775" class=""><mark class="highlight-yellow">Net 40k Bnak Gloria Suarez (4p) </mark><mark class="highlight-yellow"><a href="mailto:Haroldjab1294+4733@gmail.com">Haroldjab1294+4733@gmail.com</a></mark></p></details></li></ul><ul id="ce5c4037-d906-4a77-bdc7-c97a294cab40" class="toggle"><li><details open=""><summary>12 de enero</summary><p id="e658cf3b-1dee-4daa-82b1-7456a9c7d7ff" class="">Inversión: Álex 7k, Harold 49k</p><p id="80a1892f-b47b-4e9e-a87f-ae7bd44fb4f8" class=""><mark class="highlight-blue">3/3 ipTV 90k Nequi Alejandro Cepeda </mark></p><p id="044334d4-2e8b-42fe-9c22-fb415d266887" class=""><mark class="highlight-yellow">2/3 Net 35k bank Luis Hernandez3 (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx47+8auto@gmail.com">ldznnfx47+8auto@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="62455acd-5494-447e-832a-be3239360041" class=""><mark class="highlight-yellow">1/3 Spotify 25k Bank Carlos Medina </mark></p><p id="da0453db-1bc7-4ae0-b428-4a9f6cd89bae" class=""><mark class="highlight-blue">Net + Dis 17k Bank Franyer Benavides (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+le1@estratosfera.net">auto+le1@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="f5c983d4-433e-4483-8edf-ef0231deab77" class=""><mark class="highlight-blue">Dis 10k Bank Anyi Meliza</mark></p><p id="14c47bcd-7f46-4cdc-97a3-ca40bb2f8ae7" class=""><mark class="highlight-yellow">1 net 14k davi Daniela Suarez (1p)  </mark><mark class="highlight-yellow"><a href="mailto:blim9091@gmail.com">blim9091@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="df67276e-d2b7-4308-b3d3-fe290be24f50" class=""><mark class="highlight-yellow">1 net + dis 32k nequi Nevis Palencia (2p) </mark><mark class="highlight-yellow"><a href="mailto:Shayno@eljhonnapd.com">Shayno@eljhonnapd.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="fe4a0cd7-4801-45e1-bffc-d22ece0ad48c" class=""><mark class="highlight-yellow">1 net+star+amz 39k Rene Palacio (2p) </mark><mark class="highlight-yellow"><a href="mailto:auto+h2@estratosfera.net">auto+h2@estratosfera.net</a></mark></p><p id="bd02f38c-6dd5-4bb8-b77c-86d77cc00932" class=""><mark class="highlight-blue">1 net 14k bank Angie Melissa (1p) </mark><mark class="highlight-blue"><a href="mailto:laura12frfgt+9a@gmail.com">laura12frfgt+9a@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="bae73b44-fe1f-4ca0-934f-367acf8db21d" class=""><mark class="highlight-blue">1 crunchy 14k ban k Oriana Bustos </mark></p><p id="9c94f248-0884-47a0-a3cd-45c1a6992d0b" class=""><mark class="highlight-blue">Comb1 27k bank Andres Garcia (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+h2pant@estratosfera.net">auto+h2pant@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="1ff6b6ec-920a-4780-82bc-96f49b24c2d0" class=""><mark class="highlight-yellow">Comb5 100k nequi Victor Palacios (4p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma3@estratosfera.net">auto+hma3@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="487ef32b-d544-44f9-90ce-cdec34b9f08e" class=""><mark class="highlight-blue">Net 14k bank Yamiles Mosquera (1p) </mark><mark class="highlight-blue"><a href="mailto:estratosfera+tecla05@sauted.co">estratosfera+tecla05@sauted.co</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="02c2cb81-e3cb-4c40-8195-fbbc4dcd6dd0" class="toggle"><li><details open=""><summary>13 de enero</summary><p id="3e375439-d53d-4102-8490-bd3f7f184bc5" class="">Inversión: Harold 64k</p><p id="cba06af6-f87d-4482-901f-0a9f7a45cfee" class=""><mark class="highlight-yellow">2/3 Net 36k Bank Angélica Fernández (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx41+auto22@gmail.com">ldznnfx41+auto22@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="a78f1073-16c4-4c72-9e6e-4ea2add60b6e" class=""><mark class="highlight-yellow">3/4 YouTube 24k Bank René Palacios</mark></p><p id="2e0cb92e-7459-4045-9e56-ca95c06162b5" class=""><mark class="highlight-yellow">Comb5 sin parm 93k bank Dani Bermudez (4p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx46+auto777@gmail.com">ldznnfx46+auto777@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="57b49efa-7c59-4b16-9fe2-55ffaa27701e" class=""><mark class="highlight-yellow">Net 14k bank Maria Paez (1p) </mark><mark class="highlight-yellow"><a href="mailto:Torres69933@hotmail.com">Torres69933@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="f8628587-bbcc-4f84-acd3-eab83bba967b" class=""><mark class="highlight-blue">Comb3 con star sin parm 45k bank Ivan del Toro (2p) </mark><mark class="highlight-blue"><a href="mailto:Net.pre.miu.m1294@gmail.com">Net.pre.miu.m1294@gmail.com</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="3d2a0a25-e55b-4527-a424-ca7b6b7bf417" class="toggle"><li><details open=""><summary>14 de enero</summary><p id="6e5f3dd4-f288-43e0-98de-97436bb5492b" class="">Inversión: Alexandra 29.5k, Yisel 6k, Álex 3k</p><p id="e96b0c37-582f-4b8d-9fd5-f59102e6f26f" class=""><mark class="highlight-yellow">4/5 net Deiwis Martinez2 (1p) ldznnfx41+auto22@gmail.com</mark></p><p id="1f30efd1-d733-4a9d-97fd-59ecb3bdcd58" class=""><mark class="highlight-yellow">2/3 dis + HBO 90k nequi Bertha Blanco </mark></p><p id="f9964347-6869-4565-9f38-5412f405f2be" class=""><mark class="highlight-blue">Comb1 27k Bank Juan José Hernández (1p) </mark><mark class="highlight-blue"><a href="mailto:Torres69933@hotmail.com">Torres69933@hotmail.com</a></mark></p><p id="4d4a80c7-0457-48d2-909a-a79c7b5f797b" class=""><mark class="highlight-blue">Net 14k Bank Iliana Miranda (1p) </mark><mark class="highlight-blue"><a href="mailto:PESO17@JBTVMED.COM">PESO17@JBTVMED.COM</a></mark><mark class="highlight-blue"> </mark></p><p id="47da9478-c211-4011-a2af-b936903ec7a6" class=""><mark class="highlight-yellow">CombEspc 60k bank Karina Torres (4p) </mark><mark class="highlight-yellow"><a href="mailto:ROMA43@JBTVMED.COM">ROMA43@JBTVMED.COM</a></mark><mark class="highlight-yellow"> </mark></p><p id="ea2551c8-295d-4847-baf4-0149b4cc3de6" class=""><mark class="highlight-yellow">Net 14k bank Karen Sanchez (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma2@estratosfera.net">auto+hma2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="aba7e8d2-207f-434a-a485-c52227af5645" class=""><mark class="highlight-blue">Comb5 100k bank Luis Angel Moreno (4p) </mark><mark class="highlight-blue"><a href="mailto:auto+h3@estratosfera.net">auto+h3@estratosfera.net</a></mark></p><p id="aa2b8439-d2b0-4517-951d-c19e2ec8b563" class=""><mark class="highlight-yellow">Comb1 27k nequi Jacky Castillo (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma2@estratosfera.net">auto+hma2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="4c3a5b5c-36f9-4787-ab66-a3abfaf4e370" class="toggle"><li><details open=""><summary>15 de enero</summary><p id="b8f53525-d9a2-4d15-a7e3-d9c7c4446001" class="">Inversión: Alexandra 58k</p><p id="61151a40-d7e0-4528-a5a3-179347d4d6b5" class=""><mark class="highlight-yellow">6/6 net Leidy Samira Cossio (1p) estratosfera+tecla05@sauted.co</mark></p><p id="58379a01-b400-495d-b69d-034a760a5413" class=""><mark class="highlight-yellow">3/3 net Ney Ramirez (1p) </mark><mark class="highlight-yellow"><a href="mailto:net.net624@yahoo.com">net.net624@yahoo.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="0db4811e-4612-44da-988a-98d4d003c9a6" class=""><mark class="highlight-yellow">2/3 spoty 25k bank Luisa Fernanda</mark></p><p id="7995551e-f4fa-4cf4-9bd9-6aef0fb587af" class=""><mark class="highlight-yellow">Comb1 27k Bank Luis Daniel Rodríguez (1p) </mark><mark class="highlight-yellow"><a href="mailto:Yesidruiz192+03822@gmail.com">Yesidruiz192+03822@gmail.com</a></mark></p><p id="1d795dcb-fbf4-49af-aca0-40ded3f0cdcf" class=""><mark class="highlight-blue">Comb1 27k Bank Maye Camacho (1p) </mark><mark class="highlight-blue"><a href="mailto:Shayno@eljhonnapd.com">Shayno@eljhonnapd.com</a></mark></p><p id="4bda900a-887d-4c3b-a590-a37ec54cca2d" class=""><mark class="highlight-blue">Param 8k Bnak Sergio Chacón</mark></p><p id="de8c5c64-83a5-457c-81d5-c9841cc9f8ba" class=""><mark class="highlight-blue">Comb1 27k Nequi Andrés Narvaez (1p) oscar2021astrid+COL18JUN@gmail.com</mark></p><p id="54cb07c1-2dfa-4dd8-88b6-b8450dd27aad" class=""><mark class="highlight-yellow">Comb5 100k nequi Edilmer Rodriguez (4p) </mark><mark class="highlight-yellow"><a href="mailto:Netflix-expi3ed@criscordnet.com">Netflix-expi3ed@criscordnet.com</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="2a4726a7-65e9-4005-b97d-d1c416dac4b5" class="toggle"><li><details open=""><summary>16 de enero</summary><p id="5e074052-2964-4f2b-8e40-d3e4e4fff5f1" class="">Inversion: 16k, Harold 103k</p><p id="ded1559f-7db2-4e1d-a8d1-f68fae2a9dc5" class=""><mark class="highlight-yellow">1/2 Star 20k bank Edgar Barragan </mark></p><p id="a274b880-c2d8-48a9-9675-33d981168954" class=""><mark class="highlight-yellow">3/4 YouTube 30k Bank Lowin </mark></p><p id="26e1073d-8f59-46e3-bd28-682baade5a78" class=""><mark class="highlight-yellow">6/6 net Erika Casas (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx45+auto06@gmail.com">ldznnfx45+auto06@gmail.com</a></mark></p><p id="09d9ea2c-ac8c-4ac9-b510-826dc0f6cd7c" class=""><mark class="highlight-yellow">1 net 14k bank Anyelis Garcia (1p) </mark><mark class="highlight-yellow"><a href="mailto:oscar2021astrid+COL18JUN@gmail.com">oscar2021astrid+COL18JUN@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="efd9a5ca-8123-4ab9-99d0-2d3a5c9c0d6b" class=""><mark class="highlight-blue">1 net 14k bank Armando Efecty (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+h2pant@estratosfera.net">auto+h2pant@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="9b2619da-9eea-4a29-ae40-185ba6d36669" class=""><mark class="highlight-blue">1 hbo+amz 18k nequi Jose Ricardo </mark></p><p id="f39f22d8-d824-431a-a4ae-f37965a14fcd" class=""><mark class="highlight-yellow">Comb1 27k nequi Johan Lopez (1p) </mark><mark class="highlight-yellow"><a href="mailto:jyc0811@fuwa.li">jyc0811@fuwa.li</a></mark><mark class="highlight-yellow"> </mark></p><p id="779de7f8-f98b-4422-978e-2482809c4377" class=""><mark class="highlight-blue">Net 14k Bank Tio Ger (1p) 94X1A@plunmail.xyz </mark></p><p id="f4b2347e-7706-4842-9373-cf9938d3bfcd" class=""><mark class="highlight-blue">Dis 18k Nequi Joshua Fran</mark></p><p id="dc1714e2-08ea-4a13-8ee6-58148421b481" class=""><mark class="highlight-blue">Star 10k Nequi Diógenes </mark></p><p id="84dad290-aefe-4ebd-a29c-ff6e5e1c987d" class=""><mark class="highlight-yellow">1 net 40k bank Pabla Niebles (4p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hcel2@estratosfera.net">auto+hcel2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="bd3fec41-fc57-4a96-b3b9-a63de4d8f1f6" class=""><mark class="highlight-blue">1 net+dis 18k nequi Marcela Rodriguez (1p) </mark><mark class="highlight-blue"><a href="mailto:soccer344ruiz+jzmao6@gmail.com">soccer344ruiz+jzmao6@gmail.com</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="78aa9e0b-96ba-4504-afdf-d0c55309aa90" class="toggle"><li><details open=""><summary>17 de enero</summary><p id="122142bc-dd83-4c6a-9453-dfde62a346e5" class="">Inversión: Yisel 5k, Harold 128k</p><p id="ea231553-617c-4646-80dc-117daf4a676e" class=""><mark class="highlight-yellow">1/4 YouTube 15k Bank Oriana Bustos</mark></p><p id="22ab21c2-95d4-40d4-8eb4-ed4e047a9760" class=""><mark class="highlight-yellow">1 net+amz 41k nequi Marcos Vidrioautos (4p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hpc02@estratosfera.net">auto+hpc02@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="0d1ff532-3da6-449b-9f3f-b3ca76dafc5a" class=""><mark class="highlight-yellow">Comb1 27k bank Geniel Zuñiga (1p) </mark><mark class="highlight-yellow"><a href="mailto:PESO17@JBTVMED.COM">PESO17@JBTVMED.COM</a></mark><mark class="highlight-yellow"> </mark></p><p id="72d1361d-4b19-4e54-907e-2ee6b2d65352" class=""><mark class="highlight-blue">Net 14k Bank Vanessa Rodríguez3 (1p) </mark><mark class="highlight-blue"><a href="mailto:cruz45@jbtvmed.com">cruz45@jbtvmed.com</a></mark><mark class="highlight-blue"> </mark></p><p id="628a95d8-23bf-497b-b56a-443dd60747f8" class=""><mark class="highlight-yellow">Comb1 28k nequi Johan (1p) </mark><mark class="highlight-yellow"><a href="mailto:Netpremium1294+yyyebv@gmail.com">Netpremium1294+yyyebv@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="2914a3f1-becc-4099-aa5e-210fffa9b5e5" class=""><mark class="highlight-blue">1 net 14k bank Juan Jose Torres (1p) </mark><mark class="highlight-blue"><a href="mailto:laura12frfgt+9a@gmail.com">laura12frfgt+9a@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="81fa92ae-6c69-4a0e-82e3-302d3dcaea45" class=""><mark class="highlight-blue">1 hbo+amz 19k bank Freddy Ruiz </mark></p><p id="44df103f-c91b-4340-88d2-eee6b242a3c0" class=""><mark class="highlight-blue">1 crunchy 13k Diogenes</mark></p><p id="da8ef964-c8af-465d-8744-9dc371e036c4" class=""><mark class="highlight-blue">1 hbo 10k bank Juan Pablo Zapata </mark></p></details></li></ul><ul id="1b79059f-84c7-41bb-84fd-60d034959be9" class="toggle"><li><details open=""><summary>18 de enero</summary><p id="f20215db-762b-41fc-ba44-5c97e4539807" class=""><mark class="highlight-blue">1 hbo 10k bank Andres Hernandez </mark></p><p id="8c06d89f-471e-4787-b00a-cef1961d9004" class=""><mark class="highlight-blue">Comb1 14k nequi Jaime Cuadro (1p) </mark><mark class="highlight-blue"><a href="mailto:MAUSE16@JBTVMED.COM">MAUSE16@JBTVMED.COM</a></mark><mark class="highlight-blue"> </mark></p><p id="e94cec4b-5877-4bef-9aa5-bd1afa4cd592" class=""><mark class="highlight-blue">1 dis 10k nequi Diego Martinez </mark></p><p id="625d3789-46fe-4aee-a0da-61d9c7271ed3" class=""><mark class="highlight-blue">1 hbo 10k bank Carlos Lopez </mark></p><p id="639dca50-cb22-4859-9031-a8eab09bb675" class=""><mark class="highlight-blue">HBO 10k Davi Yuyo</mark></p></details></li></ul><ul id="3d474ff1-5159-424b-bd43-61a681f8427a" class="toggle"><li><details open=""><summary>19 de enero</summary><p id="12664936-3dbe-4566-9d8d-0c40452bc2eb" class="">Inversión: Álex 5k, Angie 3k, Harold 57k</p><p id="0b0890e3-1e30-4535-ae6e-66f8c88172e6" class=""><mark class="highlight-blue">1 net 14k bank Gustavo Mendez (1p) </mark><mark class="highlight-blue"><a href="mailto:Yesidruiz192+03822@gmail.com">Yesidruiz192+03822@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="310d8218-c979-4689-a464-1856a895a2ac" class=""><mark class="highlight-yellow">Comb1 27k bank Jaime Marin (1p) </mark><mark class="highlight-yellow"><a href="mailto:MAUSE16@JBTVMED.COM">MAUSE16@JBTVMED.COM</a></mark><mark class="highlight-yellow"> </mark></p><p id="62503c7c-8398-4056-b548-59e0d8693cde" class=""><mark class="highlight-yellow">Comb2 con Star sin Param 36k nequi Jeison Leon (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hcel3@estratosfera.net">auto+hcel3@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="b7782605-1d14-46f7-8ef1-c757eada0336" class=""><mark class="highlight-blue">1 dis 10k bank William Briceño</mark></p><p id="9e9c81a0-9ca3-48d7-8481-b9b35cdfa662" class=""><mark class="highlight-yellow">Comb1 27k davi Jennifer Simanca (1p) </mark><mark class="highlight-yellow"><a href="mailto:oscar2021astrid+COL18JUN@gmail.com">oscar2021astrid+COL18JUN@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="a5cf2352-ab0a-4716-8d42-94ef25d70270" class=""><mark class="highlight-yellow">Comb1 28k davi Gustavo Restrepo (1p) </mark><mark class="highlight-yellow"><a href="mailto:net.net624@yahoo.com">net.net624@yahoo.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="f62ae2dd-fd5d-4244-aa70-558f0fbc3eb1" class=""><mark class="highlight-yellow">1 net+amz+star 25k nequi Albeiro Chole (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hMR5@hotmail.com">auto+hMR5@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="bd3bc489-6910-4129-b204-cabc54a16445" class=""><mark class="highlight-yellow">HBO 17K Nequi Juan Pablo Torres</mark></p><p id="08bd7e59-c73a-4f50-853e-f70845c008cb" class=""><mark class="highlight-blue">COMB1 28k bank Edry Flores (1p) </mark><mark class="highlight-blue"><a href="mailto:4.yoja@diamondplan.es">4.yoja@diamondplan.es</a></mark><mark class="highlight-blue"> </mark></p><p id="4df92145-083d-4971-a914-67cddb4756db" class=""><mark class="highlight-blue">NET 14k Bank Carolina Rayo (1p) </mark><mark class="highlight-blue"><a href="mailto:oscar2021astrid+COL18JUN@gmail.com">oscar2021astrid+COL18JUN@gmail.com</a></mark></p><p id="1069a40a-7704-4f62-8477-139a39d7f951" class=""><mark class="highlight-yellow">NET 14k nequi Orlando (1p) </mark><mark class="highlight-yellow"><a href="mailto:4.yoja@diamondplan.es">4.yoja@diamondplan.es</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="febdef28-ed81-4572-b03e-9e1855e63f62" class="toggle"><li><details open=""><summary>20 de enero</summary><p id="0e7d154b-755d-4236-b580-04959c793337" class="">Inversión: Angie 7k</p><p id="47f9d7df-eb96-4e6e-b579-ff5665e67784" class=""><mark class="highlight-blue">3/3 Net Picón2 (1p) estratosfera+megautox@sauted.co</mark></p><p id="29d992d1-6934-4e8e-9c00-de19f4e53502" class=""><mark class="highlight-yellow">2/3 HBO 40k nequi Andres Martinez Buti </mark></p><p id="5869106b-a7b5-44cf-9ff8-2b9e521dc908" class=""><mark class="highlight-yellow">1 net+dis+hbo 24k nequi Heyler (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx47+8auto@gmail.com">ldznnfx47+8auto@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="39613fcf-5a07-415f-b7d6-0c5efa82e3bd" class=""><mark class="highlight-blue">COMB1 27k bank Yeison Soto (1p) </mark><mark class="highlight-blue"><a href="mailto:Torres69933@hotmail.com">Torres69933@hotmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="3fc1093c-d0ba-4225-b306-e21840071425" class=""><mark class="highlight-yellow">1 net cc + dis 41k nequi Alexander Gonzalez (4p) </mark><mark class="highlight-yellow"><a href="mailto:Abuela@eljhonnapd.com">Abuela@eljhonnapd.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="f7be7f75-7c02-4692-b881-cb9b07cb3f9d" class=""><mark class="highlight-yellow">1 net 37k davi Oriana Bustos (4p) </mark><mark class="highlight-yellow"><a href="mailto:Yesidruiz192+03822@gmail.com">Yesidruiz192+03822@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="dc47dff8-85e3-4185-b0a5-bcdb4f5c8427" class=""><mark class="highlight-blue">1 net 14k nequi Deisy Camacho (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hluz12@estratosfera.net">auto+hluz12@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="9228ba7a-fdb0-4012-acb2-318ffda34d5a" class=""><mark class="highlight-yellow">COMB1 28k Bank Nuris Pérez (1p) </mark><mark class="highlight-yellow"><a href="mailto:mamburra3000@yahoo.com">mamburra3000@yahoo.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="a3376424-9cd6-466b-86f1-6a0e91d4f155" class=""><mark class="highlight-blue">COMB1 28k Bank Issac Baq (1p) </mark><mark class="highlight-blue"><a href="mailto:casa12@jbtvmed.com">casa12@jbtvmed.com</a></mark></p><p id="e2179cd5-322c-4e85-bcef-eb80643c5d42" class=""><mark class="highlight-blue">SPOTIFY FAM 15k Bank Victor Palacios </mark></p><p id="5800f262-66ba-43fd-8b3f-8e8981887752" class=""><mark class="highlight-yellow">NET 40k Nequi Freddy Mateus (4p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hpc03@estratosfera.net">auto+hpc03@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="6527766c-a6b0-4901-90ab-85f5f2933069" class=""><mark class="highlight-yellow">COMB1 sin dis 24k Nequi Karen Rocha (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+le1@estratosfera.net">auto+le1@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="809316b5-8807-4ab6-8129-8ce01001118e" class=""><mark class="highlight-blue">1 net 14k bank Katherin (1p) </mark><mark class="highlight-blue"><a href="mailto:estratosfera+megautox@sauted.co">estratosfera+megautox@sauted.co</a></mark><mark class="highlight-blue"> </mark></p></details></li></ul><ul id="5ef9cae9-fbbc-4435-a2aa-9ef1fd688b1e" class="toggle"><li><details open=""><summary>21 de enero</summary><p id="52f3cfdf-f6a5-46ee-8ce3-d90ba0bbf6da" class="">Inversión: Álex Rojas 33k, Harold 74k, Angie 7k</p><p id="65511ed6-8086-435d-ac6c-ed021ede69c8" class=""><mark class="highlight-blue">3/3 Spotify Daniel Eduardo Ramos </mark></p><p id="b5ea9751-8d26-46de-a6a5-185d3b44630f" class=""><mark class="highlight-yellow">3/6 net Victor Villanueva (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+bionaire6@estratosfera.net">auto+bionaire6@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="1801b8f6-72ca-4db5-845c-b8d2878899ad" class=""><mark class="highlight-yellow">1 net 14k nequi Yilian Verdugo (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hluz12@estratosfera.net">auto+hluz12@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="897b4b24-4026-4f03-ab85-25a0ce60d241" class=""><mark class="highlight-blue">Net + Dis 41k Nequi Alexander Gónzales (4p) </mark><mark class="highlight-blue"><a href="mailto:samanta5645565+NUE1AGO@hotmail.com">samanta5645565+NUE1AGO@hotmail.com</a></mark></p><p id="c257ffb1-8086-4c1b-a4f4-783248dc9bbc" class=""><mark class="highlight-blue">HBO 4k Nequi Alexander Gónzales</mark></p><p id="9f78809e-8123-4e67-8ccd-32fb2f08ff79" class=""><mark class="highlight-yellow">NET 40k Bank Alas Bravas (4p) </mark><mark class="highlight-yellow"><a href="mailto:abel221665@gmail.com">abel221665@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="0ae452c5-1d0a-4ced-9bab-4493fd4173b3" class=""><mark class="highlight-blue">NET 14k Bank Sarays (1p) </mark><mark class="highlight-blue"><a href="mailto:casa12@jbtvmed.com">casa12@jbtvmed.com</a></mark><mark class="highlight-blue"> </mark></p><p id="41610c02-e386-47ff-abff-958956bfefab" class=""><mark class="highlight-blue">AMA 14k Bank Francisco Castillo</mark></p><p id="d0873618-8c96-4b06-b962-848e56c6d2fc" class=""><mark class="highlight-blue">NET 14k Bank Nairo (1p) </mark><mark class="highlight-blue"><a href="mailto:jyc0811@fuwa.li">jyc0811@fuwa.li</a></mark><mark class="highlight-blue"> </mark></p><p id="cd85de04-8daf-4c47-a1dd-320e24ca43bb" class=""><mark class="highlight-yellow">COMB1 param sin Dis 27k Nequi Sarami (1p) </mark><mark class="highlight-yellow"><a href="mailto:jyc0811@fuwa.li">jyc0811@fuwa.li</a></mark></p><p id="7daef2f7-f2a4-4860-b6a0-05a590aa2e50" class=""><mark class="highlight-yellow">STAR 20k Bank Oriana Bustos </mark></p></details></li></ul><ul id="ffb10abe-0373-4d11-ab76-f359ea1661e6" class="toggle"><li><details open=""><summary>22 de enero</summary><p id="33d62133-5b9e-4831-95bf-78c070790393" class="">Inversión: Álex Rojas 36k</p><p id="8f53ad92-c919-4449-9b02-10f73ac4a9cb" class=""><mark class="highlight-blue">HBO 10k Nequi Majo Zapata</mark></p><p id="25bb7932-4d9a-4fc3-be4d-2dfd36948f32" class=""><mark class="highlight-blue">HBO 10k Nequi Sebastián Baldiris</mark></p><p id="22e3c091-9a2a-46b8-93f4-7157a740d2cd" class=""><mark class="highlight-blue">STAR 10k Nequi Luis Daniel Rodrígue</mark>z</p><p id="76051428-7386-4545-a609-b7a090a7fa10" class=""><mark class="highlight-blue">DIS+AMA 7k Nequi Alexander Gónzales</mark></p><p id="1cb0b200-ec1d-4d8b-9b82-cfe261217314" class=""><mark class="highlight-blue">NET 14k Bank Rafael Angulo (1p) sabes_0000@jvs07.xyz</mark></p><p id="f7a0e618-9a20-42d9-a405-2edcea4a1521" class=""><mark class="highlight-blue">1 star 10k bank Jesus Martinez</mark></p><p id="6b9a54ba-8d57-49eb-b811-b15432bb58ae" class=""><mark class="highlight-yellow">1 net 14k nequi Jose Julian Herrera (1p) </mark><mark class="highlight-yellow"><a href="mailto:vincenth96@bumbleegad.com">vincenth96@bumbleegad.com</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="627cf8be-e98e-4d75-833c-7f1f2183f0cd" class="toggle"><li><details open=""><summary>23 de enero</summary><p id="6cf156dc-921b-42fa-b58b-8d80d3c3b57e" class="">Inersión: Angie 6k</p><p id="da551b8d-2834-429a-a18d-9ae36d3481f8" class=""><mark class="highlight-yellow">2/6 Net 60k Bank Hamilton (1p) </mark><mark class="highlight-yellow"><a href="mailto:soccer344ruiz+jzmao6@gmail.com">soccer344ruiz+jzmao6@gmail.com</a></mark></p><p id="48acaf5a-f0e9-4a7c-854f-1852121a587f" class=""><mark class="highlight-yellow">HBO 17K Nequi Dúver Ávila</mark></p><p id="30d47479-7eaa-48d8-814e-033a1f9f547a" class=""><mark class="highlight-blue">NET 14k Bank Juan Puertas (1p) </mark><mark class="highlight-blue"><a href="mailto:jyc0811@fuwa.li">jyc0811@fuwa.li</a></mark><mark class="highlight-blue">  </mark></p><p id="46b76313-135a-48f7-9184-b7979224322f" class=""><mark class="highlight-blue">1 net+star 18k bank Maria A. Bernal (1p) </mark><mark class="highlight-blue"><a href="mailto:criscordinternacional+blanca@gmail.com">criscordinternacional+blanca@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="88cd58e9-9c31-4746-a24c-8d498524899b" class=""><mark class="highlight-blue">1 net 14k nequi Yenifer Catherine Higuita (1p) </mark><mark class="highlight-blue"><a href="mailto:ldznnfx44+auto55@gmail.com">ldznnfx44+auto55@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="f0ffb3d0-c0bd-4d7b-9545-d5e816f98668" class=""><mark class="highlight-yellow">1 hbo, dis, amz cc 40k bank Anthony Posada</mark></p><p id="73e78c98-a53c-4b4c-8020-68bc61283c07" class=""><mark class="highlight-yellow">1 star 10k bank Esthela </mark></p></details></li></ul><ul id="90522ca2-0144-4221-827c-892ffbb65ee1" class="toggle"><li><details open=""><summary>24 de enero</summary><p id="f369bf09-a877-4f29-99ac-e513eb979b04" class="">Inversion: 30k, Harold 94k</p><p id="20639568-8011-419c-8833-24784c5bf4e0" class=""><mark class="highlight-yellow">2 star 20k bank Yeijose (1p)  </mark></p><p id="01d21d99-6135-4cda-b88a-9a76fef01413" class=""><mark class="highlight-blue">1 star+amz 1p 15k nequi Fernando</mark></p><p id="c08b867c-856f-4468-a419-0500122b6e23" class=""><mark class="highlight-blue">1 netcc + amz 1p 40k nequi Alexander Gonzales Revendedor (4p) </mark><mark class="highlight-blue"><a href="mailto:Nomedijona@eljhonnapd.com">Nomedijona@eljhonnapd.com</a></mark><mark class="highlight-blue"> </mark></p><p id="ffd4f578-ec46-40ee-bf40-1fd25fbf918f" class=""><mark class="highlight-blue">1 amz + hbo 1p 7k nequi Alexander Gonzalez Rev </mark></p></details></li></ul><ul id="7c726f3e-a8a7-4800-bc4a-2acf2cfb0464" class="toggle"><li><details open=""><summary>25 de enero</summary><p id="0be9b323-4b03-4f9f-a3e2-340ca47c57cc" class="">Inversión: 10k, Heider 6k<br/><mark class="highlight-yellow">2/3 Spotify 25k Bank Andelibeth2</mark></p><p id="b6aaced2-29d0-46c6-af7d-a94a632f122c" class=""><mark class="highlight-yellow">2/3 Spotify 25k Bank Andelibeth2</mark></p><p id="855df999-f611-4ad2-9d71-c085d465574e" class=""><mark class="highlight-blue">1 hbo 4k nequi Alexander Gonzalez rev</mark></p><p id="cec655f0-effd-4eac-885f-0055a5bc9504" class=""><mark class="highlight-blue">CombEspc 30k nequi Tatiana Posada </mark></p><p id="79d65fe0-7b0c-484b-a8de-0a4b3ec7dbbf" class=""><mark class="highlight-blue">1 star 10k bank Hilda Aguilar </mark></p><p id="71a1dc71-95d5-454e-a563-ced692d9186c" class=""><mark class="highlight-yellow">CombEspc cc 50k nequi Juan Pablo Torres</mark></p><p id="5fee1fb2-453b-4520-bce7-34f0e3c4ad81" class=""><mark class="highlight-blue">1 dis cc 18k davi Oriana Bustos</mark></p><p id="cb6ee257-d385-422d-8a0f-b22508d0642f" class=""><mark class="highlight-blue">1 param 14k bank Oriana Bustos</mark></p><p id="4032936a-e0c1-4506-bcaf-a633c860deac" class=""><mark class="highlight-blue">1 dis 4k nequi Alexander Gonzalez</mark></p><p id="fa3f83e7-11bd-42ac-b91f-ddcb027108bf" class=""><mark class="highlight-yellow">NET 14k Bank Karen Daniela (1p) </mark><mark class="highlight-yellow"><a href="mailto:cruz45@jbtvmed.com">cruz45@jbtvmed.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="946eb936-664f-4348-b8bb-db6cabc967ad" class=""><mark class="highlight-yellow">NET 14k bank Angie Ferrer (1p) auto+hma1@estratosfera.net </mark></p></details></li></ul><ul id="b45c54e3-9c47-423c-89b9-6126dc6c9cf7" class="toggle"><li><details open=""><summary>26 de enero</summary><p id="ec15068a-290f-47f1-abb3-ddad82af480c" class="">inversion: 33k, Harold 53k</p><p id="7fcc66dd-6d05-45b9-82d2-b6c3abb9e2ec" class=""><mark class="highlight-yellow">6/6 net Zury (1p) estratosfera+megautox@sauted.co</mark></p><p id="214708ba-9820-4de8-9564-382037a9bbba" class=""><mark class="highlight-blue">6/6 net 60k nequi Miguel Reyes (1p) estratosfera+hugo1x@sauted.co</mark></p><p id="da074be4-f63d-4136-8f1d-cb26776e5a23" class=""><mark class="highlight-yellow">1/3 HBO 42k Bank Marcela García</mark></p><p id="edc114b2-198b-4470-a994-2198a4a6b812" class=""><mark class="highlight-blue">NET 14k Bank Nela (1p) </mark><mark class="highlight-blue"><a href="mailto:jyc0811@fuwa.li">jyc0811@fuwa.li</a></mark></p><p id="5790ea89-d8c4-4eff-88b9-5564d72b65bd" class=""><mark class="highlight-blue">1 hbo+dis+amz 11k nequi Alexander Gonzalez rev</mark></p><p id="6471ae7a-6e34-4ab6-b484-f825535bbf9e" class=""><mark class="highlight-blue">1 dis 4k nequi Alexander Gonzalez rev </mark></p><p id="8e669afb-d867-40a1-8bea-f4b0c0adc731" class=""><mark class="highlight-yellow">12 net 300k nequi Natalia (4p) </mark><mark class="highlight-yellow"><a href="mailto:estratosfera+auto015@sauted.co">estratosfera+auto015@sauted.co</a></mark><mark class="highlight-yellow"> </mark></p><p id="5af581ec-689f-4f03-aa69-ef4c2823fe8a" class=""><mark class="highlight-yellow">1 net 14k davi Yina Mozo (1p) </mark><mark class="highlight-yellow"><a href="mailto:mamburra3000@yahoo.com">mamburra3000@yahoo.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="d07887f7-9e6a-443b-b517-1591a1eb40f6" class=""><mark class="highlight-blue">1 net 14k nequi Pedro Delgado (1p) </mark><mark class="highlight-blue"><a href="mailto:vincenth96@bumbleegad.com">vincenth96@bumbleegad.com</a></mark><mark class="highlight-blue"> </mark></p><p id="5e5fedbe-9d9b-4802-8a7c-144892572831" class=""><mark class="highlight-yellow">NET y AMA 19k Nequi Diana Aguilar (1p) TODO14@JBTVMED.COM</mark></p><p id="17dcaf24-2fd8-492a-a5c8-19cee6f9549c" class=""><mark class="highlight-yellow">COMB2 sin AMA 30k nequi Daniela Olmos (1p) auto+h2@estratosfera.net </mark></p></details></li></ul><ul id="6ed299d7-8282-406d-ba75-8c2e0410735b" class="toggle"><li><details open=""><summary>27 de enero</summary><p id="40066828-00e9-4fc0-a73c-0047225d98bb" class="">Inversion: 15k, Álex Rojas 49k</p><p id="875744ee-c1d7-4304-a8f7-88163789e8ea" class=""><mark class="highlight-yellow">2/9 Dis 90k Davi Sheli Rodríguez </mark></p><p id="274ca8bd-7258-4f1a-b523-89d099897298" class=""><mark class="highlight-blue">2/2 Net + Star 36k Bank Jorge Brito (1p) </mark><mark class="highlight-blue"><a href="mailto:vincenth96@bumbleegad.com">vincenth96@bumbleegad.com</a></mark></p><p id="6772c6f3-a69d-48c2-989b-a0a87645dc7c" class=""><mark class="highlight-yellow">1 net 14k bank Luz Mary Mosquera (1p) </mark><mark class="highlight-yellow"><a href="mailto:estratosfera+megautox@sauted.co">estratosfera+megautox@sauted.co</a></mark><mark class="highlight-yellow"> </mark></p><p id="af376769-e006-401c-acb9-81d9b21b7459" class=""><mark class="highlight-blue">1 net 37k bank Oriana Bustos (4p) </mark><mark class="highlight-blue"><a href="mailto:carcamo221665@gmail.com">carcamo221665@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="b2086c95-cc3b-4837-ae46-a70e07ae0deb" class=""><mark class="highlight-yellow">1 net 14k nequi Candy Miranda (1p) </mark><mark class="highlight-yellow"><a href="mailto:vincenth96@bumbleegad.com">vincenth96@bumbleegad.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="bf53c049-b0f3-41b0-8806-e63d6ce4f627" class=""><mark class="highlight-yellow">NET y HBO 16k Nequi Johana Chala (1p) criscordinternacional+blanca@gmail.com</mark></p><p id="9f6eb238-4358-4ebc-a657-2265602e41d4" class=""><mark class="highlight-yellow">COMB1 28k Bank Hilda Aguilar (1p) sabes_0000@jvs07.xyz</mark></p><p id="e17bd155-bbe7-4910-a000-21e51023b81a" class=""><mark class="highlight-yellow">NET 14k Bank Bank Yisell (1p) </mark><mark class="highlight-yellow"><a href="mailto:Net.pre.miu.m1294@gmail.com">Net.pre.miu.m1294@gmail.com</a></mark></p><p id="0e349387-fa3e-4e6b-821a-1cbde2570ad3" class=""><mark class="highlight-yellow">COMB1 28k Bank Óscar Herrera (1p) </mark><mark class="highlight-yellow"><a href="mailto:laura12frfgt+9a@gmail.com">laura12frfgt+9a@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="3fe9e870-c6fe-42a7-8515-4da0ada4203c" class=""><mark class="highlight-yellow">STAR y AMA 15k Bank Jose Romero</mark></p><p id="dfc84da8-f89f-4abf-a751-cbadd3b5175a" class=""><mark class="highlight-blue">Crunchy 13k Bank Víctor Palacios </mark></p><p id="09b2d6e9-911d-4473-8257-05f9c84686d0" class=""><mark class="highlight-yellow">COMB1 27k Bank Julian Rojas (1p) </mark><mark class="highlight-yellow"><a href="mailto:4.yoja@diamondplan.es">4.yoja@diamondplan.es</a></mark><mark class="highlight-yellow"> </mark></p><p id="741ef733-49f1-4b4c-b74a-32533d3f5eec" class=""><mark class="highlight-yellow">dis+hbo y parm 24k bank Carlos Osuna JUEVES</mark></p></details></li></ul><ul id="c84cbc7b-aec2-487e-83be-f3adf606cc4a" class="toggle"><li><details open=""><summary>28 de enero</summary><p id="3683de4d-bfef-4aa9-8a80-543886e09c39" class="">Inversión: Harold 118k, Alexandra 30k, Álex Rojas 12k, Heider 12k</p><p id="6ec557be-1dd1-4762-9460-c9d3e940ab82" class=""><mark class="highlight-yellow">4/6 NET 65k Bank Cindy Gentil (1p) Tarazant9731+Netflix13@gmail.com</mark></p><p id="8af0d891-6fd8-482d-9ad6-1ea975be54ef" class=""><mark class="highlight-yellow">5/6 DIS Cindy Gentil (1p)</mark></p><p id="76ab7ce0-f4bb-4647-83a8-e7808eb9eb91" class=""><mark class="highlight-yellow">5/6 NET180k bank Marinly Morillo (4p) estratosfera+autoanti1x@sauted.co</mark></p><p id="6b249d9f-e0c5-4160-977d-9a45db7b96e1" class=""><mark class="highlight-yellow">NET, HBO y STAR 47k Nequi Alexander Gonzales (4p) </mark><mark class="highlight-yellow"><a href="mailto:Greentusxi@solutionsjvd.com">Greentusxi@solutionsjvd.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="636a3b7d-7068-4a54-a36b-c7b259e8b427" class=""><mark class="highlight-blue">DIS 18k Davi Silvina</mark></p><p id="5b033b12-2a1a-4409-a779-4cfc660fff60" class=""><mark class="highlight-blue">DIS 4k Nequi Alexander Gonzales</mark></p><p id="f9dd9db4-100b-4d7b-9bdb-067b77d6a54a" class=""><mark class="highlight-yellow">NET 25k Nequi Diego Martinez (2p) </mark><mark class="highlight-yellow"><a href="mailto:mamburra3000@yahoo.com">mamburra3000@yahoo.com</a></mark><mark class="highlight-yellow"> y </mark><mark class="highlight-yellow"><a href="mailto:cuent5500+2jh87@zohomail.com">cuent5500+2jh87@zohomail.com</a></mark></p><p id="7b7c9956-cb46-4062-ba3d-970eac54aa5b" class=""><mark class="highlight-yellow">NET 37k Bank Jacke (4p) </mark><mark class="highlight-yellow"><a href="mailto:auto+cel1@estratosfera.net">auto+cel1@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="87297a34-219b-41ea-81c6-033faa071f8f" class=""><mark class="highlight-yellow">1 net+ dis+hbo 50k bank Jose Renteria (3p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma1@estratosfera.net">auto+hma1@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="55cc516c-2678-481d-a6e2-913d81d171b0" class=""><mark class="highlight-yellow">Comb1 28k bank Gylmar Pianeta (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hMR5@hotmail.com">auto+hMR5@hotmail.com</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="41034236-a30a-4979-a2c9-33745ba667e1" class="toggle"><li><details open=""><summary>29 de enero</summary><p id="2b8d7021-876d-4763-a3eb-6d210bbe1958" class="">Inversión: Angie 4k, Álex 13k</p><p id="36be15a7-73fb-4892-a527-33ca413ed0f7" class=""><mark class="highlight-yellow">2/4 30 dólaes PayPal Iptv Elvis Usa</mark></p><p id="9edc65f3-855f-4bbc-b00f-3cfcd5ee1c2a" class=""><mark class="highlight-yellow">NET+DIS 18k Bank Verónica Rojas (1p) </mark><mark class="highlight-yellow"><a href="mailto:Net.pre.miu.m1294@gmail.com">Net.pre.miu.m1294@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="9cee6baf-d0bd-4724-89df-fb724a9405c1" class=""><mark class="highlight-blue">NET 14k Nequi Wilman Anguila (1p) </mark><mark class="highlight-blue"><a href="mailto:laura12frfgt+9a@gmail.com">laura12frfgt+9a@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="a46f0615-d3a6-4505-a4cb-66fa412b2e9f" class=""><mark class="highlight-blue">Comb1+star 35k nequi Ben Posada (1p) </mark><mark class="highlight-blue"><a href="mailto:vincenth96@bumbleegad.com">vincenth96@bumbleegad.com</a></mark><mark class="highlight-blue"> </mark></p><p id="3b0ef79a-c5c9-4022-b99c-9e1dd002025d" class=""><mark class="highlight-yellow">COMB1 87k Davi Lesli Benjumea (1p) auto+hMR4@estratosfera.net </mark></p><p id="2fb14e7f-72f9-42bf-beca-87fef154bbce" class=""><mark class="highlight-yellow">1 net 37k nequi Shawnny Gomez (4p) </mark><mark class="highlight-yellow"><a href="mailto:pfls70XD2QQ0@8.dnsabr.com">pfls70XD2QQ0@8.dnsabr.com</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><ul id="21f48b79-bd0a-42fa-a952-af6436f44b12" class="toggle"><li><details open=""><summary>30 de enero</summary><p id="2ea76dbd-d18a-4428-a68d-eb97292fb437" class="">Inversión: 34k, Álex 4k, Harold 25k</p><p id="91c75adc-76a7-40e6-8c36-062cc8e0c6b7" class=""><mark class="highlight-yellow">2/6 IPTV 140K Bank Mr Núñez</mark></p><p id="a6de50fe-1aee-4022-aea2-a4a7da1b63d3" class=""><mark class="highlight-yellow">7/12 dis Ander Moya</mark></p><p id="ab9f4ca3-eeae-4b69-8309-5696a8c1f50e" class=""><mark class="highlight-yellow">2/3 Net 36k Bank Claudia Cabrera (1p) ldznnfx47+8auto@gmail.com</mark></p><p id="ba6e94fd-0b7f-49e8-a07a-bb102462d4fd" class=""><mark class="highlight-blue">3/3 spoty 25k efect Jose Yesid</mark></p><p id="5b3e2943-b1a9-4c33-9236-3381c5a1e3ba" class=""><mark class="highlight-yellow">NET, PAR, AMA y STAR 30k Davi Domingo Di Gregorio (1p) </mark><mark class="highlight-yellow"><a href="mailto:Shayno@eljhonnapd.com">Shayno@eljhonnapd.com</a></mark></p><p id="9a206f61-d6df-497b-859f-a9c0093426c4" class=""><mark class="highlight-yellow">1 net 37k nequi Ricardo Samsung (4p) </mark><mark class="highlight-yellow"><a href="mailto:haroldjab129624@gmail.com">haroldjab129624@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="d49f6841-9f03-4436-a6cb-02b9ff80b7ed" class=""><mark class="highlight-blue">Comb2 34k bank Almis Vasquez (1p) </mark><mark class="highlight-blue"><a href="mailto:cruz45@jbtvmed.com">cruz45@jbtvmed.com</a></mark><mark class="highlight-blue"> </mark></p><p id="1ee577d8-ccce-4e6f-a6c7-0419a8fe2eb6" class=""><mark class="highlight-yellow">1 net 14k nequi Ludis Charris Guerrero (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma2@estratosfera.net">auto+hma2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="9f88b0da-9c5d-43dc-9c49-829a306c6aa5" class=""><mark class="highlight-blue">1 dis 10k nequi Diego Vergara Rodriguez </mark></p><p id="8f3cc22f-95ed-4e7c-848b-b0836b7c535a" class=""><mark class="highlight-yellow">3 spoty 21k bak Marcus Nfx Flash</mark></p><p id="e5337fc0-f113-442f-b44b-d4456f8954bb" class=""><mark class="highlight-yellow">1 net 14k bank Nicolas Castillo (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx45+auto06@gmail.com">ldznnfx45+auto06@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="9c3f77da-da8a-4c1a-a879-7ea537aebae0" class=""><mark class="highlight-yellow">COMB1 28k nequi Lina Torres (1p) </mark><mark class="highlight-yellow"><a href="mailto:blim9091@gmail.com">blim9091@gmail.com</a></mark><mark class="highlight-yellow"> </mark></p><p id="ac7bda4f-fb50-4ea8-b8df-e7fa57042046" class=""><mark class="highlight-yellow">COMB2 32k Bank Jean Durango (1p) </mark><mark class="highlight-yellow"><a href="mailto:Shayno@eljhonnapd.com">Shayno@eljhonnapd.com</a></mark></p><p id="4d638ec1-2f36-4d44-983c-6172ee4a741c" class=""><mark class="highlight-blue">COMB1 27k bank Harvy Rodriguez (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+hMR4@estratosfera.net">auto+hMR4@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="a200f457-0833-48bf-8a4c-dc7df018814f" class=""><mark class="highlight-yellow">NET 37k Nequi Alexander Gonzáles (4p) Reno18@jvs07.xyz </mark></p><p id="481e235b-354e-4c38-8c80-e93fe4b1861b" class=""><mark class="highlight-blue">1 dis+amz 10k nequi Alexander Gonzalez</mark></p><p id="32c52ec5-2955-4a59-b4ab-66e2d65bba11" class=""><mark class="highlight-blue">1 amz+hbo y dis 11k nequi Alexander Gonzalez</mark></p></details></li></ul><ul id="a045b3d0-82a1-4edf-8480-c40967df4c27" class="toggle"><li><details open=""><summary>31 de enero</summary><p id="4781b285-66a9-4809-b66b-a9f21cfb40c5" class=""><mark class="highlight-yellow">3/6 net 70k bank Durley (1p) </mark><mark class="highlight-yellow"><a href="mailto:auto+hma2@estratosfera.net">auto+hma2@estratosfera.net</a></mark><mark class="highlight-yellow"> </mark></p><p id="65095d88-4be9-4dd5-b45d-26bdf7269792" class=""><mark class="highlight-yellow">2/4 YouTube 30k Mr Núñez</mark></p><p id="6ed67cac-4f4b-4493-a18b-a03cff54ed92" class=""><mark class="highlight-yellow">3 net 40k bank Raul Pinto (1p) </mark><mark class="highlight-yellow"><a href="mailto:ldznnfx45+auto06@gmail.com">ldznnfx45+auto06@gmail.com</a></mark> </p><p id="1ddf140a-c237-407e-9609-aecd96819e1b" class=""><mark class="highlight-blue">1 net 14k nequi Sergio Chacon (1p) </mark><mark class="highlight-blue"><a href="mailto:auto+h002p@estratosfera.net">auto+h002p@estratosfera.net</a></mark><mark class="highlight-blue"> </mark></p><p id="2a4cdcb0-d94a-4c2b-9516-268c180f59d5" class=""><mark class="highlight-yellow">4 yt prem 30k nequi Ander Moya </mark></p><p id="6e0395b2-6c9b-4dbd-a33c-ae9917a5f247" class=""><mark class="highlight-blue">1 net 14k bank Juan Gaitan (1p) </mark><mark class="highlight-blue"><a href="mailto:ldznnfx41+auto22@gmail.com">ldznnfx41+auto22@gmail.com</a></mark><mark class="highlight-blue"> </mark></p><p id="dd7636c2-59e9-43cd-8d02-c5959059bf57" class=""><mark class="highlight-blue">1 hbo 10kbank Rouss Rangel </mark></p><p id="6c05b42a-b767-4206-9b77-f46e766454ba" class=""><mark class="highlight-blue">1 dis 18k bank Martin Murillo Vanegas </mark></p><p id="76a25c9a-cce7-4e9f-9d03-1d8d4ede5a22" class=""><mark class="highlight-blue">1 dis 4k nequi Alexander Gonzalez </mark></p><p id="f28a1286-0b7d-4ecc-9078-0e7399b74d44" class=""><mark class="highlight-yellow">2 net 77k nequi Bertha Blanco (4p) </mark><mark class="highlight-yellow"><a href="mailto:Eldeellos@elpatronx.com">Eldeellos@elpatronx.com</a></mark><mark class="highlight-yellow">  </mark><mark class="highlight-yellow"><a href="mailto:estratosfera+mus5x@sauted.co">estratosfera+mus5x@sauted.co</a></mark><mark class="highlight-yellow"> </mark></p></details></li></ul><p id="bb27d4f6-a987-45a0-942d-b2caf64575a0" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

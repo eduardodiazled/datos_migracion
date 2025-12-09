@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  celular       String        @id // Sanitized phone number (PK)
+  nombre        String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  transactions  Transaction[]
+}
+
+model InventoryAccount {
+  id        Int            @id @default(autoincrement())
+  servicio  String         // Netflix, Disney, etc.
+  tipo      String         // 'ESTATICO', 'DESECHABLE'
+  email     String
+  password  String
+  perfiles  SalesProfile[]
+  transactions Transaction[]
+  providerId Int?
+  provider   Provider?     @relation(fields: [providerId], references: [id])
+  dia_corte  Int?          // Day of the month (1-31) when payment is due to provider
+  is_disposable Boolean    @default(false)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model SalesProfile {
+  id           Int           @id @default(autoincrement())
+  nombre_perfil String
+  pin          String?
+  estado       String        @default("LIBRE") // 'LIBRE', 'OCUPADO', 'CUARENTENA_PIN', 'GARANTIA'
+  accountId    Int
+  account      InventoryAccount @relation(fields: [accountId], references: [id])
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+
+
+model Transaction {
+  id               Int          @id @default(autoincrement())
+  clienteId        String
+  client           Client       @relation(fields: [clienteId], references: [celular])
+  perfilId         Int?         // Optional for 'Venta Libre'
+  profile          SalesProfile? @relation(fields: [perfilId], references: [id])
+  accountId        Int?         // Optional for 'Venta Cuenta Completa'
+  account          InventoryAccount? @relation(fields: [accountId], references: [id])
+  estado_pago      String       // 'PAGADO', 'PENDIENTE', 'PROMESA_PAGO'
+  metodo_pago      String?      // 'NEQUI', 'BANCOLOMBIA', 'EFECTIVO', etc.
+  groupId          String?      // Optional: IDs grouped in a single Combo transaction
+  fecha_inicio     DateTime
+  fecha_vencimiento DateTime
+  monto            Float
+  descripcion      String?      // Snapshot of service name at time of sale
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Expense {
+  id             Int      @id @default(autoincrement())
+  categoria      String   // 'PROVEEDOR', 'NOMINA', 'GASTO_ADMIN', 'PUBLICIDAD', 'OTRO'
+  descripcion    String
+  monto          Float
+  fecha          DateTime
+  metodo_pago    String   // 'NEQUI', 'BANCOLOMBIA', etc.
+  proveedor      String?  // Optional supplier name
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("ADMIN") // ADMIN, EMPLOYEE
+  createdAt DateTime @default(now())
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @unique
+  accounts  InventoryAccount[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

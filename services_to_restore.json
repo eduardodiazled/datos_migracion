@@ -1,0 +1,6806 @@
+[
+  {
+    "phone": "Claudia Jiménez Nfx",
+    "date": "2024-07-06",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Ayrton Berrio Nfx",
+    "date": "2024-07-06",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Mirna Bernal Nfx",
+    "date": "2024-07-06",
+    "amount": 10000.0,
+    "service": "1 HBO Max 1 Pantalla"
+  },
+  {
+    "phone": "Nela Nfx",
+    "date": "2024-07-13",
+    "amount": 15000.0,
+    "service": "1 Disney 1 Pantalla"
+  },
+  {
+    "phone": "Tatiana Nfx",
+    "date": "2024-07-13",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yoleidis Fonseca Nfx",
+    "date": "2024-07-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nicolas NC Nfx",
+    "date": "2024-07-16",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Jean Michael Muñoz Nfx",
+    "date": "2024-07-16",
+    "amount": 35000.0,
+    "service": "1 Combo 2"
+  },
+  {
+    "phone": "Rafael Suárez ariza Nfx",
+    "date": "2024-07-16",
+    "amount": 30000.0,
+    "service": "1 Combo 3"
+  },
+  {
+    "phone": "María Blanco Nfx",
+    "date": "2024-07-16",
+    "amount": 10000.0,
+    "service": "1 Prime video 1 pantalla"
+  },
+  {
+    "phone": "Celis Lozano Nfx",
+    "date": "2024-07-17",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2024-07-17",
+    "amount": 35000.0,
+    "service": "1 Netflix 4 pantallas"
+  },
+  {
+    "phone": "Víctor Vargas Nfx",
+    "date": "2024-07-17",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-07-17",
+    "amount": 35000.0,
+    "service": "1 Netflix 4 pantallas (Especial)"
+  },
+  {
+    "phone": "Johan Nfx",
+    "date": "2024-07-17",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Duver Ávila Nfx",
+    "date": "2024-07-17",
+    "amount": 10000.0,
+    "service": "1 HBO Max 1 Pantalla"
+  },
+  {
+    "phone": "Bertha Blanco Nfx",
+    "date": "2024-07-18",
+    "amount": 37000.0,
+    "service": "1 Netflix 4 pantallas (especial)"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2024-07-18",
+    "amount": 18000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Eduardo Nfx",
+    "date": "2024-07-18",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Carlos Osuna2 Nfx",
+    "date": "2024-07-18",
+    "amount": 10000.0,
+    "service": "1 HBO Max 1 Pantalla"
+  },
+  {
+    "phone": "Yussi Sierra Nfx",
+    "date": "2024-07-26",
+    "amount": 35000.0,
+    "service": "1 Netflix 1 pantalla x3 meses"
+  },
+  {
+    "phone": "Karime Moncada Nfx",
+    "date": "2024-07-26",
+    "amount": 15000.0,
+    "service": "1 Disney 1 Pantalla"
+  },
+  {
+    "phone": "Alejandra Acevedo B Nfx",
+    "date": "2024-07-26",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Santiago Morales Nfx",
+    "date": "2024-07-26",
+    "amount": 18000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Prime video 1 pantalla"
+  },
+  {
+    "phone": "JOSE ricardo Nfx",
+    "date": "2024-07-26",
+    "amount": 55000.0,
+    "service": "1 Disney+ Cuenta Completa 3 meses , 1 Max 3"
+  },
+  {
+    "phone": "Christian Nfx",
+    "date": "2024-07-26",
+    "amount": 28000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "LUZ YADIRA Nfx",
+    "date": "2024-07-28",
+    "amount": 35000.0,
+    "service": "1 Disney 1 pantalla 2 meses, 1 Prime Video 1"
+  },
+  {
+    "phone": "Francisco Camaño Nfx",
+    "date": "2024-07-29",
+    "amount": 28000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Alba Lida Rodríguez Nfx",
+    "date": "2024-07-31",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Liliana Durán Nfx",
+    "date": "2024-08-01",
+    "amount": 28000.0,
+    "service": "Paramount+ 1 pantalla , 1 Prime Video 1"
+  },
+  {
+    "phone": "Yinet Ayala Nfx",
+    "date": "2024-08-01",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Cristian Bogotá Nfx",
+    "date": "2024-08-01",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Cindy Pedraza Nfx",
+    "date": "2024-08-01",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "María Fernanda Grisales Nfx",
+    "date": "2024-08-01",
+    "amount": 19000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Shawnny Gómez Nfx",
+    "date": "2024-08-01",
+    "amount": 37000.0,
+    "service": "1 Netflix 4 pantallas (especial)"
+  },
+  {
+    "phone": "Heyler 5 Nfx",
+    "date": "2024-08-01",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Felipe Peña Nfx",
+    "date": "2024-08-01",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Julian Herrera",
+    "date": "2024-08-01",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Indira Olivo Nfx",
+    "date": "2024-08-01",
+    "amount": 75000.0,
+    "service": "1 Disney+ 1 pantalla 3 meses, 1 Max 3 meses"
+  },
+  {
+    "phone": "Jose Paredes Nfx",
+    "date": "2024-08-02",
+    "amount": 30000.0,
+    "service": "1 Crunchyroll, 1 HBO Max 1 Pantalla, 1 Netflix"
+  },
+  {
+    "phone": "Paola sarmiento Nfx",
+    "date": "2024-08-03",
+    "amount": 36000.0,
+    "service": "1 Disney 1 pantalla 2 meses, 1 Netflix 1"
+  },
+  {
+    "phone": "Kerwin Herrera",
+    "date": "2024-08-05",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Luisa Suarez Nfx",
+    "date": "2024-08-05",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2024-08-06",
+    "amount": 40000.0,
+    "service": "1 Netflix 4 pantallas"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2024-08-06",
+    "amount": 20000.0,
+    "service": "1 Max 1 pantalla 2 meses"
+  },
+  {
+    "phone": "Javier Vargas Nfx",
+    "date": "2024-08-06",
+    "amount": 10000.0,
+    "service": "1 Max 1 pantalla"
+  },
+  {
+    "phone": "Carlos Julian Alvarez Nfx",
+    "date": "2024-08-06",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Deimer fuentes Nfx",
+    "date": "2024-08-06",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Mr Nuñez Nfx",
+    "date": "2024-08-06",
+    "amount": 200000.0,
+    "service": "1 Netflix CC 6 meses"
+  },
+  {
+    "phone": "Ayrton Berrio Nfx",
+    "date": "2024-08-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Heidy Sarabia Castillo nfx",
+    "date": "2024-08-06",
+    "amount": 19000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-08-06",
+    "amount": 15000.0,
+    "service": "1 Prime video cuenta completa"
+  },
+  {
+    "phone": "Alondra Nfx",
+    "date": "2024-08-06",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Jose Antonio Lora Nfx",
+    "date": "2024-08-07",
+    "amount": 18000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Prime Video 1"
+  },
+  {
+    "phone": "Alejandra Chará Nfx",
+    "date": "2024-08-07",
+    "amount": 23000.0,
+    "service": "1 Netflix Priv 1 Pantalla , 1 Prime Video 1"
+  },
+  {
+    "phone": "Ever Ramirez Nfx",
+    "date": "2024-08-10",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luisa fernanda rodriguez Nfx",
+    "date": "2024-08-10",
+    "amount": 38000.0,
+    "service": "1 Netflix 4 pantallas (especial)"
+  },
+  {
+    "phone": "Juan Jose Senior Nfx",
+    "date": "2024-08-10",
+    "amount": 27000.0,
+    "service": "1 HBO Max cuenta completa"
+  },
+  {
+    "phone": "Reinel Ospino Nfx",
+    "date": "2024-08-10",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-08-10",
+    "amount": 25000.0,
+    "service": "1 Disney Cuenta Completa"
+  },
+  {
+    "phone": "LEZLITH Nfx",
+    "date": "2024-08-10",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Diego Martínez Nfx",
+    "date": "2024-08-11",
+    "amount": 24000.0,
+    "service": "1 Disney 1 Pantalla, 1 Paramount+ 1 pantalla ,"
+  },
+  {
+    "phone": "Javier forero Nfx",
+    "date": "2024-08-13",
+    "amount": 25000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Karina Torres Nfx",
+    "date": "2024-08-14",
+    "amount": 50000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Karen Mendoza",
+    "date": "2024-08-14",
+    "amount": 40000.0,
+    "service": "Paramount+ 1 pantalla , 1 Prime Video 1"
+  },
+  {
+    "phone": "Yisell Nfx",
+    "date": "2024-08-14",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Carolina Murillo Nfx",
+    "date": "2024-08-15",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Jonathan lazaro Nfx",
+    "date": "2024-08-16",
+    "amount": 25000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Arianis Pertuz Nfx",
+    "date": "2024-08-19",
+    "amount": 40000.0,
+    "service": "Netflix 1 Pantalla, 1 Paramount+ 1 pantalla , 1"
+  },
+  {
+    "phone": "Gustavo Restrepo Nfx",
+    "date": "2024-08-19",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Norys Pastrana Nfx",
+    "date": "2024-08-19",
+    "amount": 15000.0,
+    "service": "1 Prime Video 2 Pantallas"
+  },
+  {
+    "phone": "Stephany Nfx",
+    "date": "2024-08-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gustavo Bujato Nfx",
+    "date": "2024-08-19",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Orlando Ruíz Nfx",
+    "date": "2024-08-20",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Cristian Roa Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Prime Video 1"
+  },
+  {
+    "phone": "Juan Barrios Nfx",
+    "date": "2024-08-20",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jeffer Ariza Nfx",
+    "date": "2024-08-20",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Vanessa Rodríguez3 Nfx",
+    "date": "2024-08-20",
+    "amount": 10000.0,
+    "service": "1 Paramount+ 1 pantalla"
+  },
+  {
+    "phone": "Yenny Rodríguez Nfx",
+    "date": "2024-08-20",
+    "amount": 30000.0,
+    "service": "2 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Victor Villanueva Nfx",
+    "date": "2024-08-20",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Yoryanis Nfx",
+    "date": "2024-08-21",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Doralys Rojas Nfx",
+    "date": "2024-08-21",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Wendy B Nfx",
+    "date": "2024-08-22",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Damaris Nfx",
+    "date": "2024-08-22",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jenny Karolina Carrillo Nfx",
+    "date": "2024-08-23",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Carolina Vélez Nfx",
+    "date": "2024-08-23",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Natalia Fernández Nfx",
+    "date": "2024-08-23",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Diana Rebolledo Nfx",
+    "date": "2024-08-23",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Fuentes Nfx",
+    "date": "2024-08-23",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Lina Zuleta Nfx",
+    "date": "2024-08-23",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karine Jiménez Nfx",
+    "date": "2024-08-24",
+    "amount": 14000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Romario Romero Nfx",
+    "date": "2024-08-24",
+    "amount": 8000.0,
+    "service": "1 YouTube 1 mes"
+  },
+  {
+    "phone": "Lizeth Ospino Nfx",
+    "date": "2024-08-24",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Christian Nfx",
+    "date": "2024-08-26",
+    "amount": 30000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Sharon Romero Nfx",
+    "date": "2024-08-28",
+    "amount": 34000.0,
+    "service": "2 Netflix Priv 1 Pantalla"
+  },
+  {
+    "phone": "Laura Corro Nfx",
+    "date": "2024-08-28",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yeferson Suárez Nfx",
+    "date": "2024-08-28",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "ANA OSPINO Nfx",
+    "date": "2024-08-28",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luis Miguel Urquijo Nfx",
+    "date": "2024-08-28",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karencita Mda",
+    "date": "2024-08-28",
+    "amount": 25000.0,
+    "service": "1 Netflix 2 pantallas"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2024-08-29",
+    "amount": 15000.0,
+    "service": "1 Prime video cuenta completa"
+  },
+  {
+    "phone": "Romario Romero Nfx",
+    "date": "2024-08-29",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Francisco Camaño Nfx",
+    "date": "2024-08-29",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y HBO)"
+  },
+  {
+    "phone": "Carlos Cadena Nfx",
+    "date": "2024-08-29",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Isnelia Nfx",
+    "date": "2024-08-29",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gustavo Lozano Nfx",
+    "date": "2024-08-30",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Andrey León Nfx",
+    "date": "2024-08-30",
+    "amount": 12000.0,
+    "service": "1 HBO Max cuenta completa"
+  },
+  {
+    "phone": "Jossimar donado villegas Nfx",
+    "date": "2024-08-30",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Julián Rojas Nfx",
+    "date": "2024-08-30",
+    "amount": 18000.0,
+    "service": "1 Max 1 pantalla , 1 Prime video 1 pantalla"
+  },
+  {
+    "phone": "Andrés Camilo Ortiz Nfx",
+    "date": "2024-08-30",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "William Ramos",
+    "date": "2024-08-30",
+    "amount": 25000.0,
+    "service": "1 Spotify 3 Meses"
+  },
+  {
+    "phone": "Danilo Romero Nfx",
+    "date": "2024-08-30",
+    "amount": 15000.0,
+    "service": "1 Spotify x 2 meses"
+  },
+  {
+    "phone": "Diana Sierra 2 Nfx",
+    "date": "2024-08-30",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "HILDA AGUILAR Nfx",
+    "date": "2024-08-30",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jorge Arias Nfx",
+    "date": "2024-08-30",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Soraida López Nfx",
+    "date": "2024-08-31",
+    "amount": 25000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Kerwin Herrera",
+    "date": "2024-08-31",
+    "amount": 35000.0,
+    "service": "1 Crunchyroll, 1 Disney 1 Pantalla, 1 Netflix 1"
+  },
+  {
+    "phone": "Jose Julian Herrera",
+    "date": "2024-09-01",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Ana Karina Bertel Nfx",
+    "date": "2024-09-02",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y HBO)"
+  },
+  {
+    "phone": "Marlon Cantillo TD",
+    "date": "2024-09-02",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla , 1 HBO Max 1 Pantalla"
+  },
+  {
+    "phone": "Bertha Blanco Nfx",
+    "date": "2024-09-02",
+    "amount": 38000.0,
+    "service": "1 Netflix 4 pantallas (Especial)"
+  },
+  {
+    "phone": "Carolina Restrepo Nfx",
+    "date": "2024-09-02",
+    "amount": 25000.0,
+    "service": "1 Netflix x2 pantallas"
+  },
+  {
+    "phone": "Jorge Arias Nfx",
+    "date": "2024-09-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Vanessa Nfx",
+    "date": "2024-09-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Liena Rios Nfx",
+    "date": "2024-09-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Claudia Cabrera Nfx",
+    "date": "2024-09-02",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y HBO)"
+  },
+  {
+    "phone": "Daniel Eduardo Ramos Nfx",
+    "date": "2024-09-02",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Laurent Díaz Nfx",
+    "date": "2024-09-02",
+    "amount": 20000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Sandra Vega Nfx",
+    "date": "2024-09-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Sebastián Salinas Nfx",
+    "date": "2024-09-02",
+    "amount": 25000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Enelvis Nfx",
+    "date": "2024-09-03",
+    "amount": 25000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Lina León Nfx",
+    "date": "2024-09-07",
+    "amount": 25000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Silfri Manuel Medina Ortiz",
+    "date": "2024-09-07",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Natalia Zuluaga Nfx",
+    "date": "2024-09-07",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Jose Paredes Nfx",
+    "date": "2024-09-07",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y HBO)"
+  },
+  {
+    "phone": "Alejandra Chará Nfx",
+    "date": "2024-09-07",
+    "amount": 23000.0,
+    "service": "1 Netflix Priv 1 Pantalla , 1 Prime Video 1"
+  },
+  {
+    "phone": "Yeison Nfx",
+    "date": "2024-09-08",
+    "amount": 25000.0,
+    "service": "1 Crunchyroll, 1 Netflix 1 Pantalla, 1 Prime"
+  },
+  {
+    "phone": "Luis Anaya Nfx",
+    "date": "2024-09-09",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Ever Ramirez Nfx",
+    "date": "2024-09-10",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2024-09-11",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Yeijosé Nfx",
+    "date": "2024-09-11",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Diego Martínez Nfx",
+    "date": "2024-09-11",
+    "amount": 24000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Julián Velázquez Nfx",
+    "date": "2024-09-13",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Vanessa Rodríguez3 Nfx",
+    "date": "2024-09-13",
+    "amount": 28000.0,
+    "service": "1 Netflix 1 Pantalla, 1 Paramount+ 1 pantalla , 1"
+  },
+  {
+    "phone": "Yisell Nfx",
+    "date": "2024-09-14",
+    "amount": 30000.0,
+    "service": "1 Disney 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Karina Torres Nfx",
+    "date": "2024-09-14",
+    "amount": 50000.0,
+    "service": "1 Disney 1 Pantalla, 1 HBO Max 1 Pantalla, 1"
+  },
+  {
+    "phone": "Manuela Jiménez Nfx",
+    "date": "2024-09-14",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "José Angel Nfx",
+    "date": "2024-09-14",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Carolina Murillo Nfx",
+    "date": "2024-09-15",
+    "amount": 30000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Camilo Puello Nfx",
+    "date": "2024-09-15",
+    "amount": 12000.0,
+    "service": "1 YouTube 1 mes"
+  },
+  {
+    "phone": "Carlos Cifuentes Nfx",
+    "date": "2024-09-15",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-09-16",
+    "amount": 35000.0,
+    "service": "1 Netflix 4 pantallas (Especial)"
+  },
+  {
+    "phone": "Gloria Suarez Nfx",
+    "date": "2024-09-16",
+    "amount": 40000.0,
+    "service": "1 Netflix 4 pantallas"
+  },
+  {
+    "phone": "Jacky Castillo Nfx",
+    "date": "2024-09-16",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Jean Michael Muñoz Nfx",
+    "date": "2024-09-16",
+    "amount": 40000.0,
+    "service": "1 Combo 2"
+  },
+  {
+    "phone": "Yaela Payares Nfx",
+    "date": "2024-09-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jharyma Santana Nfx",
+    "date": "2024-09-16",
+    "amount": 10000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Ivan Perpiñan Nfx",
+    "date": "2024-09-16",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Gladys Adiela Nfx",
+    "date": "2024-09-16",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Ramón Torres TD",
+    "date": "2024-09-17",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Andrés Gutiérrez Nfx",
+    "date": "2024-09-17",
+    "amount": 15000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Prime Video 1"
+  },
+  {
+    "phone": "Cindy Cataño Nfx",
+    "date": "2024-09-21",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose de la Rosa Nfx",
+    "date": "2024-09-21",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karen Rocha Nfx",
+    "date": "2024-09-22",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Christian Nfx",
+    "date": "2024-09-26",
+    "amount": 30000.0,
+    "service": "1 Max 1 Pantalla , 1 Netflix 1 Pantalla, 1 Prime"
+  },
+  {
+    "phone": "Isidro Jose Nfx",
+    "date": "2024-09-27",
+    "amount": 35000.0,
+    "service": "1 Netflix 1 pantalla x3 meses"
+  },
+  {
+    "phone": "Patricia Davis Nfx",
+    "date": "2024-09-27",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2024-09-27",
+    "amount": 30000.0,
+    "service": "1 HBO Max 1 Pantalla, 1 Paramount+ 1"
+  },
+  {
+    "phone": "Hector Rizo Nfx",
+    "date": "2024-10-01",
+    "amount": 42000.0,
+    "service": "1 Combo 4 especial"
+  },
+  {
+    "phone": "Liliana Durán Nfx",
+    "date": "2024-10-01",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Bertha Blanco Nfx",
+    "date": "2024-10-01",
+    "amount": 37000.0,
+    "service": "1 Netflix 4 pantallas (especial)"
+  },
+  {
+    "phone": "Paola sarmiento Nfx",
+    "date": "2024-10-01",
+    "amount": 36000.0,
+    "service": "1 Disney 1 pantalla 2 meses, 1 Netflix 1"
+  },
+  {
+    "phone": "Raul Romero Nfx",
+    "date": "2024-10-01",
+    "amount": 30000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Francisco Camaño Nfx",
+    "date": "2024-10-03",
+    "amount": 25000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Valentina Rico Nfx",
+    "date": "2024-10-04",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Eva Polo Nfx",
+    "date": "2024-10-05",
+    "amount": 15000.0,
+    "service": "1 Netflix Priv 1 Pantalla"
+  },
+  {
+    "phone": "Diego mejia Nfx",
+    "date": "2024-10-05",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Viviana Najar Nfx",
+    "date": "2024-10-05",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yessenia Hernán Nfx",
+    "date": "2024-10-05",
+    "amount": 14000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Claudia Jiménez Nfx",
+    "date": "2024-10-05",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy baron Nfx",
+    "date": "2024-10-05",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andres García Nfx",
+    "date": "2024-10-06",
+    "amount": 30000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Alejandra Chará Nfx",
+    "date": "2024-10-07",
+    "amount": 23000.0,
+    "service": "1 Netflix Priv 1 Pantalla , 1 Prime Video 1"
+  },
+  {
+    "phone": "Lina León Nfx",
+    "date": "2024-10-07",
+    "amount": 25000.0,
+    "service": "1 Max 1 Pantalla , 1 Netflix 1 Pantalla, 1 Prime"
+  },
+  {
+    "phone": "Milton Massiris López Nfx",
+    "date": "2024-10-08",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Aguilar Nfx",
+    "date": "2024-10-08",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Laura Corro Nfx",
+    "date": "2024-10-08",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Maria A. Bernal Nfx",
+    "date": "2024-10-08",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yeijosé Nfx",
+    "date": "2024-10-11",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Carlos Martínez Nfx",
+    "date": "2024-10-11",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Milenys Bautista Suárez nfx",
+    "date": "2024-10-11",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Antonio Lora Nfx",
+    "date": "2024-10-11",
+    "amount": 25000.0,
+    "service": "1 Max 1 Pantalla , 1 Paramount+ 1 pantalla , 1"
+  },
+  {
+    "phone": "Jhon Fontalvo Nfx",
+    "date": "2024-10-12",
+    "amount": 30000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Yisell Nfx",
+    "date": "2024-10-14",
+    "amount": 30000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Karina Torres Nfx",
+    "date": "2024-10-14",
+    "amount": 50000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Camilo Puello Nfx",
+    "date": "2024-10-15",
+    "amount": 12000.0,
+    "service": "1 YouTube 1 mes"
+  },
+  {
+    "phone": "Karen Sánchez Nfx",
+    "date": "2024-10-15",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Johan Lopez Nfx",
+    "date": "2024-10-15",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Gustavo Acevedo Rueda Nfx",
+    "date": "2024-10-15",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Laura Peñaloza Nfx",
+    "date": "2024-10-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jacky Castillo Nfx",
+    "date": "2024-10-16",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Yaela Payares Nfx",
+    "date": "2024-10-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gloria Suarez Nfx",
+    "date": "2024-10-16",
+    "amount": 40000.0,
+    "service": "1 Netflix Completo"
+  },
+  {
+    "phone": "María Blanco Nfx",
+    "date": "2024-10-16",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Jean Carlos Aguilar Nfx",
+    "date": "2024-10-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-10-16",
+    "amount": 35000.0,
+    "service": "1 Netflix 4 pantallas (Especial)"
+  },
+  {
+    "phone": "Stiven Moreno Nfx",
+    "date": "2024-10-16",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Lizeth Pianetta Nfx",
+    "date": "2024-10-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Kelly Marchena Nfx",
+    "date": "2024-10-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Manuela Jiménez Nfx",
+    "date": "2024-10-16",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Norys Pastrana Nfx",
+    "date": "2024-10-17",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2024-10-17",
+    "amount": 35000.0,
+    "service": "1 Netflix Completo"
+  },
+  {
+    "phone": "Hector Fabio Nfx",
+    "date": "2024-10-17",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 mes"
+  },
+  {
+    "phone": "Víctor Vargas Nfx",
+    "date": "2024-10-17",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Camilo Torres Nfx",
+    "date": "2024-10-17",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Max)"
+  },
+  {
+    "phone": "Andrés Gutiérrez Nfx",
+    "date": "2024-10-17",
+    "amount": 15000.0,
+    "service": "1 Max 1 Pantalla , 1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Johan Nfx",
+    "date": "2024-10-17",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-10-18",
+    "amount": 15000.0,
+    "service": "1 Paramount cuenta completa"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2024-10-18",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Ana Bella Nfx",
+    "date": "2024-10-18",
+    "amount": 18000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karina Torres Nfx",
+    "date": "2024-10-18",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Jhon Redondo Nfx",
+    "date": "2024-10-18",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Daniela Fontecha Nfx",
+    "date": "2024-10-18",
+    "amount": 50000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix Completo"
+  },
+  {
+    "phone": "Juan Chavarria Nfx",
+    "date": "2024-10-18",
+    "amount": 25000.0,
+    "service": "1 Spotify 3 Meses"
+  },
+  {
+    "phone": "Gustavo Restrepo Nfx",
+    "date": "2024-10-19",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Shawnny Gómez Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Mario Toscano Nfx",
+    "date": "2024-10-19",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Yendri Romero Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Rentería Nfx",
+    "date": "2024-10-19",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "William Sarmiento Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Wendy Vázquez Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Gladys Adiela Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nicolas NC Nfx",
+    "date": "2024-10-19",
+    "amount": 35000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 2 pantallas"
+  },
+  {
+    "phone": "Everlin Nfx",
+    "date": "2024-10-19",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Shawnny Gómez Nfx",
+    "date": "2024-10-19",
+    "amount": 9800.0,
+    "service": "Días de reposición"
+  },
+  {
+    "phone": "Andrea Hoyos Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Marín Nfx",
+    "date": "2024-10-19",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Geidis Nfx",
+    "date": "2024-10-19",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Alejandra Ayala Nfx",
+    "date": "2024-10-19",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Max)"
+  },
+  {
+    "phone": "Julián Velázquez Nfx",
+    "date": "2024-10-19",
+    "amount": 45000.0,
+    "service": "1 Combo 1, 1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Iván Andrés Martínez Nfx",
+    "date": "2024-10-19",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Victoria Fontalvo Nfx",
+    "date": "2024-10-19",
+    "amount": 30000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Jorge Menco Nfx",
+    "date": "2024-10-20",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Victor Villanueva Nfx",
+    "date": "2024-10-20",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Yenny Rodríguez Nfx",
+    "date": "2024-10-20",
+    "amount": 30000.0,
+    "service": "1 Netflix 2 pantallas"
+  },
+  {
+    "phone": "Yisell Nfx",
+    "date": "2024-10-20",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "David Ramirez Nfx",
+    "date": "2024-10-20",
+    "amount": 25000.0,
+    "service": "1 Netflix 1 Pantalla, 1 YouTube 1 mes"
+  },
+  {
+    "phone": "Jhon Navarro Nfx",
+    "date": "2024-10-21",
+    "amount": 25000.0,
+    "service": "1 Combo duo (Netflix y Disney)"
+  },
+  {
+    "phone": "Doralys Rojas Nfx",
+    "date": "2024-10-21",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Lizeth Pianetta Nfx",
+    "date": "2024-10-21",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Joan Gómez Nfx",
+    "date": "2024-10-22",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jorge Romero Nfx",
+    "date": "2024-10-22",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Karen Rocha Nfx",
+    "date": "2024-10-22",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Luis Alberto Calderón Nfx",
+    "date": "2024-10-25",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Yoryanis Nfx",
+    "date": "2024-10-25",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Santiago Morales Nfx",
+    "date": "2024-10-26",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Mr Nuñez Nfx",
+    "date": "2024-10-26",
+    "amount": 40000.0,
+    "service": "1 Crunchyroll, 1 DirecTV"
+  },
+  {
+    "phone": "Ricardo Cervera Nfx",
+    "date": "2024-10-26",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Alejandra Muñoz Nfx",
+    "date": "2024-10-26",
+    "amount": 40000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Ivan Perpiñan Nfx",
+    "date": "2024-10-27",
+    "amount": 40000.0,
+    "service": "1 Apple tv, 1 Prime Video 1 Pantalla, 1 ipTV"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2024-10-27",
+    "amount": 30000.0,
+    "service": "1 Max 1 Pantalla , 1 Paramount+ 1 pantalla , 1"
+  },
+  {
+    "phone": "Franklin Santiago López Nfx",
+    "date": "2024-10-30",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Andrés Camilo Ortiz Nfx",
+    "date": "2024-10-30",
+    "amount": 35000.0,
+    "service": "1 Combo 1"
+  },
+  {
+    "phone": "Andrey León Nfx",
+    "date": "2024-10-30",
+    "amount": 4000.0,
+    "service": "1 Paramount+ 1 pantalla"
+  },
+  {
+    "phone": "Diana Sierra 2 Nfx",
+    "date": "2024-10-30",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Carolina Rayo Nfx",
+    "date": "2024-10-30",
+    "amount": 14000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ximena Arias 2 Nfx",
+    "date": "2024-11-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Salvador",
+    "date": "2024-11-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jorge Arias Nfx",
+    "date": "2024-11-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karelis Nfx",
+    "date": "2024-11-02",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Enelvis Nfx",
+    "date": "2024-11-03",
+    "amount": 20000.0,
+    "service": "1 Combo duo (Netflix y Prime Video)"
+  },
+  {
+    "phone": "Karen Angulo Nfx",
+    "date": "2024-11-03",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Alejandro Barcenas Nfx",
+    "date": "2024-11-03",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Yiniris Nfx",
+    "date": "2024-11-03",
+    "amount": 20000.0,
+    "service": "1 Combo dúo (Netflix+ Paramount)"
+  },
+  {
+    "phone": "Angie Ferrer Nfx",
+    "date": "2024-11-03",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Servijagua",
+    "date": "2024-11-06",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2024-11-06",
+    "amount": 10000.0,
+    "service": "1 Prime Video 1 Pantalla"
+  },
+  {
+    "phone": "Natalia Zuluaga Nfx",
+    "date": "2024-11-08",
+    "amount": 25000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 1 Pantalla, 1"
+  },
+  {
+    "phone": "Gina Jiménez Nfx",
+    "date": "2024-11-10",
+    "amount": 30000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Luisa fernanda rodriguez Nfx",
+    "date": "2024-11-10",
+    "amount": 38000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Juan Jose Senior Nfx",
+    "date": "2024-11-10",
+    "amount": 27000.0,
+    "service": "1 HBO Max cuenta completa"
+  },
+  {
+    "phone": "Samir López Nfx",
+    "date": "2024-11-10",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Gonzalez Nfx",
+    "date": "2024-11-10",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Antonio Lora Nfx",
+    "date": "2024-11-11",
+    "amount": 25000.0,
+    "service": "1 Max 1 Pantalla , 1 Paramount+ 1 pantalla , 1"
+  },
+  {
+    "phone": "Diego Martínez Nfx",
+    "date": "2024-11-11",
+    "amount": 24000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Paramount+ 1 pantalla ,"
+  },
+  {
+    "phone": "Duber Pianetta Nfx",
+    "date": "2024-11-13",
+    "amount": 25000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Oriana Bustos Nfx",
+    "date": "2024-11-13",
+    "amount": 50000.0,
+    "service": "1 Disney Cuenta Completa , 1 Plex cuenta"
+  },
+  {
+    "phone": "Karina Torres Nfx",
+    "date": "2024-11-14",
+    "amount": 50000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla , 1"
+  },
+  {
+    "phone": "Yoider Nfx",
+    "date": "2025-09-25",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "William Mejía Nfx",
+    "date": "2025-09-25",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Felipe Castro Nfx",
+    "date": "2025-09-26",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Carlos Cadena Nfx",
+    "date": "2025-09-26",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "mohamed Nfx",
+    "date": "2025-09-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karen Rangel Nfx",
+    "date": "2025-09-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Rafa Castillo Nfx",
+    "date": "2025-09-26",
+    "amount": 10000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "Ofelia Pua Nfx",
+    "date": "2025-09-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Patricia Palencia 2 Nfx",
+    "date": "2025-09-26",
+    "amount": 21000.0,
+    "service": "1 Crunchyroll, 1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Miriam Urquijo Nfx",
+    "date": "2025-09-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2025-09-27",
+    "amount": 25000.0,
+    "service": "1 Max 1 Pantalla, 1 Prime Cuenta Completa"
+  },
+  {
+    "phone": "Marisela Ordóñez Nfx",
+    "date": "2025-09-27",
+    "amount": 15000.0,
+    "service": "1 Max 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Ángela Piedrahíta Nfx",
+    "date": "2025-09-27",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Sebastián Penagos Nfx",
+    "date": "2025-09-27",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Sergio Sánchez Nfx",
+    "date": "2025-09-27",
+    "amount": 28000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Johana Laverde Nfx",
+    "date": "2025-09-27",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Ofelia Pua Nfx",
+    "date": "2025-09-27",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2025-09-28",
+    "amount": 15000.0,
+    "service": "1 Prime Cuenta Completa"
+  },
+  {
+    "phone": "Natalia Fernández Nfx",
+    "date": "2025-09-28",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "William Sarmiento Nfx",
+    "date": "2025-09-28",
+    "amount": 26000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Sergio Reyes Nfx",
+    "date": "2025-09-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ricardo Samsung 2",
+    "date": "2025-09-28",
+    "amount": 37000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Diana Sierra 2 Nfx",
+    "date": "2025-09-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Stefany Goenaga Nfx",
+    "date": "2025-09-28",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Karencita Mda",
+    "date": "2025-09-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Lina Torres Nfx",
+    "date": "2025-09-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Himer Torres Nfx",
+    "date": "2025-09-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Haider Sánchez Nfx",
+    "date": "2025-09-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Javier forero Nfx",
+    "date": "2025-09-28",
+    "amount": 20000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Roxana Romero Nfx",
+    "date": "2025-09-29",
+    "amount": 26000.0,
+    "service": "1 Netflix 1 Pantalla, 1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Yilian Verdugo Nfx",
+    "date": "2025-09-29",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luisa Fernanda Nfx",
+    "date": "2025-09-30",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Jaiver Martínez Nfx",
+    "date": "2025-09-30",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Sergio Hernández Nfx",
+    "date": "2025-09-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karen Angulo Nfx",
+    "date": "2025-09-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Miladis Herrera Cardenas Nfx",
+    "date": "2025-09-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ernesto de Moya Nfx",
+    "date": "2025-09-30",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Yiniris Ávila Nfx",
+    "date": "2025-09-30",
+    "amount": 27000.0,
+    "service": "1 Combo Trío (Netflix, Max y Prime)"
+  },
+  {
+    "phone": "Jhon Ríos Nfx",
+    "date": "2025-09-30",
+    "amount": 28000.0,
+    "service": "1 Combo Trío (Netflix, Max y Prime)"
+  },
+  {
+    "phone": "Nelsy Rentería Nfx",
+    "date": "2025-09-30",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Luz Marina Pertuz Nfx",
+    "date": "2025-10-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Mary Tobón Nfx",
+    "date": "2025-10-01",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Alejandra Chará Nfx",
+    "date": "2025-10-01",
+    "amount": 43000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Maria Ochoa Nfx",
+    "date": "2025-10-01",
+    "amount": 95000.0,
+    "service": "1 Netflix Cuenta Completa, 1 Paramount+ 1"
+  },
+  {
+    "phone": "Daniela Sierra Nfx",
+    "date": "2025-10-01",
+    "amount": 25000.0,
+    "service": "1 Spotify 3 Meses"
+  },
+  {
+    "phone": "Issac Baq Nfx",
+    "date": "2025-10-01",
+    "amount": 37000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Juan Carlos Orjuela Nfx",
+    "date": "2025-10-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karencita Mda",
+    "date": "2025-10-01",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Fabián Carrillo Nfx",
+    "date": "2025-10-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gustavo Acevedo Rueda Nfx",
+    "date": "2025-10-01",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Camilo Carrillo Nfx",
+    "date": "2025-10-01",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Hector Rizo Nfx",
+    "date": "2025-10-01",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Liliana Durán Nfx",
+    "date": "2025-10-01",
+    "amount": 31000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Prime)"
+  },
+  {
+    "phone": "Claudia Cabrera Nfx",
+    "date": "2025-10-02",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Lusianna Nfx",
+    "date": "2025-10-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ilder Medina Nfx",
+    "date": "2025-10-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luis Palomino Nfx",
+    "date": "2025-10-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Shadia Romero Nfx",
+    "date": "2025-10-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Angelis Osorio Nfx",
+    "date": "2025-10-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Tía Ludys",
+    "date": "2025-10-02",
+    "amount": 35000.0,
+    "service": "1 Netflix 1 Pantalla 3 Meses"
+  },
+  {
+    "phone": "Lady Ortiz Nfx",
+    "date": "2025-10-02",
+    "amount": 10000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "Heyler 5 Nfx",
+    "date": "2025-10-03",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2025-10-03",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Francisco Castillo Nfx",
+    "date": "2025-10-03",
+    "amount": 35000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1\nParamount+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2025-10-03",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Jennifer Flaka Nfx",
+    "date": "2025-10-03",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Marlon Palacio Nfx",
+    "date": "2025-10-04",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andrés Romero Nfx",
+    "date": "2025-10-04",
+    "amount": 25000.0,
+    "service": "1 YouTube 3 meses"
+  },
+  {
+    "phone": "Luis Pérez Uac 2 Nfx",
+    "date": "2025-10-04",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Jose Merlano Nfx",
+    "date": "2025-10-04",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Marcela 2 Nfx",
+    "date": "2025-10-04",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Janeth Palacios Nfx",
+    "date": "2025-10-04",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Duber Pianetta Nfx",
+    "date": "2025-10-04",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Jairo Reyes 2",
+    "date": "2025-10-04",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Sara Vásquez Nfx",
+    "date": "2025-10-04",
+    "amount": 26000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Kerwin Herrera",
+    "date": "2025-10-04",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Kelly Díaz Nfx",
+    "date": "2025-10-04",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Jose Antonio Lora Nfx",
+    "date": "2025-10-05",
+    "amount": 15000.0,
+    "service": "1 IPTV Estratósfera+ 1 Pantalla"
+  },
+  {
+    "phone": "Yoryanis Nfx",
+    "date": "2025-10-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Angie Ferrer Nfx",
+    "date": "2025-10-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karen Rocha Nfx",
+    "date": "2025-10-05",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Jhon Hernández Nfx",
+    "date": "2025-10-05",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Enma Rosa Sarmiento Nfx",
+    "date": "2025-10-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Fernández Nfx",
+    "date": "2025-10-05",
+    "amount": 37000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Luis Fernando Ramírez Nfx",
+    "date": "2025-10-05",
+    "amount": 16000.0,
+    "service": "1 Max 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Omar Guzmán Nfx",
+    "date": "2025-10-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidys vizcaíno Nfx",
+    "date": "2025-10-05",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Beatriz Bravo Nfx",
+    "date": "2025-10-06",
+    "amount": 32000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Prime)"
+  },
+  {
+    "phone": "Hugo Xavier Nfx",
+    "date": "2025-10-06",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "José Angel Nfx",
+    "date": "2025-10-06",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Nakis Marquez Nfx",
+    "date": "2025-10-06",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Mary Pérez Nfx",
+    "date": "2025-10-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Cuadro Nfx",
+    "date": "2025-10-06",
+    "amount": 37000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Daniel Rubiano Nfx",
+    "date": "2025-10-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Rouss rangel Nfx",
+    "date": "2025-10-06",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Stephany Nfx",
+    "date": "2025-10-06",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Josh Nfx",
+    "date": "2025-10-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2025-10-06",
+    "amount": 42000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Andreina Rico Nfx",
+    "date": "2025-10-07",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Yakelin Sánchez Nfx",
+    "date": "2025-10-07",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Nataly Rebolledo Nfx",
+    "date": "2025-10-07",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ricardo Martínez 2 Nfx",
+    "date": "2025-10-07",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ana Karina Bertel Nfx",
+    "date": "2025-10-07",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Norys Pastrana Nfx",
+    "date": "2025-10-08",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Juliana González Nfx",
+    "date": "2025-10-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Stiven Barón Nfx",
+    "date": "2025-10-08",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Carolina Rayo Nfx",
+    "date": "2025-10-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ramón Torres TD",
+    "date": "2025-10-08",
+    "amount": 37000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Jorge Pereira Nfx",
+    "date": "2025-10-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Eliana Peñates Nfx",
+    "date": "2025-10-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nicolas NC Nfx",
+    "date": "2025-10-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yuliana Rua Nfx",
+    "date": "2025-10-08",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "José Angel Nfx",
+    "date": "2025-10-09",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "Heidy Sarabia Castillo nfx",
+    "date": "2025-10-09",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Claudia melo Nfx",
+    "date": "2025-10-09",
+    "amount": 25000.0,
+    "service": "1 YouTube 3 meses"
+  },
+  {
+    "phone": "Margarita Escop Nfx",
+    "date": "2025-10-09",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Julián Gómez Nfx",
+    "date": "2025-10-09",
+    "amount": 16000.0,
+    "service": "1 Crunchyroll, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Eliana Santiago Nfx",
+    "date": "2025-10-09",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Fernández Nfx",
+    "date": "2025-10-09",
+    "amount": 10000.0,
+    "service": "1 Paramount+ 1 Pantalla"
+  },
+  {
+    "phone": "Angelys Villanueva Nfx",
+    "date": "2025-10-09",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Yomaira Amaris Nfx",
+    "date": "2025-10-09",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Javier Vargas Nfx",
+    "date": "2025-10-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Alexander Ávila Nfx",
+    "date": "2025-10-10",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Agustín Carreño nfx",
+    "date": "2025-10-10",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Marín Nfx",
+    "date": "2025-10-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andrea Martínez Nfx",
+    "date": "2025-10-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2025-10-11",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Fernández Nfx",
+    "date": "2025-10-11",
+    "amount": 10000.0,
+    "service": "1 Vix"
+  },
+  {
+    "phone": "ivan del toro Nfx",
+    "date": "2025-10-11",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Mairon Marín Nfx",
+    "date": "2025-10-11",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Andrea Cantillo Nfx",
+    "date": "2025-10-11",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Angel González Nfx",
+    "date": "2025-10-11",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luz Dary",
+    "date": "2025-10-11",
+    "amount": 5000.0,
+    "service": "1 Canvas Pro 1 Mes"
+  },
+  {
+    "phone": "Vanessa 3b Nfx",
+    "date": "2025-10-12",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "María Cuello 2 Nfx",
+    "date": "2025-10-12",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Leo Primo Alas bravas",
+    "date": "2025-10-12",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Felipe pachon Nfx",
+    "date": "2025-10-12",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "José Bertel Nfx",
+    "date": "2025-10-12",
+    "amount": 10000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "Luz Cala Nfx",
+    "date": "2025-10-12",
+    "amount": 20000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Paola Naranjo Nfx",
+    "date": "2025-10-12",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Nathaly Bayona Nfx",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marilin Vanegas Nfx",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juan Jose Senior Nfx",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Wendy Lisette Nfx",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Lina Zuleta Nfx",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Tío Ger",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Rosa Salcedo Nfx",
+    "date": "2025-10-13",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Luz Meri Nfx",
+    "date": "2025-10-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Iván Gáfaro Martínez Nfx",
+    "date": "2025-10-13",
+    "amount": 10000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "Luis Alberto Calderón Nfx",
+    "date": "2025-10-13",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Victoria Fontalvo Nfx",
+    "date": "2025-10-13",
+    "amount": 28000.0,
+    "service": "1 Combo Trío (Netflix, Max y Prime)"
+  },
+  {
+    "phone": "Camilo Domínguez Nfx",
+    "date": "2025-10-14",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Carlos del Toro Nfx",
+    "date": "2025-10-14",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Yisell Nfx",
+    "date": "2025-10-14",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Camilo Domínguez Nfx",
+    "date": "2025-10-14",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Jorge Menco Nfx",
+    "date": "2025-10-14",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Katerin Martínez Nfx",
+    "date": "2025-10-14",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Jesus Medrano Nfx",
+    "date": "2025-10-14",
+    "amount": 15000.0,
+    "service": "1 IPTV Estratósfera+ 1 Pantalla"
+  },
+  {
+    "phone": "Mariana Ocampo Nfx",
+    "date": "2025-10-14",
+    "amount": 24000.0,
+    "service": "1 Spotify 3 Meses"
+  },
+  {
+    "phone": "Yised Nfx",
+    "date": "2025-10-14",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Felipe Mejía Nfx",
+    "date": "2025-10-14",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Andrea valderrama Nfx",
+    "date": "2025-10-15",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jenoba María Nfx",
+    "date": "2025-10-15",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nelsy Mendoza Nfx",
+    "date": "2025-10-15",
+    "amount": 21000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Marlon Palacio Nfx",
+    "date": "2025-10-16",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Jacky Castillo Nfx",
+    "date": "2025-10-16",
+    "amount": 46000.0,
+    "service": "1 Combo #1, 1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Gloria Suarez Nfx",
+    "date": "2025-10-16",
+    "amount": 42000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Irina Miranda Nfx",
+    "date": "2025-10-16",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "María Angélica Vásquez Nfx",
+    "date": "2025-10-16",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2025-10-16",
+    "amount": 16000.0,
+    "service": "1 Max 1 Pantalla 2 Meses"
+  },
+  {
+    "phone": "Natalia Zuluaga Nfx",
+    "date": "2025-10-16",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Jonatan Benavides Nfx",
+    "date": "2025-10-16",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Martha Lucía Villamil Nfx",
+    "date": "2025-10-16",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Mariangel Pedroza Nfx",
+    "date": "2025-10-16",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Carlos Ortiz Nfx",
+    "date": "2025-10-16",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Orlando Suárez Nfx",
+    "date": "2025-10-16",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Nilson Molina Nfx",
+    "date": "2025-10-16",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Viviana García Nfx",
+    "date": "2025-10-17",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Henry Fontalvo Nfx",
+    "date": "2025-10-17",
+    "amount": 130000.0,
+    "service": "1 Mega Combo"
+  },
+  {
+    "phone": "Sara Argüello Nfx",
+    "date": "2025-10-17",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Sebastián Salinas Nfx",
+    "date": "2025-10-17",
+    "amount": 32000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Max)"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2025-10-17",
+    "amount": 35000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Karen Sánchez Nfx",
+    "date": "2025-10-17",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Javier Daza Nfx",
+    "date": "2025-10-17",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Jose Gonzalez Nfx",
+    "date": "2025-10-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Katherine Cuello 2 Nfx",
+    "date": "2025-10-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Bertha Gallego Nfx",
+    "date": "2025-10-18",
+    "amount": 34000.0,
+    "service": "1 Netflix 3 Pantallas"
+  },
+  {
+    "phone": "Daniela Fontecha Nfx",
+    "date": "2025-10-18",
+    "amount": 42000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Yisela Nfx",
+    "date": "2025-10-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2025-10-18",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Diego Vergara Rodríguez Nfx",
+    "date": "2025-10-18",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Luisa Suarez Nfx",
+    "date": "2025-10-18",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Juliana Rangel Nfx",
+    "date": "2025-10-18",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Diego mejia Nfx",
+    "date": "2025-10-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Dayana López Nfx",
+    "date": "2025-10-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marcos Cervantes Nfx",
+    "date": "2025-10-18",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Marly Rodríguez Nfx",
+    "date": "2025-10-19",
+    "amount": 32000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Prime)"
+  },
+  {
+    "phone": "Carolina Murillo Nfx",
+    "date": "2025-10-19",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Norys Pastrana Nfx",
+    "date": "2025-10-19",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Andrea Hoyos Nfx",
+    "date": "2025-10-19",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Kelly Marchena Nfx",
+    "date": "2025-10-19",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Victor Villanueva Nfx",
+    "date": "2025-10-20",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Arianis Pertuz Nfx",
+    "date": "2025-10-20",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Wilmer Mejía Nfx",
+    "date": "2025-10-20",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ángela Piedrahíta Nfx",
+    "date": "2025-10-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Laura Rodríguez Nfx",
+    "date": "2025-10-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luisa Palacio USA 3 Nfx",
+    "date": "2025-10-21",
+    "amount": 18000.0,
+    "service": "1 Netflix Privado 1 Pantalla"
+  },
+  {
+    "phone": "Luis Jiménez Nfx",
+    "date": "2025-10-21",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Manuela Osorio 3 Nfx",
+    "date": "2025-10-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Liceth Arias Nfx",
+    "date": "2025-10-21",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Lily López Nfx",
+    "date": "2025-10-21",
+    "amount": 35000.0,
+    "service": "1 YouTube 4 Meses"
+  },
+  {
+    "phone": "Stefany Goenaga Nfx",
+    "date": "2025-10-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Natalia Zuluaga Nfx",
+    "date": "2025-10-21",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Marlon Palacio Nfx",
+    "date": "2025-10-21",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Hilda Aguilar Nfx",
+    "date": "2025-10-22",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Laura Rodríguez Nfx",
+    "date": "2025-10-22",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Carolina Restrepo Nfx",
+    "date": "2025-10-22",
+    "amount": 26000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Gustavo Lozano Nfx",
+    "date": "2025-10-23",
+    "amount": 42000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 2 Pantallas, 1\nPrime 1 Pantalla"
+  },
+  {
+    "phone": "Leidy baron Nfx",
+    "date": "2025-10-23",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luz Cala Nfx",
+    "date": "2025-10-23",
+    "amount": 16000.0,
+    "service": "2 Crunchyroll"
+  },
+  {
+    "phone": "Isabel Regardiz Nfx",
+    "date": "2025-10-23",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Astrid Rodríguez Nfx",
+    "date": "2025-10-23",
+    "amount": 41000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 2 Pantallas, 1\nPrime 1 Pantalla"
+  },
+  {
+    "phone": "Christian Nfx",
+    "date": "2025-10-23",
+    "amount": 31000.0,
+    "service": "1 Combo Trío (Netflix, Max y Prime)"
+  },
+  {
+    "phone": "Veronica Loaiza Nfx",
+    "date": "2025-10-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Diana Rincón B Nfx",
+    "date": "2025-10-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Katherine Cuello 2 Nfx",
+    "date": "2025-10-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Darry Castro Nfx",
+    "date": "2025-10-24",
+    "amount": 40000.0,
+    "service": "1 Crunchyroll, 1 Disney+ 1 Pantalla, 1 Max 1\nPantalla, 1 Netflix Privado 1 Pantalla"
+  },
+  {
+    "phone": "Gail Brugés Nfx",
+    "date": "2025-10-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Manuel Sarmiento Nfx",
+    "date": "2025-10-24",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Yoider Nfx",
+    "date": "2025-10-25",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Andrés Gutiérrez Nfx",
+    "date": "2025-10-25",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Andelibeth 2",
+    "date": "2025-10-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Patricia Palencia 2 Nfx",
+    "date": "2025-10-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luz Puello Nfx",
+    "date": "2025-10-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Agustín Carreño nfx",
+    "date": "2025-10-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yoeric Prada Nfx",
+    "date": "2025-10-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Cristian Roa Nfx",
+    "date": "2025-10-26",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "JULIO CESAR ACOSTA Nfx",
+    "date": "2025-10-26",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Manuel Vega Nfx",
+    "date": "2025-10-26",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Sebastian Penagos Nfx",
+    "date": "2025-10-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marlenis Londoño Nfx",
+    "date": "2025-10-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ángela Piedrahíta Nfx",
+    "date": "2025-10-27",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2025-10-27",
+    "amount": 25000.0,
+    "service": "1 Max 1 Pantalla, 1 Prime Cuenta Completa"
+  },
+  {
+    "phone": "Jera Vera",
+    "date": "2025-10-27",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Mariana Ocampo Nfx",
+    "date": "2025-10-27",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Sergio Sánchez Nfx",
+    "date": "2025-10-27",
+    "amount": 28000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Johana Laverde Nfx",
+    "date": "2025-10-27",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Marly Rodríguez Nfx",
+    "date": "2025-10-27",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Haider Sánchez Nfx",
+    "date": "2025-10-27",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Lina Torres Nfx",
+    "date": "2025-10-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2025-10-28",
+    "amount": 15000.0,
+    "service": "1 Prime Cuenta Completa"
+  },
+  {
+    "phone": "Mr Nuñez Nfx",
+    "date": "2025-10-28",
+    "amount": 150000.0,
+    "service": "Cuenta Completa 3 Meses, 1 Prime Cuenta"
+  },
+  {
+    "phone": "Ricardo Samsung 2",
+    "date": "2025-10-28",
+    "amount": 37000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Ofelia Pua Nfx",
+    "date": "2025-10-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Diana Sierra 2 Nfx",
+    "date": "2025-10-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luis Daniel Rodriguez Nfx",
+    "date": "2025-10-28",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "William Mejía Nfx",
+    "date": "2025-10-28",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Natalia Fernández Nfx",
+    "date": "2025-10-28",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Javier forero Nfx",
+    "date": "2025-10-28",
+    "amount": 20000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Roxana Romero Nfx",
+    "date": "2025-10-29",
+    "amount": 26000.0,
+    "service": "1 Netflix 1 Pantalla, 1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Yilian Verdugo Nfx",
+    "date": "2025-10-29",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andreina Rico Nfx",
+    "date": "2025-10-29",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Carolina Restrepo Nfx",
+    "date": "2025-10-29",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Johan Nfx",
+    "date": "2025-10-29",
+    "amount": 46000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1 Netflix\n2 Pantallas, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Luis Anaya Nfx",
+    "date": "2025-10-29",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Jhon Ríos Nfx",
+    "date": "2025-10-30",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Carlos Cadena Nfx",
+    "date": "2025-10-30",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Ernesto de Moya Nfx",
+    "date": "2025-10-30",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Cristina Cantillo Nfx",
+    "date": "2025-10-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Henry Fontalvo Nfx",
+    "date": "2025-10-31",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Ricardo Martínez 2 Nfx",
+    "date": "2025-10-31",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Maria Ochoa Nfx",
+    "date": "2025-11-01",
+    "amount": 95000.0,
+    "service": "1 Netflix Cuenta Completa, 1 Paramount+ 1"
+  },
+  {
+    "phone": "Alex Bárcenas Nfx",
+    "date": "2025-11-01",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Camilo Cruz Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Liliana Durán Nfx",
+    "date": "2025-11-01",
+    "amount": 31000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Max)"
+  },
+  {
+    "phone": "Issac Baq Nfx",
+    "date": "2025-11-01",
+    "amount": 37000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Karencita Mda",
+    "date": "2025-11-01",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Yendri Romero Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Alejandra Chará Nfx",
+    "date": "2025-11-01",
+    "amount": 43000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Juan Carlos Orjuela Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Antonio Villalba",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Hector Rizo Nfx",
+    "date": "2025-11-01",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Gustavo Acevedo Rueda Nfx",
+    "date": "2025-11-01",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Esneider Amado Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Paredes Nfx",
+    "date": "2025-11-01",
+    "amount": 15000.0,
+    "service": "1 Crunchyroll, 1 Paramount+ 1 Pantalla"
+  },
+  {
+    "phone": "Fabián Carrillo Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Blanca Shirley Nfx",
+    "date": "2025-11-01",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Jisela Carpio Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Víctor Julio Vásquez Fernández Nfx",
+    "date": "2025-11-01",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Rafael Angulo Nfx",
+    "date": "2025-11-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Víctor Julio Vásquez Fernández Nfx",
+    "date": "2025-11-02",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Derly Nfx",
+    "date": "2025-11-02",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Ruben Coronado HuQui Nfx",
+    "date": "2025-11-02",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Andrea Angulo Nfx",
+    "date": "2025-11-02",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Claudia Cabrera Nfx",
+    "date": "2025-11-02",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Isabel Regardiz Nfx",
+    "date": "2025-11-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Judith Johanna Guillén Nfx",
+    "date": "2025-11-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luis Palomino Nfx",
+    "date": "2025-11-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Laura García Nfx",
+    "date": "2025-11-02",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2025-11-03",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Betty Orejuela Moreno Nfx",
+    "date": "2025-11-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jennifer Flaka Nfx",
+    "date": "2025-11-03",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Eliana Santiago Nfx",
+    "date": "2025-11-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Uriel Baute Nfx",
+    "date": "2025-11-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Heyler 5 Nfx",
+    "date": "2025-11-03",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "Wilman anguila Nfx",
+    "date": "2025-11-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Karen Angulo Nfx",
+    "date": "2025-11-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Víctor Julio Vásquez Fernández Nfx",
+    "date": "2025-11-03",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Manuela Jiménez Nfx",
+    "date": "2025-11-03",
+    "amount": 28000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Diana Jurado Nfx",
+    "date": "2025-11-03",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Marlon Palacio Nfx",
+    "date": "2025-11-03",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Carlos Pedroza Nfx",
+    "date": "2025-11-04",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Mireya Coy Nfx",
+    "date": "2025-11-04",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Sara Vásquez Nfx",
+    "date": "2025-11-04",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "William Sarmiento Nfx",
+    "date": "2025-11-04",
+    "amount": 26000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Luis Pérez Uac 2 Nfx",
+    "date": "2025-11-04",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Milton Cuadrado Flash Nfx",
+    "date": "2025-11-04",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Stefany Goenaga Nfx",
+    "date": "2025-11-04",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Lily López Nfx",
+    "date": "2025-11-05",
+    "amount": 27000.0,
+    "service": "1 Netflix 1 Pantalla, 1 Prime 1 Pantalla, 1 Vix"
+  },
+  {
+    "phone": "Karen Rocha Nfx",
+    "date": "2025-11-05",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Jhon Hernández Nfx",
+    "date": "2025-11-05",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Natalia Romero",
+    "date": "2025-11-05",
+    "amount": 16000.0,
+    "service": "1 Netflix Privado 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Fernández Nfx",
+    "date": "2025-11-05",
+    "amount": 37000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Yoryanis Nfx",
+    "date": "2025-11-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Enma Rosa Sarmiento Nfx",
+    "date": "2025-11-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Angie Ferrer Nfx",
+    "date": "2025-11-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Cuadro Nfx",
+    "date": "2025-11-06",
+    "amount": 26000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Hugo Xavier Nfx",
+    "date": "2025-11-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2025-11-06",
+    "amount": 42000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Nicol González Nfx",
+    "date": "2025-11-06",
+    "amount": 16000.0,
+    "service": "1 Spotify 2 Meses"
+  },
+  {
+    "phone": "Jaime Darío Aldana Nfx",
+    "date": "2025-11-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Himer Torres Nfx",
+    "date": "2025-11-06",
+    "amount": 21000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Daniel Rubiano Nfx",
+    "date": "2025-11-06",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "José Angel Nfx",
+    "date": "2025-11-06",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Jorge Arias Nfx",
+    "date": "2025-11-06",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Ricardo Martínez 2 Nfx",
+    "date": "2025-11-07",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nakis Marquez Nfx",
+    "date": "2025-11-07",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Yakelin Sánchez Nfx",
+    "date": "2025-11-07",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Ramón Torres TD",
+    "date": "2025-11-08",
+    "amount": 37000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Carolina Rayo Nfx",
+    "date": "2025-11-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Heidy Sarabia Castillo nfx",
+    "date": "2025-11-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Eliana Peñates Nfx",
+    "date": "2025-11-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juliana González Nfx",
+    "date": "2025-11-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Stiven Barón Nfx",
+    "date": "2025-11-08",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Nicolas NC Nfx",
+    "date": "2025-11-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jorge Pereira Nfx",
+    "date": "2025-11-08",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Stephany Nfx",
+    "date": "2025-11-09",
+    "amount": 20000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "José Angel Nfx",
+    "date": "2025-11-09",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "Joel Moscote Nfx",
+    "date": "2025-11-09",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Fernández Nfx",
+    "date": "2025-11-09",
+    "amount": 10000.0,
+    "service": "1 Paramount+ 1 Pantalla"
+  },
+  {
+    "phone": "Angie Mafla Nfx",
+    "date": "2025-11-09",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Carlos Martínez Nfx",
+    "date": "2025-11-09",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Leo Primo Alas bravas",
+    "date": "2025-11-09",
+    "amount": 10000.0,
+    "service": "1 Paramount+ 1 Pantalla"
+  },
+  {
+    "phone": "Adalberto Aragón Nfx",
+    "date": "2025-11-09",
+    "amount": 25000.0,
+    "service": "1 YouTube 3 meses"
+  },
+  {
+    "phone": "Alejandra Arias Nfx",
+    "date": "2025-11-09",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Laura Rodríguez Nfx",
+    "date": "2025-11-09",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Margarita Escop Nfx",
+    "date": "2025-11-09",
+    "amount": 17000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Javier forero Nfx",
+    "date": "2025-11-09",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Franklin Santiago López Nfx",
+    "date": "2025-11-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Marín Nfx",
+    "date": "2025-11-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Laurent Díaz Nfx",
+    "date": "2025-11-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yessi Bayona",
+    "date": "2025-11-10",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Agustín Carreño nfx",
+    "date": "2025-11-10",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Javier Vargas Nfx",
+    "date": "2025-11-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Keylin Rico B Nfx",
+    "date": "2025-11-10",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2025-11-11",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Fernández Nfx",
+    "date": "2025-11-11",
+    "amount": 10000.0,
+    "service": "1 Vix"
+  },
+  {
+    "phone": "Maria del pilar cavadia Nfx",
+    "date": "2025-11-11",
+    "amount": 11000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "ivan del toro Nfx",
+    "date": "2025-11-11",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Meraris Nfx",
+    "date": "2025-11-11",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "Angel González Nfx",
+    "date": "2025-11-11",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marcela 2 Nfx",
+    "date": "2025-11-11",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Vanessa 3b Nfx",
+    "date": "2025-11-12",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Felipe pachon Nfx",
+    "date": "2025-11-12",
+    "amount": 15000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Paola Naranjo Nfx",
+    "date": "2025-11-12",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Laura Parejo Nfx",
+    "date": "2025-11-12",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Stanlee Camargo Nfx",
+    "date": "2025-11-12",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Lina Zuleta Nfx",
+    "date": "2025-11-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jaime Iván Gáfaro Martínez Nfx",
+    "date": "2025-11-13",
+    "amount": 10000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "Wendy Lisette Nfx",
+    "date": "2025-11-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Tío Ger",
+    "date": "2025-11-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Rosa Salcedo Nfx",
+    "date": "2025-11-13",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Mary Tobón Nfx",
+    "date": "2025-11-13",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Juan Jose Senior Nfx",
+    "date": "2025-11-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Veronica Loaiza Nfx",
+    "date": "2025-11-13",
+    "amount": 12000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Marilin Vanegas Nfx",
+    "date": "2025-11-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andreina Rico Nfx",
+    "date": "2025-11-13",
+    "amount": 32000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Max)"
+  },
+  {
+    "phone": "Germán Junior Meza Valera Nfx",
+    "date": "2025-11-13",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Victoria Fontalvo Nfx",
+    "date": "2025-11-13",
+    "amount": 28000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Felipe Mejía Nfx",
+    "date": "2025-11-13",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Jorge Mda",
+    "date": "2025-11-14",
+    "amount": 38000.0,
+    "service": "1 Netflix 1 Pantalla 3 Meses"
+  },
+  {
+    "phone": "Jorge Menco Nfx",
+    "date": "2025-11-14",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Mr Nuñez Nfx",
+    "date": "2025-11-14",
+    "amount": 35000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Yiniris Ávila Nfx",
+    "date": "2025-11-14",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leo Primo Alas bravas",
+    "date": "2025-11-14",
+    "amount": 20000.0,
+    "service": "2 YouTube 1 Mes"
+  },
+  {
+    "phone": "Shawnny Gómez Nfx",
+    "date": "2025-11-14",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yisell Nfx",
+    "date": "2025-11-14",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nelsy Mendoza Nfx",
+    "date": "2025-11-15",
+    "amount": 21000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Luis Alberto Calderón Nfx",
+    "date": "2025-11-15",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Kerwin Herrera",
+    "date": "2025-11-15",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Jenoba María Nfx",
+    "date": "2025-11-15",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Angelys Villanueva Nfx",
+    "date": "2025-11-15",
+    "amount": 32000.0,
+    "service": "1 Netflix 2 Pantallas, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Meraris Nfx",
+    "date": "2025-11-15",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andres Otalora Nfx",
+    "date": "2025-11-15",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Jonatan Benavides Nfx",
+    "date": "2025-11-16",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Jose Antonio Lora Nfx",
+    "date": "2025-11-16",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Hebert Lerma 2 Nfx",
+    "date": "2025-11-16",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Gloria Suarez Nfx",
+    "date": "2025-11-16",
+    "amount": 42000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Stiven Barón Nfx",
+    "date": "2025-11-16",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "María Angélica Vásquez Nfx",
+    "date": "2025-11-16",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Luis Ruiz Primo",
+    "date": "2025-11-16",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Yenifer Quintana Nfx",
+    "date": "2025-11-16",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Danna Guillén Nfx",
+    "date": "2025-11-16",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Andrés Hernández Nfx",
+    "date": "2025-11-16",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Sebastián Salinas Nfx",
+    "date": "2025-11-17",
+    "amount": 32000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Max)"
+  },
+  {
+    "phone": "Andrés Hernández Nfx",
+    "date": "2025-11-17",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nicolás Nfx",
+    "date": "2025-11-17",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2025-11-17",
+    "amount": 35000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Henry Fontalvo Nfx",
+    "date": "2025-11-17",
+    "amount": 130000.0,
+    "service": "1 Mega Combo"
+  },
+  {
+    "phone": "Juan Carlos Orjuela Nfx",
+    "date": "2025-11-17",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Samira cossio Nfx",
+    "date": "2025-11-17",
+    "amount": 75000.0,
+    "service": "1 Netflix 1 Pantalla Priv 6 Meses"
+  },
+  {
+    "phone": "Rubén Darío Ferreira Nfx",
+    "date": "2025-11-17",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Viviana García Nfx",
+    "date": "2025-11-17",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Elkin Sánchez Nfx",
+    "date": "2025-11-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Guillermo Esquibel Nfx",
+    "date": "2025-11-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Xiu Ling Correa Nfx",
+    "date": "2025-11-18",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Nilson Molina Nfx",
+    "date": "2025-11-18",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Bertha Gallego Nfx",
+    "date": "2025-11-18",
+    "amount": 36000.0,
+    "service": "1 Netflix 3 Pantallas"
+  },
+  {
+    "phone": "Diego Vergara Rodríguez Nfx",
+    "date": "2025-11-18",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Juliana Rangel Nfx",
+    "date": "2025-11-18",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Marcos Cervantes Nfx",
+    "date": "2025-11-18",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Norany Polo Nfx",
+    "date": "2025-11-18",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Daniela Fontecha Nfx",
+    "date": "2025-11-18",
+    "amount": 42000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Nathaly Bayona Nfx",
+    "date": "2025-11-18",
+    "amount": 32000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Prime)"
+  },
+  {
+    "phone": "Katherine Cuello 2 Nfx",
+    "date": "2025-11-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Mary Perez Nfx",
+    "date": "2025-11-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Kerwin Herrera",
+    "date": "2025-11-18",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juan Chavarria Nfx",
+    "date": "2025-11-18",
+    "amount": 10000.0,
+    "service": "1 Spotify 1 Mes"
+  },
+  {
+    "phone": "Carlos Parodi Nfx",
+    "date": "2025-11-19",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Carolina Murillo Nfx",
+    "date": "2025-11-19",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Eliana Peñates Nfx",
+    "date": "2025-11-19",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Luisa Cavadia Nfx",
+    "date": "2025-11-19",
+    "amount": 21000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Vanessa Rodríguez2 Nfx",
+    "date": "2025-11-20",
+    "amount": 10000.0,
+    "service": "1 Paramount+ 1 Pantalla"
+  },
+  {
+    "phone": "Arianis Pertuz Nfx",
+    "date": "2025-11-20",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Victor Villanueva Nfx",
+    "date": "2025-11-20",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Ángela Piedrahíta Nfx",
+    "date": "2025-11-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Luisa Palacio USA 3 Nfx",
+    "date": "2025-11-21",
+    "amount": 18000.0,
+    "service": "1 Netflix Privado 1 Pantalla"
+  },
+  {
+    "phone": "Liceth Arias Nfx",
+    "date": "2025-11-21",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Yoleidis Fonseca Nfx",
+    "date": "2025-11-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Juan Diego Rocha Nfx",
+    "date": "2025-11-21",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Guillermo Esquibel Nfx",
+    "date": "2025-11-21",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Jaiver Martínez Nfx",
+    "date": "2025-11-21",
+    "amount": 22000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Irina Miranda Nfx",
+    "date": "2025-11-22",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Dania Barreto Nfx",
+    "date": "2025-11-22",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Lusianna Nfx",
+    "date": "2025-11-22",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Wilmer Mejía Nfx",
+    "date": "2025-11-22",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Valeria Giraldo Nfx",
+    "date": "2025-11-22",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Lissy Nfx",
+    "date": "2025-11-22",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Barón Nfx",
+    "date": "2025-11-23",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gustavo Lozano Nfx",
+    "date": "2025-11-23",
+    "amount": 42000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Netflix 2 Pantallas, 1\nPrime 1 Pantalla"
+  },
+  {
+    "phone": "Christian Nfx",
+    "date": "2025-11-23",
+    "amount": 31000.0,
+    "service": "1 Combo Trío (Netflix, Max y Prime)"
+  },
+  {
+    "phone": "Aliris Nfx",
+    "date": "2025-11-23",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Valentina Hernández Espitia Nfx",
+    "date": "2025-11-23",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Norany Polo Nfx",
+    "date": "2025-11-23",
+    "amount": 10000.0,
+    "service": "1 Crunchyroll"
+  },
+  {
+    "phone": "Cristian Roa Nfx",
+    "date": "2025-11-23",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Luz Cala Nfx",
+    "date": "2025-11-23",
+    "amount": 16000.0,
+    "service": "2 Crunchyroll"
+  },
+  {
+    "phone": "Marlon Palacio Nfx",
+    "date": "2025-11-23",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Luz Cala Nfx",
+    "date": "2025-11-23",
+    "amount": 14000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Felipe Mejía Nfx",
+    "date": "2025-11-23",
+    "amount": 28000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Diana Rincón B Nfx",
+    "date": "2025-11-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Mr Nuñez Nfx",
+    "date": "2025-11-24",
+    "amount": 40000.0,
+    "service": "1 Crunchyroll 4 Meses"
+  },
+  {
+    "phone": "María Cuello 2 Nfx",
+    "date": "2025-11-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Veronica Loaiza Nfx",
+    "date": "2025-11-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gail Brugés Nfx",
+    "date": "2025-11-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Carlos Pedroza Nfx",
+    "date": "2025-11-24",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yoider Nfx",
+    "date": "2025-11-25",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Agustín Carreño nfx",
+    "date": "2025-11-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Patricia Palencia 2 Nfx",
+    "date": "2025-11-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yoeric Prada Nfx",
+    "date": "2025-11-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Wilman Guerrero Robles Nfx",
+    "date": "2025-11-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Samantha Martínez Nfx",
+    "date": "2025-11-25",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Andrés Gutiérrez Nfx",
+    "date": "2025-11-25",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Stefany Goenaga Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Roberto Castro Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Isabel Murillo Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidys vizcaíno Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Fernando Alonso Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Marlon Palacio Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Asly Nfx",
+    "date": "2025-11-26",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Jose Paredes Nfx",
+    "date": "2025-11-26",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Luis Ruiz Primo",
+    "date": "2025-11-26",
+    "amount": 38000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Sergio Sánchez Nfx",
+    "date": "2025-11-27",
+    "amount": 38000.0,
+    "service": "1 DirecTV"
+  },
+  {
+    "phone": "Wilman Guerrero Robles Nfx",
+    "date": "2025-11-27",
+    "amount": 25000.0,
+    "service": "1 Spotify 3 Meses"
+  },
+  {
+    "phone": "Juan Pablo Torres Nfx",
+    "date": "2025-11-27",
+    "amount": 25000.0,
+    "service": "1 Max 1 Pantalla, 1 Prime Cuenta Completa"
+  },
+  {
+    "phone": "Johana Laverde Nfx",
+    "date": "2025-11-27",
+    "amount": 36000.0,
+    "service": "1 Combo #1"
+  },
+  {
+    "phone": "Sara Vásquez Nfx",
+    "date": "2025-11-27",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Sandra Coronado Nfx",
+    "date": "2025-11-27",
+    "amount": 27000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Ricardo Samsung 2",
+    "date": "2025-11-28",
+    "amount": 37000.0,
+    "service": "1 Netflix Cuenta Completa"
+  },
+  {
+    "phone": "Marcos Vidrioautos Nfx",
+    "date": "2025-11-28",
+    "amount": 15000.0,
+    "service": "1 Prime Cuenta Completa"
+  },
+  {
+    "phone": "Luis Daniel Rodriguez Nfx",
+    "date": "2025-11-28",
+    "amount": 25000.0,
+    "service": "1 ChatGPT"
+  },
+  {
+    "phone": "Diana Sierra 2 Nfx",
+    "date": "2025-11-28",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Javier forero Nfx",
+    "date": "2025-11-28",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Stefany Goenaga Nfx",
+    "date": "2025-11-28",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Yilian Verdugo Nfx",
+    "date": "2025-11-29",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Roxana Romero Nfx",
+    "date": "2025-11-29",
+    "amount": 26000.0,
+    "service": "1 Netflix 1 Pantalla, 1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Lucero Nfx",
+    "date": "2025-11-29",
+    "amount": 28000.0,
+    "service": "1 Netflix 2 Pantallas"
+  },
+  {
+    "phone": "Andrea Martínez Nfx",
+    "date": "2025-11-29",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Carolina Restrepo Nfx",
+    "date": "2025-11-30",
+    "amount": 32000.0,
+    "service": "1 Netflix 2 Pantallas, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Ernesto de Moya Nfx",
+    "date": "2025-11-30",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Jhon Ríos Nfx",
+    "date": "2025-11-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Nelsy Rentería Nfx",
+    "date": "2025-11-30",
+    "amount": 20000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Nakis Marquez Nfx",
+    "date": "2025-11-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Yurany Ordóñez Nfx",
+    "date": "2025-11-30",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Liliana Durán Nfx",
+    "date": "2025-12-01",
+    "amount": 31000.0,
+    "service": "1 Combo Trío (Netflix, Disney+ y Max)"
+  },
+  {
+    "phone": "Hector Rizo Nfx",
+    "date": "2025-12-01",
+    "amount": 42000.0,
+    "service": "1 Combo #2"
+  },
+  {
+    "phone": "Katherine Cuello 2 Nfx",
+    "date": "2025-12-01",
+    "amount": 22000.0,
+    "service": "1 Netflix 1 Pantalla, 1 Vix"
+  },
+  {
+    "phone": "Maria Ochoa Nfx",
+    "date": "2025-12-01",
+    "amount": 95000.0,
+    "service": "1 Netflix Cuenta Completa, 1 Paramount+ 1"
+  },
+  {
+    "phone": "Andelibeth 2",
+    "date": "2025-12-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Isabel Regardiz Nfx",
+    "date": "2025-12-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Ilder Medina Nfx",
+    "date": "2025-12-01",
+    "amount": 21000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Paola sarmiento Nfx",
+    "date": "2025-12-01",
+    "amount": 56000.0,
+    "service": "1 Disney+ 1 Pantalla 2 Meses, 1 Netflix 1\nPantalla 2 Meses, 1 Prime 1 Pantalla 2 Meses"
+  },
+  {
+    "phone": "Alejandra Chará Nfx",
+    "date": "2025-12-01",
+    "amount": 22000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Karencita Mda",
+    "date": "2025-12-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Norany Polo Nfx",
+    "date": "2025-12-01",
+    "amount": 10000.0,
+    "service": "1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Marlenis Londoño Nfx",
+    "date": "2025-12-01",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Kevin Pérez Nfx",
+    "date": "2025-12-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Claudia Cabrera Nfx",
+    "date": "2025-12-02",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Laura García Nfx",
+    "date": "2025-12-02",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Max)"
+  },
+  {
+    "phone": "Carlos Cadena Nfx",
+    "date": "2025-12-02",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Derly Nfx",
+    "date": "2025-12-02",
+    "amount": 25000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla"
+  },
+  {
+    "phone": "Duber Pianetta Nfx",
+    "date": "2025-12-02",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Paola Atala Nfx",
+    "date": "2025-12-02",
+    "amount": 21000.0,
+    "service": "1 Combo Dúo (Netflix y Prime)"
+  },
+  {
+    "phone": "Luis Palomino Nfx",
+    "date": "2025-12-02",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Betty Orejuela Moreno Nfx",
+    "date": "2025-12-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Leidy Bohórquez Nfx",
+    "date": "2025-12-03",
+    "amount": 11000.0,
+    "service": "1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Luis Anaya Nfx",
+    "date": "2025-12-03",
+    "amount": 25000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Norys Pastrana Nfx",
+    "date": "2025-12-03",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Jose Merlano Nfx",
+    "date": "2025-12-03",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Amalia Rentería Nfx",
+    "date": "2025-12-03",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Gustavo Acevedo Rueda Nfx",
+    "date": "2025-12-03",
+    "amount": 26000.0,
+    "service": "1 Combo Dúo (Netflix y Disney+)"
+  },
+  {
+    "phone": "Henry Fontalvo Nfx",
+    "date": "2025-12-03",
+    "amount": 10000.0,
+    "service": "1 YouTube 1 Mes"
+  },
+  {
+    "phone": "Mireya Coy Nfx",
+    "date": "2025-12-04",
+    "amount": 20000.0,
+    "service": "1 YouTube 2 Meses"
+  },
+  {
+    "phone": "Luis Pérez Uac 2 Nfx",
+    "date": "2025-12-04",
+    "amount": 15000.0,
+    "service": "1 Disney+ 1 Pantalla"
+  },
+  {
+    "phone": "Luz Cala Nfx",
+    "date": "2025-12-04",
+    "amount": 45000.0,
+    "service": "1 Disney+ 1 Pantalla, 1 Max 1 Pantalla, 1 Netflix\n2 Pantallas, 1 Prime 1 Pantalla"
+  },
+  {
+    "phone": "Angie Ferrer Nfx",
+    "date": "2025-12-05",
+    "amount": 16000.0,
+    "service": "1 Netflix 1 Pantalla"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-01-18",
+    "amount": 8000.0,
+    "service": "2 YouTube"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-01-20",
+    "amount": 8000.0,
+    "service": "3 meses de spotify"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-01-20",
+    "amount": 80000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-01-22",
+    "amount": 72000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-01-23",
+    "amount": 20000.0,
+    "service": "1 Disney"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-01-28",
+    "amount": 40000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-01-28",
+    "amount": 15000.0,
+    "service": "5 YouTube"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-01-29",
+    "amount": 430000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-02-01",
+    "amount": 400000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-02-01",
+    "amount": 37000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-02-02",
+    "amount": 48000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-02-02",
+    "amount": 15500.0,
+    "service": "2 prime y 1 Vix"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-02-02",
+    "amount": 15000.0,
+    "service": "1 Prime y Disney estándar"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-02-03",
+    "amount": 350000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-02-04",
+    "amount": 50000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-02-07",
+    "amount": 200000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-02-10",
+    "amount": 23000.0,
+    "service": "Paquetes de Spotify y de YouTube"
+  },
+  {
+    "phone": "Fabián Mendez proveedor",
+    "date": "2025-02-10",
+    "amount": 59000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-02-10",
+    "amount": 19000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Mendez proveedor",
+    "date": "2025-02-11",
+    "amount": 50000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-02-12",
+    "amount": 175000.0,
+    "service": "7 Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-02-12",
+    "amount": 3000.0,
+    "service": "Plex 1 pantalla"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-02-12",
+    "amount": 17000.0,
+    "service": "DGO"
+  },
+  {
+    "phone": "Crédito Bancolombia",
+    "date": "2025-02-12",
+    "amount": 130000.0,
+    "service": "Crédito Bancolombia"
+  },
+  {
+    "phone": "Jose chepe",
+    "date": "2025-02-14",
+    "amount": 1000000.0,
+    "service": "Lote"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-02-20",
+    "amount": 17000.0,
+    "service": "DGO"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-02-20",
+    "amount": 60000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-02-22",
+    "amount": 28000.0,
+    "service": "2 YouTube x3 meses"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-02-24",
+    "amount": 26000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-02-25",
+    "amount": 20000.0,
+    "service": "Disney"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-02-27",
+    "amount": 16000.0,
+    "service": "2 Prime"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-02-28",
+    "amount": 400000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-03-01",
+    "amount": 200000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-06",
+    "amount": 53000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-03-07",
+    "amount": 23000.0,
+    "service": "1 Prime, 1 Disney"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-09",
+    "amount": 53000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-03-11",
+    "amount": 30000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-03-12",
+    "amount": 19000.0,
+    "service": "Paquete de YouTube y Spotify"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-03-13",
+    "amount": 18000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-03-15",
+    "amount": 35000.0,
+    "service": "3 prime 1 Disney"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-03-17",
+    "amount": 10000.0,
+    "service": "Appletv 3 meses"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-03-17",
+    "amount": 13000.0,
+    "service": "3 meses Spotify"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-03-18",
+    "amount": 375000.0,
+    "service": "15 Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-19",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-03-20",
+    "amount": 40000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-03-21",
+    "amount": 22000.0,
+    "service": "3 meses Apple TV"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-03-23",
+    "amount": 20000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-23",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-24",
+    "amount": 30000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-03-24",
+    "amount": 29000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-03-25",
+    "amount": 10000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-26",
+    "amount": 30000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-03-27",
+    "amount": 160000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-03-31",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-04-01",
+    "amount": 24000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-02",
+    "amount": 15000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-07",
+    "amount": 30000.0,
+    "service": "Gasto 8425010041"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-04-07",
+    "amount": 600000.0,
+    "service": "24 Netflix"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-04-08",
+    "amount": 10000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-04-08",
+    "amount": 12000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-10",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-04-11",
+    "amount": 20000.0,
+    "service": "Disney"
+  },
+  {
+    "phone": "Crédito Bancolombia",
+    "date": "2025-04-13",
+    "amount": 130000.0,
+    "service": "Crédito Bancolombia"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-14",
+    "amount": 17000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-04-14",
+    "amount": 36000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-04-15",
+    "amount": 12000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-04-15",
+    "amount": 10000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-04-16",
+    "amount": 39000.0,
+    "service": "Gasto 16425164439"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-17",
+    "amount": 10000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-04-17",
+    "amount": 525000.0,
+    "service": "21 Netflix"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-04-17",
+    "amount": 40500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-21",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-04-21",
+    "amount": 10000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-04-21",
+    "amount": 36000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-04-24",
+    "amount": 18500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-24",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-04-24",
+    "amount": 14000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-04-26",
+    "amount": 33000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-04-28",
+    "amount": 41500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-04-28",
+    "amount": 27000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-04-30",
+    "amount": 20000.0,
+    "service": "2 Apple TV"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-02",
+    "amount": 20000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-05-05",
+    "amount": 30000.0,
+    "service": "Recarga sir"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-06",
+    "amount": 29000.0,
+    "service": "Prime"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-07",
+    "amount": 29000.0,
+    "service": "Disney y otro servicios"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-05-09",
+    "amount": 300000.0,
+    "service": "Abono Netflix"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-05-09",
+    "amount": 36000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-05-10",
+    "amount": 100000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-05-12",
+    "amount": 20500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-05-12",
+    "amount": 100000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-12",
+    "amount": 30000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-05-12",
+    "amount": 22000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-05-14",
+    "amount": 150000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-05-15",
+    "amount": 150000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-17",
+    "amount": 25000.0,
+    "service": "2 prime 1 Disney"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-05-17",
+    "amount": 90000.0,
+    "service": "Pago deuda Smart"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-19",
+    "amount": 25000.0,
+    "service": "1 Disney 3 meses y 1 prime"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-05-19",
+    "amount": 12000.0,
+    "service": "3 meses de Spotify"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-24",
+    "amount": 20000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-05-28",
+    "amount": 5000.0,
+    "service": "3 meses Apple TV"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-05-28",
+    "amount": 48000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-05-28",
+    "amount": 31000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-29",
+    "amount": 40000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-05-30",
+    "amount": 15000.0,
+    "service": "Youtubex6"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-05-30",
+    "amount": 18000.0,
+    "service": "Disney"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-05-31",
+    "amount": 12000.0,
+    "service": "3 YouTube de 1 mes"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-06-04",
+    "amount": 10000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Harold granadosn",
+    "date": "2025-06-04",
+    "amount": 10000.0,
+    "service": "2 prime"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-06-09",
+    "amount": 495000.0,
+    "service": "Deuda de años"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-06-11",
+    "amount": 38500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-06-12",
+    "amount": 33000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-06-16",
+    "amount": 54000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-06-16",
+    "amount": 19500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Crédito Bancolombia",
+    "date": "2025-06-17",
+    "amount": 129000.0,
+    "service": "Crédito de Bancolombia"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-06-18",
+    "amount": 10000.0,
+    "service": "Iptv"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-06-18",
+    "amount": 31000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-06-20",
+    "amount": 500000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-06-22",
+    "amount": 37000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-06-22",
+    "amount": 24000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-06-24",
+    "amount": 112000.0,
+    "service": "4 Netflix"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-06-25",
+    "amount": 62500.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-06-27",
+    "amount": 505000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-06-28",
+    "amount": 25000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-07-02",
+    "amount": 22000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-07-03",
+    "amount": 46000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-07-06",
+    "amount": 10000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-07-06",
+    "amount": 55000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-07-07",
+    "amount": 480000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-07-14",
+    "amount": 40000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Crédito Bancolombia",
+    "date": "2025-07-14",
+    "amount": 130000.0,
+    "service": "Crédito"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-07-15",
+    "amount": 34000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Mendez proveedor",
+    "date": "2025-07-15",
+    "amount": 9000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-07-16",
+    "amount": 265000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-07-18",
+    "amount": 46000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-07-20",
+    "amount": 28000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-07-21",
+    "amount": 12000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Serverprem",
+    "date": "2025-07-24",
+    "amount": 8000.0,
+    "service": "1 año Crunchy"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-07-29",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-07-30",
+    "amount": 15000.0,
+    "service": "Steaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-07-31",
+    "amount": 15000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-05",
+    "amount": 32000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-08-10",
+    "amount": 351000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-08-11",
+    "amount": 39000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-08-13",
+    "amount": 134000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-08-14",
+    "amount": 155000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-14",
+    "amount": 8000.0,
+    "service": "Prime"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-17",
+    "amount": 20000.0,
+    "service": "Plataforma"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-08-18",
+    "amount": 285000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Crédito Bancolombia",
+    "date": "2025-08-18",
+    "amount": 130000.0,
+    "service": "Crédito"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-18",
+    "amount": 28000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Fenix Digital",
+    "date": "2025-08-20",
+    "amount": 6000.0,
+    "service": "Spoti"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-21",
+    "amount": 10000.0,
+    "service": "Iptv"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-23",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-08-24",
+    "amount": 35000.0,
+    "service": "Spotify"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-08-25",
+    "amount": 325000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-08-26",
+    "amount": 9000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-08-27",
+    "amount": 35000.0,
+    "service": "Spotify 3 meses"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-09-06",
+    "amount": 32000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-09-08",
+    "amount": 30000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-09-09",
+    "amount": 245000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-09-15",
+    "amount": 50000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-09-18",
+    "amount": 32000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-09-21",
+    "amount": 25000.0,
+    "service": "Recarga de página"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-09-24",
+    "amount": 20000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Fabián Mendez proveedor",
+    "date": "2025-09-26",
+    "amount": 25000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-09-27",
+    "amount": 21000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-01",
+    "amount": 20000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-10-04",
+    "amount": 925000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-06",
+    "amount": 30000.0,
+    "service": "Recarga pagina"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-10-06",
+    "amount": 12000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-10",
+    "amount": 30000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-11",
+    "amount": 20000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Alex Rojas Socio Netflix",
+    "date": "2025-10-11",
+    "amount": 15000.0,
+    "service": "YouTube x4 meses"
+  },
+  {
+    "phone": "Esteban Proveedor Spdc2",
+    "date": "2025-10-11",
+    "amount": 10000.0,
+    "service": "YouTube x4 meses"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-10-15",
+    "amount": 125000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-10-15",
+    "amount": 39000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-18",
+    "amount": 30000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Alex Rojas Socio Netflix",
+    "date": "2025-10-19",
+    "amount": 14000.0,
+    "service": "Steaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-10-21",
+    "amount": 50000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Pedagoguito",
+    "date": "2025-10-23",
+    "amount": 200000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Alex Rojas Socio Netflix",
+    "date": "2025-10-23",
+    "amount": 53000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-10-23",
+    "amount": 15000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-24",
+    "amount": 15000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-28",
+    "amount": 20000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-10-31",
+    "amount": 31000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-10-31",
+    "amount": 11000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Alex Rojas Socio Netflix",
+    "date": "2025-11-01",
+    "amount": 10000.0,
+    "service": "YouTube x2"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-01",
+    "amount": 20000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Alex Rojas Socio Netflix",
+    "date": "2025-11-03",
+    "amount": 65000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-11-05",
+    "amount": 115000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-09",
+    "amount": 48000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-11-09",
+    "amount": 12000.0,
+    "service": "Spoti x3 meses"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-11-11",
+    "amount": 22000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-11-12",
+    "amount": 990000.0,
+    "service": "30 Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-13",
+    "amount": 49000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-14",
+    "amount": 10000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-11-14",
+    "amount": 50000.0,
+    "service": "2 Disney"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-11-18",
+    "amount": 25000.0,
+    "service": "Disney"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-11-18",
+    "amount": 150000.0,
+    "service": "5 Netflix"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-19",
+    "amount": 20000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-11-20",
+    "amount": 25000.0,
+    "service": "Disney"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-11-22",
+    "amount": 25000.0,
+    "service": "Disney"
+  },
+  {
+    "phone": "Angie Proveedora",
+    "date": "2025-11-24",
+    "amount": 34000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-25",
+    "amount": 20000.0,
+    "service": "Recarga página"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-11-25",
+    "amount": 30000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-11-26",
+    "amount": 25000.0,
+    "service": "Dgo"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-11-27",
+    "amount": 90000.0,
+    "service": "Netflix"
+  },
+  {
+    "phone": "Fabián Méndez Proveedor",
+    "date": "2025-11-27",
+    "amount": 36000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Cuentas URBAN",
+    "date": "2025-11-28",
+    "amount": 12000.0,
+    "service": "Spotify x3 meses"
+  },
+  {
+    "phone": "Sir Premium",
+    "date": "2025-11-29",
+    "amount": 25000.0,
+    "service": "Recarga plataforma"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-11-29",
+    "amount": 23000.0,
+    "service": "Dgo"
+  },
+  {
+    "phone": "Jonathan FOX MC GREEN",
+    "date": "2025-12-01",
+    "amount": 25000.0,
+    "service": "Disney premium"
+  },
+  {
+    "phone": "Alex Rojas Socio Netflix",
+    "date": "2025-12-03",
+    "amount": 35000.0,
+    "service": "Streaming"
+  },
+  {
+    "phone": "Óscar Blanco Socio Netflix",
+    "date": "2025-12-03",
+    "amount": 82000.0,
+    "service": "Streaming’"
+  },
+  {
+    "phone": "Andrés Proveedor Net",
+    "date": "2025-12-04",
+    "amount": 90000.0,
+    "service": "3 Netflix"
+  }
+]
