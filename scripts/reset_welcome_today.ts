@@ -25,6 +25,9 @@ async function main() {
         const result = await prisma.client.updateMany({
             where: {
                 welcomeSent: true,
+                updatedAt: {
+                    gte: today // Only reset if they were touched (marked true) TODAY
+                },
                 transactions: {
                     some: {
                         fecha_inicio: {
