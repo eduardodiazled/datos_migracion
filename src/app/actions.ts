@@ -1685,41 +1685,48 @@ export async function verifyLoginCode(phone: string, code: string) {
     try {
         const cleanPhone = phone.replace(/\D/g, '')
 
-        // Find Client (Again)
+        // Find ALL clients with this phone number (handling duplicates)
         const searchSuffix = cleanPhone.slice(-6)
         const possibleClients = await prisma.client.findMany({
             where: { celular: { contains: searchSuffix } }
         })
-        const client = possibleClients.find(c => {
+
+        // Filter strictly by phone digits (to avoid false suffix matches)
+        const exactMatches = possibleClients.filter(c => {
             const dbClean = c.celular.replace(/\D/g, '')
             return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
         })
 
-        if (!client) return { success: false, message: 'Cliente no encontrado' }
+        if (exactMatches.length === 0) return { success: false, message: 'Cliente no encontrado' }
 
-        // Verify Code
         const inputCode = code.trim()
-        const storedCode = client.otpCode?.trim()
 
-        if (storedCode !== inputCode) {
-            console.log(`⚠️ OTP Mismatch for ${client.nombre}. Input: '${inputCode}' vs Stored: '${storedCode}'`)
-            return { success: false, message: 'Código incorrecto' }
+        // Scan ALL matches to see if ANY has the correct code
+        // This fixes the issue where Client A has the code but we checked Client B
+        const validClient = exactMatches.find(c => {
+            if (!c.otpCode) return false
+            if (c.otpCode.trim() !== inputCode) return false
+            if (c.otpExpires && new Date() > c.otpExpires) return false // Ignore expired
+            return true
+        })
+
+        if (!validClient) {
+            console.log(`⚠️ OTP Failed. Checked ${exactMatches.length} candidates. Input: ${inputCode}`)
+            return { success: false, message: 'Código incorrecto o expirado' }
         }
 
-        if (client.otpExpires && new Date() > client.otpExpires) {
-            return { success: false, message: 'Código expirado. Solicita uno nuevo.' }
-        }
-
-        // Clear Code (One-time use)
+        // Success! Log in this specific client
+        // Clear Code
         await prisma.client.update({
-            where: { celular: client.celular },
+            where: { id: validClient.id }, // Use ID to be precise
             data: { otpCode: null, otpExpires: null }
         })
 
-        return { success: true, valid: true }
-    } catch (e) {
+        return { success: true, valid: true, clientId: validClient.id }
+
+    } catch (e: any) {
         console.error('Verify OTP Error', e)
-        return { success: false, message: 'Error de verificación' }
+        return { success: false, message: `Error: ${e.message || 'Desconocido'}` }
     }
 }
 
