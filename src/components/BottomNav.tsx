@@ -16,8 +16,8 @@ export function BottomNav() {
     ]
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/5 pb-safe">
-            <div className="flex justify-around items-center h-16 px-2">
+        <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-slate-950/90 backdrop-blur-xl border-t border-white/5 pb-safe env(safe-area-inset-bottom) w-full shadow-2xl">
+            <div className="flex justify-around items-center h-[72px] px-2 w-full">
                 {navItems.map((item) => {
                     const Icon = item.icon
                     const isActive = pathname === item.href
@@ -27,13 +27,13 @@ export function BottomNav() {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`flex flex-col items-center justify-center w-16 h-full space-y-1 transition-colors ${isActive
+                                className={`flex flex-col items-center justify-center w-20 h-full space-y-1 transition-colors ${isActive
                                     ? 'text-emerald-400'
                                     : 'text-slate-500 hover:text-slate-300'
                                     }`}
                             >
-                                <Icon size={26} strokeWidth={isActive ? 2.5 : 2} />
-                                <span className="text-[10px] font-bold">Ventas</span>
+                                <Icon size={30} strokeWidth={isActive ? 2.5 : 2} />
+                                <span className="text-xs font-bold">Ventas</span>
                             </Link>
                         )
                     }
@@ -47,7 +47,8 @@ export function BottomNav() {
                                 : 'text-slate-500 hover:text-slate-300'
                                 }`}
                         >
-                            <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                            <Icon size={26} strokeWidth={isActive ? 2.5 : 2} />
+                            {isActive && <span className="text-[10px] font-medium animate-fade-in">{item.name}</span>}
                         </Link>
                     )
                 })}

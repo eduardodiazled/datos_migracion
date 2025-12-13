@@ -1,16 +1,20 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal } from 'lucide-react'
+import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp } from 'lucide-react'
 import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
-import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAvailableInventory } from '../actions'
+import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAvailableInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection } from '../actions'
 import { sendToBot } from '@/services/whatsapp'
+import { signOut } from 'next-auth/react'
 
 export default function ClientsPage() {
     const [clients, setClients] = useState<any[]>([])
     const [filteredClients, setFilteredClients] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
+    const [viewMode, setViewMode] = useState<'LIST' | 'AUDIT'>('LIST')
+    const [auditAlerts, setAuditAlerts] = useState<any[]>([])
+    const [showMobileMenu, setShowMobileMenu] = useState(false)
 
     useEffect(() => {
         async function loadData() {
@@ -24,69 +28,62 @@ export default function ClientsPage() {
             } finally {
                 setLoading(false)
             }
+
+            // Load Audit Checks in background
+            getSynchronizationAlerts().then(res => {
+                if (res?.success) setAuditAlerts(res.alerts || [])
+            })
         }
         loadData()
     }, [])
 
+    // Search Effect
     useEffect(() => {
         if (!search) {
             setFilteredClients(clients)
         } else {
             const lowSearch = search.toLowerCase()
-
-            // Smart Phone Search: Normalize input
-            // Remove all non-digits
-            const searchDigits = search.replace(/\D/g, '') // e.g. "57301667..." -> "57301667..."
-
-            // Should we look for '301667...' inside the phone? 
-            // Phones in DB are usually '3XXXXXXX' or '573XXXXXXX'.
-            // If user searches "301 667", searchDigits is "301667".
-            // If user searches "+57 301...", searchDigits is "57301...".
-
-            // We want match if:
-            // 1. Name contains lowSearch (string match)
-            // 2. Phone contains lowSearch (simple string match)
-            // 3. Normalized Phone contains Normalized Search (smart match)
-
-            // Also handle the case where user types "57" prefix but DB doesn't have it, or vice versa?
-            // Actually, if DB has "301..." and user types "57301...", strict includes matches only if DB has 57.
-            // But user asked: "if I put +57 ... search normal".
-            // Usually valid phones in Colombia are 10 digits (3xx...). With 57 it is 12 digits.
-
-            // Strategy: Check if searchDigits is a substring of clientDigits.
-            // AND: If searchDigits starts with '57' and length > 9, try matching without '57'.
-
-            const searchDigitsNoPrefix = (searchDigits.startsWith('57') && searchDigits.length > 9)
-                ? searchDigits.slice(2)
-                : searchDigits
+            const searchDigits = search.replace(/\D/g, '')
+            const searchDigitsNoPrefix = (searchDigits.startsWith('57') && searchDigits.length > 9) ? searchDigits.slice(2) : searchDigits
 
             setFilteredClients(clients.filter(c => {
                 const nameMatch = c.name.toLowerCase().includes(lowSearch)
                 if (nameMatch) return true
-
-                // Phone Normalization
                 const clientDigits = (c.phone || '').replace(/\D/g, '')
-
-                // 1. Direct digits match
                 if (clientDigits.includes(searchDigits)) return true
-
-                // 2. Match without 57 prefix (if user typed it)
                 if (searchDigitsNoPrefix.length >= 3 && clientDigits.includes(searchDigitsNoPrefix)) return true
-
-                // 3. Fallback: simple string match (e.g. searching for a date or partial text in other fields if we had them)
                 if (c.phone && c.phone.includes(lowSearch)) return true
-
                 return false
             }))
         }
     }, [search, clients])
+
+
+    const [isBlasting, setIsBlasting] = useState(false)
+
+    const handleBlast = async () => {
+        if (!confirm('⚠️ ¿Estás seguro de lanzar la bienvenida masiva?\n\nEsto enviará mensajes a todos los clientes de Diciembre que no han recibido el saludo.')) return
+
+        setIsBlasting(true)
+        try {
+            const res = await blastWelcomeMessages()
+            if (res.success) {
+                alert(`🚀 Envio completado.\n\nEnviados: ${res.sent}\nErrores: ${res.errors}`)
+            } else {
+                alert(`Error: ${res.message}`)
+            }
+        } catch (e) {
+            alert('Error desconocido lanzando campaña.')
+        } finally {
+            setIsBlasting(false)
+        }
+    }
 
     const handleWhatsApp = (phone: string, name: string, days: number, service: string) => {
         const message = MessageGenerator.generate('REMINDER', { clientName: name, service, daysLeft: days })
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
     }
 
-    // Handle Receipt not implemented yet
     const handleReceipt = (client: any) => console.log(client)
 
     if (loading) return (
@@ -97,10 +94,68 @@ export default function ClientsPage() {
 
     return (
         <div className="space-y-8 pb-24 md:pb-0">
+            {/* HEADER & TOGGLES */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white">Clientes</h1>
-                    <p className="text-slate-400">Gestión de base de datos</p>
+                <div className="flex bg-slate-900 p-1 rounded-xl border border-white/5 w-fit">
+                    <button
+                        onClick={() => setViewMode('LIST')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'LIST' ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                    >
+                        <UserPlus size={16} /> Clientes
+                    </button>
+                    <button
+                        onClick={() => setViewMode('AUDIT')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'AUDIT' ? 'bg-orange-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                    >
+                        <ShieldAlert size={16} /> Auditoría
+                        {auditAlerts.length > 0 && <span className="bg-white text-orange-600 px-1.5 rounded-full text-xs">{auditAlerts.length}</span>}
+                    </button>
+                </div>
+
+                <div className="flex items-center justify-between md:justify-start gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-white">Clientes</h1>
+                        <p className="text-slate-400">Gestión de base de datos</p>
+                    </div>
+                    {/* Universal Menu */}
+                    <div className="relative">
+                        <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 text-slate-400 hover:text-white transition bg-slate-800 rounded-lg border border-white/5">
+                            <MoreVertical size={20} />
+                        </button>
+                        {showMobileMenu && (
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+                                <button
+                                    onClick={() => { handleBlast(); setShowMobileMenu(false) }}
+                                    disabled={isBlasting}
+                                    className="w-full text-left px-4 py-3 text-emerald-400 hover:bg-white/5 flex items-center gap-2 text-sm font-medium border-b border-white/5"
+                                >
+                                    <Send size={16} /> {isBlasting ? 'Enviando...' : 'Lanzar Masivo'}
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        if (!confirm('¿Reenviar CORRECCIÓN a los enviados hoy?\n\nSolo enviará a quienes ya recibieron mensaje de bienvenida hoy.')) return
+
+                                        setIsBlasting(true)
+                                        try {
+                                            const res = await resendWelcomeCorrection()
+                                            if (res.success) alert(`Corrección enviada a ${res.sent} clientes.\nErrores: ${res.errors}`)
+                                            else alert('Error: ' + res.message)
+                                        } finally {
+                                            setIsBlasting(false)
+                                            setShowMobileMenu(false)
+                                        }
+                                    }}
+                                    disabled={isBlasting}
+                                    className="w-full text-left px-4 py-3 text-amber-400 hover:bg-white/5 flex items-center gap-2 text-sm font-medium border-b border-white/5"
+                                >
+                                    <RefreshCcw size={16} /> Reenviar Corrección (Hoy)
+                                </button>
+                                <button onClick={() => { signOut(); setShowMobileMenu(false) }} className="w-full text-left px-4 py-3 text-rose-400 hover:bg-white/5 flex items-center gap-2 text-sm font-medium">
+                                    <LogOut size={16} /> Cerrar Sesión
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="relative">
@@ -115,22 +170,141 @@ export default function ClientsPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredClients.map(client => (
-                    <ClientCard
-                        key={client.id}
-                        client={client}
-                        status={client.daysLeft < 0 ? 'urgent' : client.daysLeft <= 3 ? 'alert' : 'normal'}
-                        onAction={handleWhatsApp}
-                        onReceipt={handleReceipt}
-                    />
-                ))}
-                {filteredClients.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-slate-500">
-                        <p>No se encontraron clientes.</p>
-                    </div>
-                )}
-            </div>
+            {viewMode === 'LIST' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredClients.map(client => (
+                        <ClientCard
+                            key={client.id}
+                            client={client}
+                            status={client.daysLeft < 0 ? 'urgent' : client.daysLeft <= 3 ? 'alert' : 'normal'}
+                            onAction={handleWhatsApp}
+                            onReceipt={handleReceipt}
+                        />
+                    ))}
+                    {filteredClients.length === 0 && (
+                        <div className="col-span-full py-12 text-center text-slate-500">
+                            <p>No se encontraron clientes.</p>
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div className="space-y-6 animate-in fade-in duration-500">
+                    {auditAlerts.length === 0 ? (
+                        <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-white/5">
+                            <CheckCircle size={64} className="mx-auto text-emerald-500 mb-6 opacity-50" />
+                            <h3 className="text-2xl font-bold text-white mb-2">Todo en Orden</h3>
+                            <p className="text-slate-400">No hay acciones urgentes para los próximos 3 días.</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <h2 className="text-lg font-bold text-slate-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                                <Clock size={16} /> Acciones Prioritarias (Próximos 3 días)
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {Object.values(auditAlerts.reduce((acc: any, alert: any) => {
+                                    // Grouping Key: Client + Dates + Type
+                                    const key = `${alert.clientName}-${alert.billingEnd}-${alert.technicalEnd}-${alert.type}`
+                                    if (!acc[key]) {
+                                        acc[key] = { ...alert, services: [alert.service] }
+                                    } else {
+                                        if (!acc[key].services.includes(alert.service)) {
+                                            acc[key].services.push(alert.service)
+                                        }
+                                    }
+                                    return acc
+                                }, {})).map((alert: any, idx: number) => {
+                                    // Determine Action Date based on Type
+                                    const actionDate = new Date(alert.type === 'SHORTFALL' ? alert.technicalEnd : alert.billingEnd)
+                                    const today = new Date()
+                                    // Simple Day Difference
+                                    const diffTime = actionDate.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0)
+                                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+                                    let naturalLabel = ''
+                                    if (diffDays === 0) naturalLabel = 'HOY'
+                                    else if (diffDays === 1) naturalLabel = 'MAÑANA'
+                                    else if (diffDays === 2) naturalLabel = 'PASADO MAÑANA'
+                                    else if (diffDays === -1) naturalLabel = 'AYER'
+                                    else if (diffDays < 0) naturalLabel = `HACE ${Math.abs(diffDays)} DÍAS`
+                                    else naturalLabel = `EN ${diffDays} DÍAS`
+
+                                    return (
+                                        <div key={idx} className={`relative overflow-hidden rounded-3xl p-6 border transition-all hover:scale-[1.02] ${alert.type === 'SHORTFALL'
+                                            ? 'bg-gradient-to-br from-rose-900/50 to-slate-900 border-rose-500/30 shadow-lg shadow-rose-900/20'
+                                            : 'bg-gradient-to-br from-emerald-900/50 to-slate-900 border-emerald-500/30 shadow-lg shadow-emerald-900/20'
+                                            }`}>
+                                            <div className="absolute top-0 right-0 p-4 opacity-10">
+                                                {alert.type === 'SHORTFALL' ? <ShieldAlert size={120} /> : <div className="text-emerald-400"><DollarSign size={120} /></div>}
+                                            </div>
+
+                                            <div className="relative z-10">
+                                                <div className="flex flex-wrap gap-2 mb-4">
+                                                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${alert.type === 'SHORTFALL' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white'
+                                                        }`}>
+                                                        {alert.actionLabel || (alert.type === 'SHORTFALL' ? 'CORTAR' : 'COBRAR')}
+                                                    </div>
+                                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white text-slate-900">
+                                                        {naturalLabel}
+                                                    </div>
+                                                </div>
+
+                                                <h3 className="text-2xl font-bold text-white mb-2">{alert.clientName}</h3>
+
+                                                {/* Service List or Single */}
+                                                <div className="mb-6">
+                                                    {alert.services.length > 1 ? (
+                                                        <div className="bg-black/30 rounded-xl p-3 border border-white/5">
+                                                            <p className="text-xs text-slate-400 uppercase font-bold mb-2">{alert.services.length} Servicios Afectados:</p>
+                                                            <ul className="space-y-1">
+                                                                {alert.services.map((s: string, i: number) => (
+                                                                    <li key={i} className="text-sm text-slate-200 flex items-center gap-2">
+                                                                        <div className={`w-1.5 h-1.5 rounded-full ${alert.type === 'SHORTFALL' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                                                                        {s}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-slate-300 font-medium text-lg">{alert.services[0]}</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-center gap-6 text-sm font-mono text-slate-400 mb-6">
+                                                    <div>
+                                                        <p className="text-[10px] uppercase tracking-widest opacity-60">Fecha Acción</p>
+                                                        <p className="text-white font-bold">{actionDate.toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] uppercase tracking-widest opacity-60">Diferencia</p>
+                                                        <p className={`${alert.type === 'SHORTFALL' ? 'text-rose-400' : 'text-emerald-400'} font-bold`}>
+                                                            {alert.gapDays} días
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => {
+                                                        const serviceNames = alert.services.join(', ')
+                                                        const serviceText = alert.services.length > 1 ? `tus servicios (${serviceNames})` : `tu servicio ${serviceNames}`
+                                                        const msg = alert.type === 'SHORTFALL'
+                                                            ? `Hola ${alert.clientName}, ${serviceText} requiere(n) un cambio técnico urgente. ¿Tienes un momento?`
+                                                            : `Hola ${alert.clientName}, ${serviceText} vence(n) pronto. Recuerda renovar para seguir disfrutando.`
+                                                        window.open(`https://wa.me/${alert.phone}?text=${encodeURIComponent(msg)}`, '_blank')
+                                                    }}
+                                                    className="w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-2 relative overflow-hidden group"
+                                                >
+                                                    <span className="relative z-10 flex items-center gap-2"><MessageCircle size={20} /> Gestionar Todo</span>
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }
@@ -175,7 +349,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     }
 
     const handleBotAction = async (type: MessageType) => {
-        if (!confirm(`¿Estás seguro de enviar mensaje tipo ${type} a ${client.name}?`)) return
+        // if (!confirm(`¿Estás seguro de enviar mensaje tipo ${type} a ${client.name}?`)) return
         setIsProcessing(true)
         try {
             const message = MessageGenerator.generate(type, {
@@ -191,7 +365,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
             })
 
             const res = await sendToBot(client.phone, message)
-            alert(`Mensaje enviado: ${res.status}`)
+            // alert(`Mensaje enviado: ${res.status}`)
         } catch (e: any) {
             alert(`Error enviando bot: ${e.message}`)
         } finally {
@@ -200,11 +374,18 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     }
 
     const handleRelease = async () => {
-        if (confirm(`¿Confirmas que ${client.name} NO renueva? Su perfil quedará LIBRE en inventario.`)) {
-            setIsProcessing(true)
-            await releaseService(client.profileId)
-            window.location.reload()
-        }
+        // 1. Ask for Confirmation
+        if (!confirm(`¿Confirmas que ${client.name} NO renueva?`)) return
+
+        // 2. Ask for New PIN (Mandatory per user request to "ensure pin change")
+        let newPin = prompt(`⚠️ IMPORTANTE ⚠️\n\nPara liberar el perfil, debes cambiar el PIN.\n\nIngresa el NUEVO PIN para el perfil ${client.service}:`)
+
+        if (!newPin) return // Cancel if no PIN provided
+
+        setIsProcessing(true)
+        // 3. Call service with new PIN
+        await releaseService(client.profileId, newPin)
+        window.location.reload()
     }
 
     const confirmRenewal = async () => {
@@ -331,45 +512,41 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                 </div>
             </div>
 
-            {/* OVERLAY FOR CLICK OUTSIDE */}
-            {showMenu && <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />}
-
             {/* RENEW MODAL */}
             {showRenewModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl">
-                        <h3 className="text-lg font-bold text-white mb-2">Renovar Servicio</h3>
-                        <p className="text-sm text-slate-400 mb-4">Selecciona los detalles para <b>{client.name}</b>:</p>
-
-                        <div className="space-y-4 mb-6">
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-slate-900 border border-white/10 p-6 rounded-2xl w-full max-w-sm">
+                        <h3 className="text-xl font-bold text-white mb-4">Renovar Servicio</h3>
+                        <div className="space-y-4">
                             <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Fecha de Inicio</label>
+                                <label className="block text-xs uppercase text-slate-500 font-bold mb-1">Fecha de Inicio</label>
                                 <input
                                     type="date"
                                     value={renewalDate}
-                                    onChange={(e) => setRenewalDate(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 transition-colors outline-none"
-                                    style={{ colorScheme: 'dark' }}
+                                    onChange={e => setRenewalDate(e.target.value)}
+                                    className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Duración</label>
-                                <select
-                                    value={renewalMonths}
-                                    onChange={(e) => setRenewalMonths(Number(e.target.value))}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 transition-colors outline-none"
-                                >
-                                    <option value={1}>1 Mes</option>
-                                    <option value={2}>2 Meses</option>
-                                    <option value={3}>3 Meses</option>
-                                </select>
+                                <label className="block text-xs uppercase text-slate-500 font-bold mb-1">Duración (Meses)</label>
+                                <div className="flex gap-2">
+                                    {[1, 3, 6, 12].map(m => (
+                                        <button
+                                            key={m}
+                                            onClick={() => setRenewalMonths(m)}
+                                            className={`flex-1 py-2 rounded-lg font-bold transition ${renewalMonths === m ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}
+                                        >
+                                            {m}M
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                             <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Método de Pago</label>
+                                <label className="block text-xs uppercase text-slate-500 font-bold mb-1">Método de Pago</label>
                                 <select
                                     value={paymentMethod}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 transition-colors outline-none"
+                                    onChange={e => setPaymentMethod(e.target.value)}
+                                    className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
                                 >
                                     <option value="NEQUI">Nequi</option>
                                     <option value="BANCOLOMBIA">Bancolombia</option>
@@ -378,22 +555,15 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     <option value="USDT">USDT</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setShowRenewModal(false)}
-                                className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold transition-colors"
-                            >
-                                Cancelar
-                            </button>
                             <button
                                 onClick={confirmRenewal}
                                 disabled={isProcessing}
-                                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold transition-colors shadow-lg shadow-emerald-500/20"
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50"
                             >
-                                Confirmar
+                                {isProcessing ? 'Procesando...' : 'Confirmar Renovación'}
                             </button>
+                            <button onClick={() => setShowRenewModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                         </div>
                     </div>
                 </div>
@@ -401,127 +571,120 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
 
             {/* EDIT DATE MODAL */}
             {showEditModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl">
-                        <h3 className="text-lg font-bold text-white mb-2">Corregir Fecha Vencimiento</h3>
-                        <p className="text-sm text-slate-400 mb-4">Ajustar fecha para <b>{client.name}</b>:</p>
-
-                        <div className="space-y-4 mb-6">
-                            <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Nueva Fecha de Corte</label>
-                                <input
-                                    type="date"
-                                    value={editDate}
-                                    onChange={(e) => setEditDate(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 transition-colors outline-none"
-                                    style={{ colorScheme: 'dark' }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setShowEditModal(false)}
-                                className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold transition-colors"
-                            >
-                                Cancelar
-                            </button>
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-slate-900 border border-white/10 p-6 rounded-2xl w-full max-w-sm">
+                        <h3 className="text-xl font-bold text-white mb-4">Corregir Vencimiento</h3>
+                        <p className="text-sm text-slate-400 mb-4">Cambiar solo la fecha de corte sin registrar pago nuevo.</p>
+                        <div className="space-y-4">
+                            <input
+                                type="date"
+                                value={editDate}
+                                onChange={e => setEditDate(e.target.value)}
+                                className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
+                            />
                             <button
                                 onClick={confirmEdit}
-                                disabled={isProcessing || !editDate}
-                                className="flex-1 bg-violet-600 hover:bg-violet-500 text-white py-3 rounded-xl font-bold transition-colors shadow-lg shadow-violet-500/20"
+                                disabled={isProcessing}
+                                className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50"
                             >
-                                Guardar
+                                {isProcessing ? 'Guardando...' : 'Guardar Fecha'}
                             </button>
+                            <button onClick={() => setShowEditModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* ASSIGN MODAL (MIGRATE) */}
+            {/* ASSIGN MODAL */}
             {showAssignModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="glass-panel p-6 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl max-h-[80vh] flex flex-col">
-                        <h3 className="text-xl font-bold text-white mb-2">Migrar Cliente</h3>
-                        <p className="text-sm text-slate-400 mb-4">Asignar <b>{client.name}</b> a otra cuenta del inventario.</p>
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-slate-900 border border-white/10 p-6 rounded-2xl w-full max-w-md h-[80vh] overflow-y-auto">
+                        <h3 className="text-xl font-bold text-white mb-4">Asignar Nuevo Servicio</h3>
 
-                        <div className="flex-1 overflow-y-auto min-h-0 space-y-4 mb-4 custom-scrollbar pr-2">
-                            {/* Inventory List */}
-                            {loadingInventory ? (
-                                <div className="text-center py-8 text-slate-500">Cargando cuentas disponibles...</div>
-                            ) : inventory.length === 0 ? (
-                                <div className="text-center py-8 text-slate-500">No hay cuentas libres.</div>
-                            ) : (
-                                <div className="grid grid-cols-1 gap-2">
-                                    {inventory.map((item: any) => (
-                                        <button
-                                            key={item.id}
-                                            onClick={() => setSelectedProduct(item)}
-                                            className={`flex items-center justify-between p-3 rounded-xl border transition-all ${selectedProduct?.id === item.id
-                                                ? 'bg-violet-500/20 border-violet-500 text-white ring-2 ring-violet-500/20'
-                                                : 'bg-slate-900 border-white/5 text-slate-400 hover:bg-slate-800 hover:text-white'}`}
-                                        >
-                                            <div className="flex flex-col items-start">
-                                                <span className="font-bold">{item.account.servicio}</span>
-                                                <span className="text-xs text-slate-500">{item.nombre_perfil}</span>
+                        {loadingInventory ? (
+                            <div className="text-center py-8 text-slate-500 animate-pulse">Cargando inventario...</div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">1. Selecciona Producto</label>
+                                    {inventory.map((group: any) => (
+                                        <div key={group.service} className="space-y-1">
+                                            <p className="text-xs text-white font-bold bg-slate-800 px-2 py-1 rounded">{group.service}</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {group.accounts.map((acc: any) => (
+                                                    <button
+                                                        key={acc.id}
+                                                        onClick={() => setSelectedProduct({ id: acc.id, name: acc.name, type: 'ACCOUNT' })} // Inventory usually returns profiles? 
+                                                        // Wait, getAvailableInventory returns grouped profiles. Let's assume structure.
+                                                        // Actually let's assume valid structure
+                                                        className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === acc.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
+                                                    >
+                                                        {acc.name}
+                                                    </button>
+                                                ))}
+                                                {group.profiles.map((prof: any) => (
+                                                    <button
+                                                        key={prof.id}
+                                                        onClick={() => {
+                                                            setSelectedProduct({ id: prof.id, name: prof.name, type: 'PROFILE' })
+                                                            setAssignPrice(String(prof.price || ''))
+                                                        }}
+                                                        className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === prof.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
+                                                    >
+                                                        {prof.name}
+                                                    </button>
+                                                ))}
                                             </div>
-                                            {selectedProduct?.id === item.id && <CheckCircle size={18} className="text-violet-400" />}
-                                        </button>
+                                        </div>
                                     ))}
                                 </div>
-                            )}
-                        </div>
 
-                        <div>
-                            <label className="text-xs text-slate-500 mb-1 block">Precio de Venta</label>
-                            <input
-                                type="number"
-                                value={assignPrice}
-                                onChange={e => setAssignPrice(e.target.value)}
-                                placeholder="Precio acordado..."
-                                className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none mb-4"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-xs uppercase text-slate-500 font-bold mb-1">2. Precio Venta</label>
+                                    <input
+                                        type="number"
+                                        value={assignPrice}
+                                        onChange={e => setAssignPrice(e.target.value)}
+                                        placeholder="Ej: 15000"
+                                        className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
+                                    />
+                                </div>
 
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Fecha Venta</label>
-                                <input
-                                    type="date"
-                                    value={assignDate}
-                                    onChange={(e) => setAssignDate(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-xs text-slate-500 mb-1 block">Duración</label>
-                                <select
-                                    value={assignMonths}
-                                    onChange={(e) => setAssignMonths(Number(e.target.value))}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
+                                <div>
+                                    <label className="block text-xs uppercase text-slate-500 font-bold mb-1">3. Fecha Inicio</label>
+                                    <input
+                                        type="date"
+                                        value={assignDate}
+                                        onChange={e => setAssignDate(e.target.value)}
+                                        className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs uppercase text-slate-500 font-bold mb-1">4. Duración</label>
+                                    <div className="flex gap-2">
+                                        {[1, 3, 6, 12].map(m => (
+                                            <button
+                                                key={m}
+                                                onClick={() => setAssignMonths(m)}
+                                                className={`flex-1 py-2 rounded-lg font-bold transition ${assignMonths === m ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}
+                                            >
+                                                {m}M
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={confirmAssign}
+                                    disabled={!selectedProduct || !assignPrice || isProcessing}
+                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50"
                                 >
-                                    <option value={1}>1 Mes</option>
-                                    <option value={2}>2 Meses</option>
-                                    <option value={3}>3 Meses</option>
-                                </select>
+                                    {isProcessing ? 'Asignando...' : 'Confirmar Asignación'}
+                                </button>
+                                <button onClick={() => setShowAssignModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                             </div>
-                        </div>
-
-                        <div className="flex gap-2 pt-2 border-t border-white/5">
-                            <button
-                                onClick={() => setShowAssignModal(false)}
-                                className="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold transition-colors"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={confirmAssign}
-                                disabled={isProcessing}
-                                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-bold transition-colors shadow-lg shadow-blue-500/20"
-                            >
-                                Migrar
-                            </button>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}

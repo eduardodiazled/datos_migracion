@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,72 +8,77 @@ datasource db {
 }
 
 model Client {
-  celular       String        @id // Sanitized phone number (PK)
-  nombre        String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  transactions  Transaction[]
+  celular      String        @id
+  nombre       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  otpCode          String?
+  otpExpires       DateTime?
+  welcomeSent      Boolean       @default(false)
+  magicToken       String?       @unique
+  magicTokenExpires DateTime?
+  transactions Transaction[]
 }
 
 model InventoryAccount {
-  id        Int            @id @default(autoincrement())
-  servicio  String         // Netflix, Disney, etc.
-  tipo      String         // 'ESTATICO', 'DESECHABLE'
-  email     String
-  password  String
-  perfiles  SalesProfile[]
-  transactions Transaction[]
-  providerId Int?
-  provider   Provider?     @relation(fields: [providerId], references: [id])
-  dia_corte  Int?          // Day of the month (1-31) when payment is due to provider
-  is_disposable Boolean    @default(false)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id               Int            @id @default(autoincrement())
+  servicio         String
+  tipo             String
+  email            String
+  password         String
+  providerId       Int?
+  dia_corte        Int?
+  is_disposable    Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  fecha_activacion DateTime       @default(now())
+  duracion_meses   Int            @default(1)
+  provider         Provider?      @relation(fields: [providerId], references: [id])
+  perfiles         SalesProfile[]
+  transactions     Transaction[]
 }
 
 model SalesProfile {
-  id           Int           @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   nombre_perfil String
-  pin          String?
-  estado       String        @default("LIBRE") // 'LIBRE', 'OCUPADO', 'CUARENTENA_PIN', 'GARANTIA'
-  accountId    Int
-  account      InventoryAccount @relation(fields: [accountId], references: [id])
-  transactions Transaction[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  pin           String?
+  estado        String           @default("LIBRE")
+  accountId     Int
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  account       InventoryAccount @relation(fields: [accountId], references: [id])
+  transactions  Transaction[]
 }
 
-
-
 model Transaction {
-  id               Int          @id @default(autoincrement())
-  clienteId        String
-  client           Client       @relation(fields: [clienteId], references: [celular])
-  perfilId         Int?         // Optional for 'Venta Libre'
-  profile          SalesProfile? @relation(fields: [perfilId], references: [id])
-  accountId        Int?         // Optional for 'Venta Cuenta Completa'
-  account          InventoryAccount? @relation(fields: [accountId], references: [id])
-  estado_pago      String       // 'PAGADO', 'PENDIENTE', 'PROMESA_PAGO'
-  metodo_pago      String?      // 'NEQUI', 'BANCOLOMBIA', 'EFECTIVO', etc.
-  groupId          String?      // Optional: IDs grouped in a single Combo transaction
-  fecha_inicio     DateTime
+  id                Int               @id @default(autoincrement())
+  clienteId         String
+  perfilId          Int?
+  accountId         Int?
+  estado_pago       String
+  metodo_pago       String?
+  groupId           String?
+  fecha_inicio      DateTime
   fecha_vencimiento DateTime
-  monto            Float
-  descripcion      String?      // Snapshot of service name at time of sale
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  monto             Float
+  descripcion       String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  account           InventoryAccount? @relation(fields: [accountId], references: [id])
+  client            Client            @relation(fields: [clienteId], references: [celular])
+  profile           SalesProfile?     @relation(fields: [perfilId], references: [id])
 }
 
 model Expense {
-  id             Int      @id @default(autoincrement())
-  categoria      String   // 'PROVEEDOR', 'NOMINA', 'GASTO_ADMIN', 'PUBLICIDAD', 'OTRO'
-  descripcion    String
-  monto          Float
-  fecha          DateTime
-  metodo_pago    String   // 'NEQUI', 'BANCOLOMBIA', etc.
-  proveedor      String?  // Optional supplier name
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  categoria   String
+  descripcion String
+  monto       Float
+  fecha       DateTime
+  metodo_pago String
+  proveedor   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model User {
@@ -84,14 +86,19 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  role      String   @default("ADMIN") // ADMIN, EMPLOYEE
+  role      String   @default("ADMIN")
   createdAt DateTime @default(now())
 }
 
 model Provider {
-  id        Int      @id @default(autoincrement())
-  nombre    String   @unique
+  id        Int                @id @default(autoincrement())
+  nombre    String             @unique
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
   accounts  InventoryAccount[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model PayrollState {
+  id        Int      @id @default(autoincrement())
+  lastReset DateTime @default(now())
 }

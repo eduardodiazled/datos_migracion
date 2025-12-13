@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Monitor, User, RefreshCw, ShieldAlert, Copy, Plus, LogOut, DollarSign, Check, Edit2, Trash2 } from 'lucide-react'
+import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
-import { createInventoryAccount, createSale, assignProfile, getAllProviders, createProvider, updateInventoryAccount, createComboSale, sellFullAccount, deleteInventoryAccount, setAccountWarranty } from '../actions'
+import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients } from '../actions'
+import { calculateSafeEndDate } from '@/lib/dateUtils'
 
 // Types
 type Profile = {
@@ -32,6 +33,7 @@ type Account = {
   dia_corte?: number
   is_disposable?: boolean
   tipo: string
+  activationDate?: string
 }
 
 const DEFAULT_PRICES: Record<string, number> = {
@@ -72,7 +74,7 @@ export default function InventoryPage() {
   const [selectedProviderId, setSelectedProviderId] = useState<number | 'ALL'>('ALL')
 
   // Forms Data
-  const [newAccount, setNewAccount] = useState<{ service: string, email: string, password: string, profilesCount: number, providerId?: number, dia_corte?: number, is_disposable?: boolean }>({ service: '', email: '', password: '', profilesCount: 1, is_disposable: false })
+  const [newAccount, setNewAccount] = useState<{ service: string, email: string, password: string, profilesCount: number, providerId?: number, dia_corte?: number, is_disposable?: boolean, activationDate?: string, months_duration?: number }>({ service: '', email: '', password: '', profilesCount: 1, is_disposable: false, activationDate: new Date().toISOString().split('T')[0], months_duration: 1 })
   // Filters & Views
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('CARDS')
@@ -85,15 +87,35 @@ export default function InventoryPage() {
   const [saleData, setSaleData] = useState({ phone: '', name: '', price: '', paymentMethod: 'NEQUI', date: new Date().toISOString().split('T')[0], months: 1 })
   // Assign Modal
   const [showAssignModal, setShowAssignModal] = useState(false)
-  const [assignData, setAssignData] = useState({ phone: '', name: '', date: new Date().toISOString().split('T')[0] })
+  const [assignData, setAssignData] = useState({ phone: '', name: '', startDate: new Date().toISOString().split('T')[0], months: 1 })
+  const [clientSearchResults, setClientSearchResults] = useState<{ celular: string, nombre: string }[]>([])
+  const [isSearchingClient, setIsSearchingClient] = useState(false)
 
   // Edit Account State
   const [showEditAccountModal, setShowEditAccountModal] = useState(false)
   const [editingAccount, setEditingAccount] = useState<any>(null)
+  const [editingProfiles, setEditingProfiles] = useState<{ id?: number, name: string, pin?: string }[]>([])
+
+  // Replace Account State
+  const [showReplaceModal, setShowReplaceModal] = useState(false)
+
+  // Full Account Sale State
+  const [isFullAccountSale, setIsFullAccountSale] = useState(false)
+  const [targetAccountForSale, setTargetAccountForSale] = useState<any>(null)
+
+  // ...
+
+  const [replacingAccount, setReplacingAccount] = useState<{ id: number, serviceName: string } | null>(null)
+  const [replaceData, setReplaceData] = useState({
+    email: '',
+    password: '',
+    date: new Date().toISOString().split('T')[0]
+  })
 
   // Sort & Group State
   const [sortBy, setSortBy] = useState<'DEFAULT' | 'AVAILABILITY'>('DEFAULT')
   const [groupBy, setGroupBy] = useState<'PROVIDER' | 'SERVICE'>('PROVIDER')
+  const [showMenu, setShowMenu] = useState(false)
 
   const fetchInventory = () => {
     setLoading(true)
@@ -180,13 +202,23 @@ export default function InventoryPage() {
       profiles,
       providerId: newAccount.providerId,
       dia_corte: newAccount.dia_corte,
-      is_disposable: newAccount.is_disposable
+      is_disposable: newAccount.is_disposable,
+      activationDate: newAccount.activationDate,
+      months_duration: newAccount.months_duration
     })
 
     if (res.success) {
       toast.success('Cuenta creada!')
       setShowAddModal(false)
-      setNewAccount({ service: '', email: '', password: '', profilesCount: 1 })
+      setNewAccount({
+        service: '',
+        email: '',
+        password: '',
+        profilesCount: 1,
+        is_disposable: false,
+        activationDate: new Date().toISOString().split('T')[0],
+        months_duration: 1
+      })
       setProfileDetails([])
       setUsePin(false)
       fetchInventory()
@@ -266,9 +298,11 @@ export default function InventoryPage() {
   }
 
   const handleAssign = async () => {
-    if (!selectedProfileId || !assignData.phone || !assignData.name || !assignData.date) return toast.error('Faltan datos')
+    if (!selectedProfileId || !assignData.phone || !assignData.name) return toast.error('Faltan datos')
 
-    const res = await assignProfile(assignData.phone, assignData.name, selectedProfileId, assignData.date)
+    const calculatedEndDate = calculateSafeEndDate(assignData.startDate, assignData.months)
+
+    const res = await assignProfile(assignData.phone, assignData.name, selectedProfileId, calculatedEndDate.toISOString(), assignData.startDate)
     if (res.success) {
       toast.success('Cliente asignado correctamente!')
       setShowAssignModal(false)
@@ -276,6 +310,23 @@ export default function InventoryPage() {
     } else {
       toast.error('Error al asignar')
     }
+  }
+
+  const handleClientSearch = async (query: string) => {
+    setAssignData(prev => ({ ...prev, name: query }))
+    if (query.length > 2) {
+      setIsSearchingClient(true)
+      const results = await searchClients(query)
+      setClientSearchResults(results)
+      setIsSearchingClient(false)
+    } else {
+      setClientSearchResults([])
+    }
+  }
+
+  const selectClient = (client: { celular: string, nombre: string }) => {
+    setAssignData(prev => ({ ...prev, name: client.nombre, phone: client.celular }))
+    setClientSearchResults([])
   }
 
   const handleUpdateAccount = async () => {
@@ -289,11 +340,19 @@ export default function InventoryPage() {
     if (editingAccount.providerId) payload.providerId = editingAccount.providerId
     if (editingAccount.dia_corte) payload.dia_corte = editingAccount.dia_corte
     if (editingAccount.is_disposable !== undefined) payload.is_disposable = editingAccount.is_disposable
+    if (editingAccount.fecha_activacion) payload.activationDate = editingAccount.fecha_activacion
+    // @ts-ignore
+    if (editingAccount.duracion_meses) payload.months_duration = editingAccount.duracion_meses
+    // @ts-ignore
+    if (editingAccount.duracion_meses) payload.months_duration = editingAccount.duracion_meses
+
+    // Add profiles if modified
+    payload.profiles = editingProfiles
 
     const res = await updateInventoryAccount(editingAccount.id, payload)
 
     if (res.success) {
-      toast.success('Cuenta actualizada')
+      toast.success('Cuenta y perfiles actualizados')
       setShowEditAccountModal(false)
       setEditingAccount(null)
       fetchInventory()
@@ -309,8 +368,56 @@ export default function InventoryPage() {
         toast.success(`Cuenta ${serviceName} marcada en Garantía`)
         fetchInventory()
       } else {
-        toast.error('Error al aplicar garantía: ' + res.error)
+        toast.error('Error: ' + res.error) // Will show stock error if gate fails
       }
+    }
+  }
+
+  const handleOpenReplace = (account: Account) => {
+    setReplacingAccount({ id: account.id, serviceName: account.servicio })
+    setReplaceData({
+      email: '',
+      password: '',
+      date: new Date().toISOString().split('T')[0]
+    })
+    setShowReplaceModal(true)
+  }
+
+  const handleReplaceSubmit = async () => {
+    if (!replacingAccount) return
+    if (!replaceData.email || !replaceData.password || !replaceData.date) return toast.error('Faltan datos de la cuenta nueva')
+
+    const res = await replaceInventoryAccount(replacingAccount.id, {
+      newEmail: replaceData.email,
+      newPassword: replaceData.password,
+      newDate: replaceData.date
+    })
+
+    if (res.success) {
+      toast.success('Cuenta Repuesta Exitosamente (Perfiles Libres)')
+      setShowReplaceModal(false)
+      fetchInventory()
+    } else {
+      toast.error('Error al reponer: ' + res.error)
+    }
+  }
+
+  const handleProfileStatus = async (profileId: number, status: 'LIBRE' | 'GARANTIA') => {
+    // If setting to WARRANTY, we should probably check stock too? 
+    // The user requirement specifically mentioned "si yo meto una cuenta desechable... no, es que si debe ser asi la garantia es con la cuenta completaa"
+    // But later "cada perfil individual... mensaje a traves del bot".
+    // Let's allow individual toggle. Ideally strict stock check should be on backend for this too, but setAccountWarranty has the gate.
+    // For individual profile:
+    if (status === 'GARANTIA') {
+      if (!confirm('¿Reportar este perfil específico a Garantía?')) return
+    }
+
+    const res = await updateProfileStatus(profileId, status)
+    if (res.success) {
+      toast.success(`Perfil actualizado a ${status}`)
+      fetchInventory()
+    } else {
+      toast.error('Error actualizando perfil')
     }
   }
 
@@ -328,7 +435,7 @@ export default function InventoryPage() {
     }
   }
 
-  if (loading) return <div className="p-8 text-center text-slate-400">Cargando inventario...</div>
+  if (loading && accounts.length === 0) return <div className="p-8 text-center text-slate-400">Cargando inventario...</div>
 
   return (
 
@@ -363,19 +470,24 @@ export default function InventoryPage() {
         </div>
       )}
 
-      <div className="p-4 md:p-8 md:ml-72 space-y-6 pb-24">
+      <div className="space-y-6 pb-24">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold">Inventario</h1>
             <p className="text-slate-400 text-sm">Gestiona cuentas y perfiles.</p>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => setShowAddModal(true)} className="btn btn-primary bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-xl flex items-center font-medium transition-all shadow-lg shadow-violet-600/20">
-              <Plus size={18} className="md:mr-2" /> <span className="hidden md:inline">Nueva Cuenta</span>
+          <div className="relative md:hidden">
+            <button onClick={() => setShowMenu(!showMenu)} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors">
+              <MoreVertical size={24} />
             </button>
-            <button onClick={() => signOut({ callbackUrl: '/login' })} className="md:hidden bg-slate-800 p-2 rounded-xl text-slate-400">
-              <LogOut size={20} />
-            </button>
+
+            {showMenu && (
+              <div className="absolute right-0 top-12 bg-slate-900 border border-white/10 rounded-xl shadow-2xl p-2 min-w-[160px] z-50 flex flex-col gap-1">
+                <button onClick={() => { signOut({ callbackUrl: '/login' }); setShowMenu(false) }} className="w-full text-left px-4 py-2 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-lg flex items-center gap-2 text-sm font-bold">
+                  <LogOut size={16} /> Cerrar Sesión
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -443,22 +555,26 @@ export default function InventoryPage() {
                   const isLowStock = count < 2
 
                   return (
-                    <div key={serviceName} className="glass-panel p-4 rounded-2xl min-w-[130px] flex flex-col items-center gap-3 border border-white/5 bg-slate-900/60 relative overflow-hidden group snap-center cursor-default transition-all hover:bg-slate-800/80">
+                    <div
+                      onClick={() => setSearchTerm(serviceName)}
+                      key={serviceName}
+                      className="glass-panel p-2 md:p-4 rounded-2xl min-w-[100px] md:min-w-[130px] flex flex-col items-center gap-2 border border-white/5 bg-slate-900/60 relative overflow-hidden group snap-center cursor-pointer transition-all hover:bg-slate-800/80 active:scale-95"
+                    >
                       {/* Background Glow */}
                       {isLowStock && <div className="absolute inset-0 bg-red-500/10 z-0 animate-pulse"></div>}
 
-                      <div className="w-12 h-12 rounded-xl bg-slate-800/50 flex items-center justify-center overflow-hidden relative z-10 shadow-inner">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-slate-800/50 flex items-center justify-center overflow-hidden relative z-10 shadow-inner">
                         {iconPath ? (
                           <img src={iconPath} alt={serviceName} className={`w-full h-full object-cover ${scaleClass}`} />
                         ) : (
-                          <Monitor size={24} className="text-slate-400" />
+                          <Monitor size={20} className="text-slate-400" />
                         )}
                       </div>
                       <div className="text-center z-10 w-full">
-                        <div className={`text-2xl font-black leading-none mb-1 ${isLowStock ? 'text-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.3)]' : 'text-white'}`}>
+                        <div className={`text-lg md:text-2xl font-black leading-none mb-1 ${isLowStock ? 'text-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.3)]' : 'text-white'}`}>
                           {count}
                         </div>
-                        <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400 truncate w-full">
+                        <div className="text-[9px] md:text-[10px] uppercase tracking-wider font-bold text-slate-400 truncate w-full px-1">
                           {serviceName}
                         </div>
                       </div>
@@ -472,25 +588,35 @@ export default function InventoryPage() {
 
         {/* Filters */}
         {/* CONTROLS BAR: SEARCH + FLTERS + VIEW TOGGLE */}
-        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6 bg-slate-900/50 p-4 rounded-3xl border border-white/5 backdrop-blur-sm">
+        <div className="flex flex-col md:flex-row gap-4 justify-start items-start md:items-center mb-6 bg-slate-900/50 p-4 rounded-3xl border border-white/5 backdrop-blur-sm sticky top-2 z-30 shadow-xl">
           {/* 1. Search Bar */}
-          <div className="relative w-full md:w-96">
+          <div className="bg-slate-800/50 p-1 rounded-xl flex items-center border border-white/5 w-full max-w-[280px] md:max-w-none md:w-80 transition-all focus-within:border-violet-500/50 focus-within:bg-slate-800 focus-within:ring-2 focus-within:ring-violet-500/20 relative">
+            <Search size={18} className="text-slate-500 ml-2" />
             <input
-              type="text"
-              placeholder="Buscar por servicio, email o cliente..."
-              className="w-full bg-slate-800 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white text-sm focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition outline-none"
+              className="bg-transparent border-none outline-none text-white text-sm p-2 w-full placeholder-slate-500 pr-8"
+              placeholder="Buscar..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3.5 top-3 text-slate-400"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2 text-slate-500 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
-
-          <div className="flex gap-4 items-center w-full md:w-auto justify-between md:justify-end">
+          <div className="flex flex-wrap gap-2 items-center w-full md:w-auto justify-start">
+            {/* New Account Button (Mobile Position) */}
+            <button onClick={() => setShowAddModal(true)} className="bg-violet-600 hover:bg-violet-500 text-white px-3 py-2 rounded-xl flex items-center justify-center gap-2 font-bold shadow-lg shadow-violet-600/20 active:scale-95 transition-all w-auto whitespace-nowrap order-first md:order-none text-xs md:text-sm">
+              <Plus size={18} /> <span className="hidden sm:inline">Nueva</span><span className="inline sm:hidden">Crear</span>
+            </button>
             {/* 2. Tabs: Renewable vs Disposable */}
-            <div className="flex bg-slate-800 p-1 rounded-xl">
+            <div className="flex bg-slate-800 p-1 rounded-xl overflow-x-auto max-w-[200px] md:max-w-none">
               <button
                 onClick={() => setActiveTab('ALL')}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeTab === 'ALL' ? 'bg-slate-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 md:px-4 py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'ALL' ? 'bg-slate-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
               >
                 Todos
               </button>
@@ -685,9 +811,13 @@ export default function InventoryPage() {
                                           password: account.password,
                                           providerId: account.provider?.id,
                                           dia_corte: (account as any).dia_corte,
-                                          is_disposable: (account as any).is_disposable
+                                          is_disposable: (account as any).is_disposable,
+                                          duracion_meses: (account as any).duracion_meses || 1,
+                                          fecha_activacion: (account as any).fecha_activacion ? new Date((account as any).fecha_activacion).toISOString().split('T')[0] : ''
                                         })
                                         setShowEditAccountModal(true)
+                                        // Initialize editing profiles
+                                        setEditingProfiles(account.perfiles.map(p => ({ id: p.id, name: p.nombre_perfil, pin: p.pin || '' })))
                                       }}
                                       className="p-1 rounded-full hover:bg-white/10 text-slate-500 hover:text-white transition"
                                       title="Editar Cuenta"
@@ -722,7 +852,9 @@ export default function InventoryPage() {
                                   isSelected={selectedItems.some(i => i.profileId === profile.id)}
                                   onToggle={() => toggleSelection(profile, account.servicio)}
                                   onRotate={() => handleRotate(profile.id, profile.estado)}
-                                  onWarranty={() => handleAccountWarranty(account.id, account.servicio)}
+                                  // Individual Profile Actions
+                                  onReportWarranty={() => handleProfileStatus(profile.id, 'GARANTIA')}
+                                  onRevive={() => handleProfileStatus(profile.id, 'LIBRE')}
                                   onSell={() => handleOpenSell(profile.id, account.servicio)}
                                   onAssign={() => handleOpenAssign(profile.id)}
                                 />
@@ -732,20 +864,23 @@ export default function InventoryPage() {
                             { /* Full Account Sale Button */}
                             <div className="mt-4 pt-4 border-t border-white/5 flex justify-end">
                               <button
-                                onClick={async () => {
-                                  if (confirm(`⚠ GARANTÍA DE CUENTA COMPLETA ⚠\n\n¿Estás seguro de poner TODA la cuenta de ${account.servicio} en garantía?\nEsto marcará TODOS los perfiles como 'GARANTÍA' para revisión/reemplazo.`)) {
-                                    const res = await setAccountWarranty(account.id)
-                                    if (res.success) {
-                                      toast.success(`Cuenta ${account.servicio} marcada en Garantía`)
-                                      fetchInventory()
-                                    } else {
-                                      toast.error('Error al aplicar garantía: ' + res.error)
-                                    }
-                                  }
+                                onClick={() => {
+                                  setIsFullAccountSale(true)
+                                  setTargetAccountForSale(account)
+                                  setSaleData({ ...saleData, price: getServicePrice(account.servicio).toString() })
+                                  setShowSellModal(true)
                                 }}
                                 className="text-xs font-bold text-violet-400 hover:text-white flex items-center gap-1 transition-colors"
                               >
                                 <DollarSign size={14} /> Vender Cuenta Completa
+                              </button>
+
+                              {/* Replace Button (Only if has warranties or occupied? - User said "cuenta caida la dejo ahi... hasta que me den garantia... uso boton reponer") */}
+                              <button
+                                onClick={() => handleOpenReplace(account)}
+                                className="text-xs font-bold text-emerald-400 hover:text-white flex items-center gap-1 transition-colors ml-4"
+                              >
+                                <RefreshCw size={14} /> Reponer Cuenta
                               </button>
                             </div>
 
@@ -793,9 +928,11 @@ export default function InventoryPage() {
                                   password: account.password,
                                   providerId: account.provider?.id,
                                   dia_corte: (account as any).dia_corte,
-                                  is_disposable: (account as any).is_disposable
+                                  is_disposable: (account as any).is_disposable,
+                                  fecha_activacion: (account as any).fecha_activacion ? new Date((account as any).fecha_activacion).toISOString().split('T')[0] : ''
                                 })
                                 setShowEditAccountModal(true)
+                                setEditingProfiles(account.perfiles.map(p => ({ id: p.id, name: p.nombre_perfil, pin: p.pin || '' })))
                               }}
                               className="text-violet-400 hover:text-white font-medium"
                             >
@@ -820,7 +957,7 @@ export default function InventoryPage() {
             <h3 className="text-xl font-bold text-white mb-4 flex-shrink-0">Agregar Nueva Cuenta</h3>
 
             <div className="space-y-4 mb-6 overflow-y-auto flex-1 pr-2 custom-scrollbar">
-              {/* Provider Selection (Optional) */}
+              {/* Provider Selection (Opcional) */}
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-xs text-slate-400">Proveedor (Opcional)</label>
@@ -868,8 +1005,8 @@ export default function InventoryPage() {
                   </select>
                 )}
 
-                {/* Payment Day Input - Only if provider is selected */}
-                {newAccount.providerId && (
+                {/* Payment Day Input - Only if provider is selected AND NOT DISPOSABLE */}
+                {newAccount.providerId && !newAccount.is_disposable && (
                   <div className="mt-2">
                     <label className="text-xs text-slate-400 block mb-1">Día de Corte (Pago al Proveedor)</label>
                     <input
@@ -941,7 +1078,6 @@ export default function InventoryPage() {
 
 
 
-              {/* DISPOSABLE CHECKBOX */}
               <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
                 <input
                   type="checkbox"
@@ -950,10 +1086,39 @@ export default function InventoryPage() {
                   checked={newAccount.is_disposable}
                   onChange={(e) => setNewAccount({ ...newAccount, is_disposable: e.target.checked })}
                 />
-                <label htmlFor="is_disposable" className="text-sm font-medium text-slate-300">
-                  ¿Es Cuenta Desechable? (1 Mes)
-                  <span className="block text-xs text-slate-500 font-normal">Si marcas esto, la cuenta aparecerá en la pestaña de desechables.</span>
-                </label>
+                <div className="flex-1">
+                  <label htmlFor="is_disposable" className="text-sm font-medium text-slate-300 block mb-1">
+                    ¿Es Cuenta Desechable?
+                  </label>
+
+                  {newAccount.is_disposable && (
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={14} className="text-slate-400" />
+                        <input
+                          type="date"
+                          className="bg-slate-900 border border-white/10 rounded-lg p-1.5 text-xs text-white outline-none"
+                          value={newAccount.activationDate}
+                          onChange={(e) => setNewAccount({ ...newAccount, activationDate: e.target.value })}
+                        />
+                        <span className="text-[10px] text-slate-500">Fecha de Activación/Compra</span>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">Duración (Meses)</label>
+                        <select
+                          className="bg-slate-900 border border-white/10 rounded-lg p-1.5 text-xs text-white outline-none w-full"
+                          value={newAccount.months_duration || 1}
+                          onChange={e => setNewAccount({ ...newAccount, months_duration: Number(e.target.value) })}
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
+                            <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="bg-white/5 p-4 rounded-xl border border-white/5">
@@ -1001,6 +1166,8 @@ export default function InventoryPage() {
                           className="w-20 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white placeholder-slate-600 text-center"
                           placeholder="PIN"
                           maxLength={4}
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           value={profileDetails[i]?.pin || ''}
                           onChange={(e) => {
                             const newDetails = [...profileDetails]
@@ -1073,9 +1240,9 @@ export default function InventoryPage() {
                         value={saleData.months}
                         onChange={e => setSaleData({ ...saleData, months: parseInt(e.target.value) })}
                       >
-                        <option value={1}>1 Mes</option>
-                        <option value={2}>2 Meses</option>
-                        <option value={3}>3 Meses</option>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
+                          <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -1145,8 +1312,58 @@ export default function InventoryPage() {
                   onClick={async () => {
                     if (isSubmitting) return
 
-                    if (selectedItems.length > 1) {
-                      // COMBO SALE LOGIC
+                    if (isFullAccountSale && targetAccountForSale) {
+                      // SELL FULL ACCOUNT
+                      setIsSubmitting(true)
+                      const res = await sellFullAccount(
+                        targetAccountForSale.id,
+                        saleData.phone,
+                        saleData.name,
+                        parseInt(saleData.price),
+                        saleData.paymentMethod,
+                        saleData.date,
+                        saleData.months
+                      )
+
+                      setIsSubmitting(false)
+
+                      if (res.success) {
+                        toast.success('Cuenta completa vendida!')
+                        setShowSellModal(false)
+                        fetchInventory()
+
+                        // Generate Message
+                        const msg = MessageGenerator.generate('SALE', {
+                          clientName: saleData.name,
+                          service: targetAccountForSale.servicio + " (Cuenta Completa)",
+                          email: targetAccountForSale.email,
+                          password: targetAccountForSale.password,
+                          profileName: "Cuenta Completa",
+                          pin: "",
+                          expirationDate: calculateSafeEndDate(saleData.date, saleData.months).toLocaleDateString()
+                        })
+                        setSuccessData({
+                          message: msg,
+                          clientName: saleData.name,
+                          service: targetAccountForSale.servicio + " (Full)",
+                          date: saleData.date,
+                          price: parseInt(saleData.price),
+                          paymentMethod: saleData.paymentMethod,
+                          months: saleData.months
+                        })
+                        setShowSuccessModal(true)
+
+                        // Reset
+                        setSelectedItems([])
+                        setSaleData({ phone: '', name: '', price: '15000', paymentMethod: 'NEQUI', date: new Date().toISOString().split('T')[0], months: 1 })
+                        setIsFullAccountSale(false)
+                        setTargetAccountForSale(null)
+                      } else {
+                        toast.error('Error: ' + res.error)
+                      }
+
+                    } else if (selectedItems.length > 0) {
+                      // MULTI-PROFILE SALE (Already Implemented)
                       if (!saleData.phone || !saleData.name) return toast.error('Faltan datos del cliente')
 
                       setIsSubmitting(true)
@@ -1166,19 +1383,29 @@ export default function InventoryPage() {
                         if (res.success) {
                           toast.success(`Combo de ${count} ítems vendido!`)
 
-                          // Generate Success Data for Combo
-                          const msg = MessageGenerator.generate('SALE', {
-                            clientName: saleData.name,
-                            service: `Combo ${count} Ítems`,
-                            price: parseInt(saleData.price),
-                            date: new Date().toLocaleDateString()
+                          // Generate Combo Message
+                          const comboItems = selectedItems.map(i => {
+                            const acc = accounts.find(a => a.id === i.accountId)
+                            const prof = acc?.perfiles.find(p => p.id === i.profileId)
+                            return {
+                              service: acc?.servicio || '?',
+                              email: acc?.email || '?',
+                              password: acc?.password || '?',
+                              profile: prof?.nombre_perfil || '?',
+                              pin: prof?.pin
+                            }
                           })
 
+                          const msg = MessageGenerator.generate('COMBO', {
+                            clientName: saleData.name,
+                            items: comboItems,
+                            expirationDate: calculateSafeEndDate(saleData.date, saleData.months).toLocaleDateString()
+                          })
                           setSuccessData({
                             message: msg,
                             clientName: saleData.name,
                             service: `Combo (${count} P)`,
-                            date: new Date().toLocaleDateString(),
+                            date: saleData.date,
                             price: parseInt(saleData.price),
                             paymentMethod: saleData.paymentMethod,
                             months: saleData.months
@@ -1201,8 +1428,14 @@ export default function InventoryPage() {
                     } else {
                       // LEGACY SINGLE SALE
                       setIsSubmitting(true)
-                      await handleSell()
-                      setIsSubmitting(false)
+                      try {
+                        await handleSell()
+                      } catch (error) {
+                        console.error('Error selling', error)
+                        toast.error('Error al procesar venta')
+                      } finally {
+                        setIsSubmitting(false)
+                      }
                     }
                   }}
                   disabled={isSubmitting}
@@ -1224,22 +1457,61 @@ export default function InventoryPage() {
               <h3 className="text-lg font-bold text-white mb-2">Asignar Manualmente</h3>
               <p className="text-xs text-slate-400 mb-4">Vincula este perfil a un cliente existente con su fecha de vencimiento actual.</p>
 
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Celular Cliente</label>
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Nombre Cliente</label>
+                <div className="relative">
                   <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                    value={assignData.phone} onChange={e => setAssignData({ ...assignData, phone: e.target.value })} placeholder="3001234567" />
+                    value={assignData.name}
+                    onChange={e => handleClientSearch(e.target.value)}
+                    placeholder="Buscar cliente..."
+                    autoFocus
+                  />
+                  {/* Autocomplete Dropdown */}
+                  {clientSearchResults.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 bg-slate-900 border border-white/10 rounded-xl mt-1 max-h-40 overflow-y-auto z-50 shadow-xl">
+                      {clientSearchResults.map(client => (
+                        <button key={client.celular} onClick={() => selectClient(client)}
+                          className="w-full text-left p-2 hover:bg-white/5 text-sm flex flex-col border-b border-white/5 last:border-0"
+                        >
+                          <span className="font-bold text-white">{client.nombre}</span>
+                          <span className="text-xs text-slate-400">{client.celular}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
+              </div>
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Celular Cliente</label>
+                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
+                  value={assignData.phone} onChange={e => setAssignData({ ...assignData, phone: e.target.value })} placeholder="3001234567" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-400 block mb-1">Nombre Cliente</label>
-                  <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                    value={assignData.name} onChange={e => setAssignData({ ...assignData, name: e.target.value })} placeholder="Juan Pérez" />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Fecha de Vencimiento Actual</label>
+                  <label className="text-xs text-slate-400 block mb-1">Inicio (Venta)</label>
                   <input type="date" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                    value={assignData.date} onChange={e => setAssignData({ ...assignData, date: e.target.value })} />
+                    value={assignData.startDate} onChange={e => setAssignData({ ...assignData, startDate: e.target.value })} />
                 </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Duración (Meses)</label>
+                  <select
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                    value={assignData.months}
+                    onChange={e => setAssignData({ ...assignData, months: parseInt(e.target.value) })}
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
+                      <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Calculated Output Display */}
+              <div className="bg-slate-950/50 p-3 rounded-xl border border-white/5 flex justify-between items-center mt-3">
+                <span className="text-xs text-slate-400">Vence el:</span>
+                <span className="text-sm font-bold text-emerald-400">
+                  {calculateSafeEndDate(assignData.startDate, assignData.months).toLocaleDateString()}
+                </span>
               </div>
 
               <div className="flex gap-3">
@@ -1296,7 +1568,7 @@ export default function InventoryPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Día Corte</label>
+                    <label className="text-xs text-slate-400 block mb-1">Día Corte (Recurrentes)</label>
                     <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white"
                       value={editingAccount.dia_corte || ''}
                       onChange={e => setEditingAccount({ ...editingAccount, dia_corte: e.target.value ? parseInt(e.target.value) : null })}
@@ -1305,98 +1577,181 @@ export default function InventoryPage() {
                   </div>
                 </div>
 
-                <button onClick={handleUpdateAccount} className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl transition mt-2">
-                  Guardar Cambios
-                </button>
-                <button onClick={() => setShowEditAccountModal(false)} className="w-full bg-transparent hover:bg-white/5 text-slate-400 py-3 rounded-xl transition">
-                  Cancelar
-                </button>
+                {/* Activation Date (Always Visible or just for Disposable?) - Useful for all */}
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Fecha de Activación / Compra</label>
+                  <div className="relative">
+                    <Calendar size={16} className="absolute left-3 top-3.5 text-slate-500" />
+                    <input type="date" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-10 text-white"
+                      value={editingAccount.fecha_activacion || ''}
+                      onChange={e => setEditingAccount({ ...editingAccount, fecha_activacion: e.target.value })}
+                    />
+                  </div>
+                </div>
 
-                <div className="pt-4 border-t border-white/5 mt-2">
-                  <button onClick={handleDeleteAccount} className="w-full flex items-center justify-center gap-2 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 py-3 rounded-xl transition font-medium text-sm">
-                    <Trash2 size={16} /> Eliminar Cuenta Permanentemente
-                  </button>
+                {/* Disposable Toggle */}
+                <div className="flex items-center gap-3 p-3 bg-slate-950 border border-white/10 rounded-xl cursor-pointer" onClick={() => setEditingAccount({ ...editingAccount, is_disposable: !editingAccount.is_disposable })}>
+                  <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${editingAccount.is_disposable ? 'bg-amber-500 border-amber-500' : 'border-slate-500'}`}>
+                    {editingAccount.is_disposable && <Check size={14} className="text-black" />}
+                  </div>
+                  <span className="text-sm text-slate-300 font-medium">Cuenta Desechable (No Renovable)</span>
+                </div>
+
+                {/* Duration Selector for Edit (Only show if Disposable) */}
+                {editingAccount.is_disposable && (
+                  <div>
+                    <label className="text-xs text-slate-400 block mb-1">Duración (Meses)</label>
+                    <select
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                      // @ts-ignore
+                      value={editingAccount.duracion_meses || 1}
+                      // @ts-ignore
+                      onChange={e => setEditingAccount({ ...editingAccount, duracion_meses: Number(e.target.value) })}
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
+                        <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+              </div>
+
+              {/* Profiles Editor */}
+              <div className="border-t border-white/5 pt-4">
+                <label className="text-sm font-bold text-white mb-2 block">Editar Perfiles</label>
+                <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
+                  {editingProfiles.map((profile, idx) => (
+                    <div key={profile.id || idx} className="flex gap-2">
+                      <input
+                        className="flex-1 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white"
+                        value={profile.name}
+                        onChange={(e) => {
+                          const newProfiles = [...editingProfiles]
+                          newProfiles[idx].name = e.target.value
+                          setEditingProfiles(newProfiles)
+                        }}
+                        placeholder="Nombre Perfil"
+                      />
+                      <input
+                        className="w-20 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white text-center"
+                        value={profile.pin || ''}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        maxLength={4}
+                        onChange={(e) => {
+                          const newProfiles = [...editingProfiles]
+                          newProfiles[idx].pin = e.target.value
+                          setEditingProfiles(newProfiles)
+                        }}
+                        placeholder="PIN"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setEditingProfiles([...editingProfiles, { name: `Perfil ${editingProfiles.length + 1}`, pin: '' }])}
+                  className="w-full mt-2 py-2 border border-dashed border-white/20 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2"
+                >
+                  <Plus size={14} /> Agregar Perfil
+                </button>
+              </div>
+
+              <button onClick={handleUpdateAccount} className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl transition mt-2">
+                Guardar Cambios
+              </button>
+              <button onClick={() => setShowEditAccountModal(false)} className="w-full bg-transparent hover:bg-white/5 text-slate-400 py-3 rounded-xl transition">
+                Cancelar
+              </button>
+
+              <div className="pt-4 border-t border-white/5 mt-2">
+                <button onClick={handleDeleteAccount} className="w-full flex items-center justify-center gap-2 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 py-3 rounded-xl transition font-medium text-sm">
+                  <Trash2 size={16} /> Eliminar Cuenta Permanentemente
+                </button>
+              </div>
+            </div>
+          </div >
+
+        )
+      }
+
+      {/* SUCCESS MODAL / RECEIPT */}
+      {
+        showSuccessModal && successData && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
+            <div className="bg-slate-900 w-full max-w-sm rounded-[32px] p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
+              {/* Decoration */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-600"></div>
+
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-slate-950 rounded-full mx-auto flex items-center justify-center border border-white/10 mb-3 shadow-lg shadow-violet-500/10">
+                  <Check size={32} className="text-emerald-500" />
+                </div>
+                <h2 className="text-2xl font-black text-white tracking-tight">ESTRATOSFERA</h2>
+                <p className="text-xs font-bold text-violet-400 uppercase tracking-widest mt-1">COMPROBANTE DE PAGO</p>
+              </div>
+
+              <div className="bg-slate-950/50 rounded-2xl p-6 border border-white/5 mb-6">
+                <p className="text-center text-xs text-slate-500 font-medium mb-1">TOTAL PAGADO</p>
+                <p className="text-center text-3xl font-black text-emerald-400 mb-6">${successData.price?.toLocaleString()}</p>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start text-sm">
+                    <span className="text-slate-500 shrink-0">Cliente</span>
+                    <span className="text-white font-bold text-right">{successData.clientName}</span>
+                  </div>
+                  <div className="flex justify-between items-start text-sm">
+                    <span className="text-slate-500 shrink-0">Servicio</span>
+                    <span className="text-white font-medium text-right">{successData.service}</span>
+                  </div>
+                  {successData.months && successData.months > 1 && (
+                    <div className="flex justify-between items-start text-sm">
+                      <span className="text-slate-500 shrink-0">Duración</span>
+                      <span className="text-white font-medium text-right">{successData.months} Meses</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500">Fecha</span>
+                    <span className="text-white font-medium">{successData.date}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500">Método de Pago</span>
+                    <span className="text-white font-bold bg-white/5 px-2 py-0.5 rounded text-xs">{successData.paymentMethod}</span>
+                  </div>
                 </div>
               </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    const url = `https://wa.me/?text=${encodeURIComponent(successData.message)}`
+                    window.open(url, '_blank')
+                  }}
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  Enviar al Cliente
+                </button>
+                <button onClick={() => setShowSuccessModal(false)} className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition">
+                  Cerrar
+                </button>
+              </div>
+
+              <p className="text-center text-[10px] text-slate-600 mt-6">
+                ¡Gracias por tu compra!<br />
+                Generado automáticamente por el sistema
+              </p>
             </div>
           </div>
         )
       }
 
-      {/* SUCCESS MODAL / RECEIPT */}
-      {showSuccessModal && successData && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="bg-slate-900 w-full max-w-sm rounded-[32px] p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
-            {/* Decoration */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-600"></div>
-
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-slate-950 rounded-full mx-auto flex items-center justify-center border border-white/10 mb-3 shadow-lg shadow-violet-500/10">
-                <Check size={32} className="text-emerald-500" />
-              </div>
-              <h2 className="text-2xl font-black text-white tracking-tight">ESTRATOSFERA</h2>
-              <p className="text-xs font-bold text-violet-400 uppercase tracking-widest mt-1">COMPROBANTE DE PAGO</p>
-            </div>
-
-            <div className="bg-slate-950/50 rounded-2xl p-6 border border-white/5 mb-6">
-              <p className="text-center text-xs text-slate-500 font-medium mb-1">TOTAL PAGADO</p>
-              <p className="text-center text-3xl font-black text-emerald-400 mb-6">${successData.price?.toLocaleString()}</p>
-
-              <div className="space-y-3">
-                <div className="flex justify-between items-start text-sm">
-                  <span className="text-slate-500 shrink-0">Cliente</span>
-                  <span className="text-white font-bold text-right">{successData.clientName}</span>
-                </div>
-                <div className="flex justify-between items-start text-sm">
-                  <span className="text-slate-500 shrink-0">Servicio</span>
-                  <span className="text-white font-medium text-right">{successData.service}</span>
-                </div>
-                {successData.months && successData.months > 1 && (
-                  <div className="flex justify-between items-start text-sm">
-                    <span className="text-slate-500 shrink-0">Duración</span>
-                    <span className="text-white font-medium text-right">{successData.months} Meses</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500">Fecha</span>
-                  <span className="text-white font-medium">{successData.date}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500">Método de Pago</span>
-                  <span className="text-white font-bold bg-white/5 px-2 py-0.5 rounded text-xs">{successData.paymentMethod}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => {
-                  const url = `https://wa.me/?text=${encodeURIComponent(successData.message)}`
-                  window.open(url, '_blank')
-                }}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                Enviar al Cliente
-              </button>
-              <button onClick={() => setShowSuccessModal(false)} className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition">
-                Cerrar
-              </button>
-            </div>
-
-            <p className="text-center text-[10px] text-slate-600 mt-6">
-              ¡Gracias por tu compra!<br />
-              Generado automáticamente por el sistema
-            </p>
-          </div>
-        </div>
-      )}
-
     </>
   )
 }
 
-function ProfileCard({ profile, isSelected, onToggle, onRotate, onWarranty, onSell, onAssign }: { profile: Profile, isSelected: boolean, onToggle: () => void, onRotate: () => void, onWarranty: () => void, onSell: () => void, onAssign: () => void }) {
+function ProfileCard({ profile, isSelected, onToggle, onRotate, onReportWarranty, onRevive, onSell, onAssign }: { profile: Profile, isSelected: boolean, onToggle: () => void, onRotate: () => void, onReportWarranty: () => void, onRevive: () => void, onSell: () => void, onAssign: () => void }) {
   const statusColors = {
     LIBRE: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
     OCUPADO: 'bg-slate-800/50 border-white/5 text-slate-400',
@@ -1421,9 +1776,12 @@ function ProfileCard({ profile, isSelected, onToggle, onRotate, onWarranty, onSe
             />
           )}
           <span className="font-bold text-sm truncate">{profile.nombre_perfil}</span>
+          {profile.pin && (
+            <span className="text-[10px] text-slate-500 font-mono border border-white/5 bg-black/20 px-1 rounded tracking-wider">{profile.pin}</span>
+          )}
         </div>
         <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">{profile.estado === 'CUARENTENA_PIN' ? 'CUARENTENA' : profile.estado}</span>
-      </div >
+      </div>
 
       {/* Client Name Display for Occupied Profiles */}
       {
@@ -1436,19 +1794,45 @@ function ProfileCard({ profile, isSelected, onToggle, onRotate, onWarranty, onSe
       }
 
 
-
       <div className="flex gap-2 mt-auto">
         {(profile.estado === 'OCUPADO' || profile.estado === 'GARANTIA' || profile.estado === 'CAIDO') && (
-          <button
-            onClick={onWarranty}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1 ${profile.estado === 'GARANTIA'
-              ? 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
-              : 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
-              }`}
-          >
-            <ShieldAlert size={12} />
-            {profile.estado === 'GARANTIA' ? 'REASIGNAR' : 'Garantía'}
-          </button>
+          <div className="flex gap-1 flex-1">
+            {profile.estado === 'GARANTIA' ? (
+              <button
+                onClick={onRevive}
+                className="flex-1 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors flex items-center justify-center gap-1"
+                title="Revivir Perfil (Liberar)"
+              >
+                <Activity size={12} /> Revivir
+              </button>
+            ) : (
+              <button
+                onClick={onReportWarranty}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1 ${'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
+                  }`}
+              >
+                <ShieldAlert size={12} /> Garantía
+              </button>
+            )}
+
+            {/* Fix: Reassign Logic */}
+            {/* If Warranty, we still might want to move the client to another place? 
+                 User said: 'si reasignar automaticmente...'. 
+                 The button below opens Assign Modal. 
+                 It should be available in 'GARANTIA' too if there's a client attached (usually client data is on Transaction, but if we set profile to GARANTIA, does it keep client? 
+                 Currently schema: Profile has `transactions`, but no direct `clientId` (relation is via transaction). 
+                 Wait, if we set GARANTIA, we normally shouldn't lose the client info if we want to reassign.
+                 However, `releaseService` expires the transaction. `setAccountWarranty` keeps transaction?
+                 Let's ensure the Reassign button (Blue User) is available.
+              */}
+            <button
+              onClick={onAssign} // Opens Assign Modal
+              title="Reasignar a Cliente"
+              className="w-8 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors flex items-center justify-center"
+            >
+              <User size={12} />
+            </button>
+          </div>
         )}
 
         {profile.estado === 'LIBRE' ? (
@@ -1475,15 +1859,17 @@ function ProfileCard({ profile, isSelected, onToggle, onRotate, onWarranty, onSe
             </button>
           </div>
         ) : (
-          <button
-            onClick={onRotate}
-            className="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs font-medium transition-colors flex items-center justify-center gap-1"
-          >
-            <RefreshCw size={12} />
-            {profile.estado === 'CUARENTENA_PIN' ? 'Revivir (Liberar)' : 'Rotar'}
-          </button>
+          // Status other than LIBRE (OCUPADO, GARANTIA, etc) are handled above or here if needed (e.g. CUARENTENA)
+          profile.estado === 'CUARENTENA_PIN' && (
+            <button
+              onClick={onRotate}
+              className="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs font-medium transition-colors flex items-center justify-center gap-1"
+            >
+              <RefreshCw size={12} /> Revivir
+            </button>
+          )
         )}
       </div>
-    </div >
+    </div>
   )
 }

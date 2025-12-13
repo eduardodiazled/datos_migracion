@@ -1,4 +1,4 @@
-export type MessageType = 'SALE' | 'WARRANTY' | 'ROTATION' | 'REMINDER' | 'FULL_ACCOUNT_SALE'
+export type MessageType = 'SALE' | 'WARRANTY' | 'ROTATION' | 'REMINDER' | 'FULL_ACCOUNT_SALE' | 'WELCOME_BOT'
 
 type MessageData = {
     clientName: string
@@ -10,11 +10,13 @@ type MessageData = {
     date?: string
     price?: number
     daysLeft?: number
+    phone?: string
+    magicLink?: string
 }
 
 export const MessageGenerator = {
     generate: (type: MessageType, data: MessageData): string => {
-        const isNetflix = data.service.toLowerCase().includes('netflix')
+        const isNetflix = data.service?.toLowerCase().includes('netflix')
         const hasPin = data.pin && data.pin.length > 0
         const hasProfile = data.profileName && data.profileName.length > 0
 
@@ -97,6 +99,17 @@ Pasaba a recordarte que tu servicio de ${data.service} está próximo a vencer.
 📅 Fecha de corte: ${data.date} (${timeText}) 💲 Valor: $${data.price?.toLocaleString() || '...'}
 
 Quedo atento a tu comprobante para renovarte sin interrupciones. ¡Gracias!`
+
+            case 'WELCOME_BOT':
+                return `Hola ${data.clientName} 👋 Soy el BOT nuevo de Estratosfera 🤖.
+
+Pronto estaré activo para brindarte información sobre notificaciones de tus servicios. Guárdame como "Bot Estratosfera".
+
+Por ahora, puedes ver tus servicios activos y renovaciones desde el mes de diciembre en el siguiente link:
+👇👇
+${data.magicLink || `https://estratosfera-app.vercel.app/portal?phone=${data.phone}`}
+
+¡Gracias por confiar en nosotros!`
 
             default:
                 return ''

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight } from 'lucide-react'
-import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders } from '../actions'
+import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react'
+import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders, getRenewableReminders } from '../actions'
 import html2canvas from 'html2canvas'
 
 import { signOut } from 'next-auth/react'
@@ -14,18 +14,19 @@ export default function SalesPage() {
     const [inventory, setInventory] = useState<any[]>([])
     const [dueAccounts, setDueAccounts] = useState<any[]>([])
     const [providers, setProviders] = useState<any[]>([])
+    const [renewableReminders, setRenewableReminders] = useState<any[]>([])
 
     // Modals
     const [showSaleModal, setShowSaleModal] = useState(false)
     const [showExpenseModal, setShowExpenseModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
-
+    const [showMobileMenu, setShowMobileMenu] = useState(false)
     // Forms
     const [saleType, setSaleType] = useState<'PRODUCT' | 'FREE'>('PRODUCT')
     const [saleForm, setSaleForm] = useState({ clientId: '', clientName: '', price: '', paymentMethod: 'NEQUI', description: '' })
     const [selectedProduct, setSelectedProduct] = useState<any>(null)
 
-    const [expenseForm, setExpenseForm] = useState({ category: 'PROVEEDOR', description: '', amount: '', paymentMethod: 'NEQUI', supplier: '' })
+    const [expenseForm, setExpenseForm] = useState({ category: 'PROVEEDOR', description: '', amount: '', paymentMethod: 'NEQUI', supplier: '', date: new Date().toISOString().split('T')[0] })
 
     const [editingTx, setEditingTx] = useState<any>(null)
 
@@ -44,6 +45,30 @@ export default function SalesPage() {
     const [invoiceData, setInvoiceData] = useState<any>(null)
     const invoiceRef = useRef<HTMLDivElement>(null)
 
+    // Swipe State
+    const [touchStart, setTouchStart] = useState<number | null>(null)
+    const [touchEnd, setTouchEnd] = useState<number | null>(null)
+    const minSwipeDistance = 50
+
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null)
+        setTouchStart(e.targetTouches[0].clientX)
+    }
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX)
+    }
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return
+        const distance = touchStart - touchEnd
+        const isLeftSwipe = distance > minSwipeDistance
+        const isRightSwipe = distance < -minSwipeDistance
+
+        if (isLeftSwipe) navigateDate('NEXT')
+        if (isRightSwipe) navigateDate('PREV')
+    }
+
     useEffect(() => {
         loadData()
     }, [currentDate.getFullYear()])
@@ -60,11 +85,12 @@ export default function SalesPage() {
         setLoading(true)
         const year = currentDate.getFullYear()
 
-        const [hist, inv, due, provs] = await Promise.all([
+        const [hist, inv, due, provs, remindersRes] = await Promise.all([
             getFullHistory(year), // Fetch full year
             getAvailableInventory(),
             getDueAccounts(),
-            getAllProviders()
+            getAllProviders(),
+            getRenewableReminders()
         ])
 
         // Combine transactions and expenses
@@ -74,6 +100,9 @@ export default function SalesPage() {
         setInventory(inv)
         setDueAccounts(due)
         setProviders(provs)
+
+        if (remindersRes?.success) setRenewableReminders(remindersRes.reminders || [])
+
         setLoading(false)
     }
 
@@ -134,11 +163,34 @@ export default function SalesPage() {
     }
 
     const filteredHistory = getFilteredData()
-    const filteredByTab = filteredHistory.filter(item => activeTab === 'INGRESOS' ? item.type === 'INGRESO' : item.type === 'EGRESO')
 
+    // Calculate Totals based on ALL data for the period (Financial Integrity)
     const totalIncome = filteredHistory.filter(i => i.type === 'INGRESO').reduce((sum, i) => sum + i.amount, 0)
     const totalExpense = filteredHistory.filter(i => i.type === 'EGRESO').reduce((sum, i) => sum + i.amount, 0)
     const balance = totalIncome - totalExpense
+
+    // Filter List View (User Preference: Hide Migration Data (Dec 7th Batch) but SHOW new backdated entries)
+    // - Hide items created specifically on Dec 7th (The Migration Dump)
+    // - SHOW items created on Dec 8th/9th even if their date is Dec 1st (User Backdating)
+    const filteredByTab = filteredHistory.filter(item => {
+        const isTabMatch = activeTab === 'INGRESOS' ? item.type === 'INGRESO' : item.type === 'EGRESO'
+
+        let shouldShow = true
+        if (item.createdAt) {
+            // Block the specific migration batch date (Dec 7th)
+            const created = new Date(item.createdAt)
+            // Check if it's the migration batch (Dec 7th between start and end of day local/utc?)
+            // The script showed 2025-12-07.
+            // Safe filter: Hide if created < Dec 8th 2025 AND date is > Jan 1 2025?
+            // Actually, user wants to hide "bulk". 
+            // Let's hide anything created BEFORE Dec 8th, 2025.
+            if (created < new Date('2025-12-08T00:00:00')) {
+                shouldShow = false
+            }
+        }
+
+        return isTabMatch && shouldShow
+    })
 
     // --- HANDLERS ---
 
@@ -166,15 +218,20 @@ export default function SalesPage() {
     const handleCreateExpense = async () => {
         if (!expenseForm.amount || !expenseForm.description) return alert('Datos incompletos')
 
+        // Fix: Force Noon (12:00) to prevent timezone shifts to previous day
+        const safeDate = expenseForm.date
+            ? new Date(expenseForm.date + 'T12:00:00').toISOString()
+            : new Date().toISOString()
+
         const res = await createExpense({
             ...expenseForm,
             amount: Number(expenseForm.amount),
-            date: new Date().toISOString()
+            date: safeDate
         })
 
         if (res.success) {
             setShowExpenseModal(false)
-            setExpenseForm({ category: 'PROVEEDOR', description: '', amount: '', paymentMethod: 'NEQUI', supplier: '' })
+            setExpenseForm({ category: 'PROVEEDOR', description: '', amount: '', paymentMethod: 'NEQUI', supplier: '', date: new Date().toISOString().split('T')[0] })
             loadData()
         } else {
             alert('Error creating expense')
@@ -184,35 +241,54 @@ export default function SalesPage() {
     const handleUpdate = async () => {
         if (!editingTx) return
 
-        let res
-        if (editingTx.type === 'EGRESO') {
-            res = await updateExpense(editingTx.id, {
-                category: editingTx.category,
-                description: editingTx.description,
-                amount: Number(editingTx.amount),
-                paymentMethod: editingTx.paymentMethod,
-                supplier: editingTx.client,
-                date: editingTx.date
-            })
-        } else {
-            res = await updateTransaction(editingTx.id, {
-                price: Number(editingTx.amount),
-                description: editingTx.description,
-                paymentMethod: editingTx.paymentMethod,
-                clientName: editingTx.client,
-                clientId: editingTx.clientId,
-                profileId: editingTx.newProfileId,
-                date: editingTx.date, // Send the string directly (YYYY-MM-DD) if modified from input
-                months: editingTx.months
-            })
-        }
+        try {
+            console.log("Updating...", editingTx)
 
-        if (res.success) {
-            setShowEditModal(false)
-            setEditingTx(null)
-            loadData()
-        } else {
-            alert('Error updating')
+            // Fix: Date Handling (Force Noon if simple date string)
+            const safeDate = (dateVal: string) => {
+                if (!dateVal) return new Date().toISOString()
+                if (dateVal.length === 10) return new Date(dateVal + 'T12:00:00').toISOString()
+                return dateVal
+            }
+
+            let res
+            if (editingTx.type === 'EGRESO') {
+                res = await updateExpense(editingTx.id, {
+                    category: editingTx.category,
+                    description: editingTx.description,
+                    amount: Number(editingTx.amount),
+                    paymentMethod: editingTx.paymentMethod,
+                    supplier: editingTx.client,
+                    date: safeDate(editingTx.date)
+                })
+            } else {
+                res = await updateTransaction(editingTx.id, {
+                    price: Number(editingTx.amount),
+                    description: editingTx.description,
+                    paymentMethod: editingTx.paymentMethod,
+                    clientName: editingTx.client,
+                    clientId: editingTx.clientId,
+                    profileId: editingTx.newProfileId,
+                    date: safeDate(editingTx.date),
+                    months: editingTx.months
+                })
+            }
+
+            console.log("Update Result:", res)
+
+            if (res.success) {
+                setShowEditModal(false)
+                setEditingTx(null)
+                loadData()
+                toast.success('¡Actualizado Correctamente! 🚀')
+            } else {
+                console.error("Update Failed:", res.error)
+                alert('Error al actualizar: ' + (res.error || 'Desconocido'))
+                toast.error('Error al actualizar: ' + res.error)
+            }
+        } catch (error) {
+            console.error("Critical Update Error:", error)
+            alert('Error Crítico: ' + error)
         }
     }
 
@@ -252,161 +328,237 @@ export default function SalesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 md:ml-72 pb-32 md:pb-8">
+        <div className="text-slate-200 pb-32 md:pb-8" >
 
             {/* H E A D E R */}
-            <div className="flex flex-col gap-6 mb-6">
+            < div className="flex flex-col gap-6 mb-6" >
                 <div className="flex justify-between items-start md:items-center">
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold text-white mb-1">Balance</h1>
                         <p className="text-slate-400 text-sm">Resumen financiero</p>
                     </div>
 
-                    {/* Desktop View Switcher & Actions */}
-                    <div className="hidden md:flex items-center gap-4">
-                        <div className="bg-slate-900 p-1 rounded-xl border border-white/5 flex">
-                            {['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].map(mode => (
-                                <button
-                                    key={mode}
-                                    onClick={() => setViewMode(mode as any)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition ${viewMode === mode ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
-                                >
-                                    {mode === 'DAILY' ? 'Diario' : mode === 'WEEKLY' ? 'Semanal' : mode === 'MONTHLY' ? 'Mensual' : 'Anual'}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => setShowSaleModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition active:scale-95 text-sm">
-                                <Plus size={18} /> Nueva Venta
-                            </button>
-                            <button onClick={() => setShowExpenseModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-rose-500/20 flex items-center gap-2 transition active:scale-95 text-sm">
-                                <ArrowDownRight size={18} /> Nuevo Gasto
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Date Navigation */}
-                <div className="flex items-center justify-between bg-slate-900/50 p-2 rounded-xl border border-white/5 backdrop-blur-sm">
-                    <button onClick={() => navigateDate('PREV')} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition"><ChevronLeft /></button>
-
-                    <div className="text-center">
-                        <span className="text-white font-bold capitalize text-lg block">{getDateLabel()}</span>
-                    </div>
-
-                    <button onClick={() => navigateDate('NEXT')} className="p-2 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition"><ChevronRight /></button>
-                </div>
-
-                {/* Mobile View Switcher */}
-                <div className="md:hidden flex overflow-x-auto pb-2 gap-2 custom-scrollbar">
-                    {['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].map(mode => (
-                        <button
-                            key={mode}
-                            onClick={() => setViewMode(mode as any)}
-                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition border ${viewMode === mode ? 'bg-violet-600 border-violet-600 text-white' : 'bg-slate-900 border-white/5 text-slate-400'}`}
-                        >
-                            {mode === 'DAILY' ? 'Diario' : mode === 'WEEKLY' ? 'Semanal' : mode === 'MONTHLY' ? 'Mensual' : 'Anual'}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* ALERTS SECTION */}
-            {dueAccounts.length > 0 && (() => {
-                const today = new Date().getDate()
-                const currentMonth = new Date().getMonth()
-
-                const alerts = dueAccounts.map(acc => {
-                    const isPaid = history.some(h =>
-                        h.type === 'EGRESO' &&
-                        h.category === 'PROVEEDOR' &&
-                        h.client === acc.provider?.nombre &&
-                        new Date(h.date).getMonth() === currentMonth
-                    )
-
-                    if (isPaid) return { ...acc, urgency: 'NORMAL', daysUntil: 0, isPaid: true }
-
-                    let daysUntil = acc.dia_corte - today
-                    if (daysUntil < 0) daysUntil += 30
-
-                    let urgency = 'NORMAL'
-                    if (daysUntil === 0) urgency = 'TODAY'
-                    else if (daysUntil <= 3) urgency = 'SOON'
-
-                    return { ...acc, urgency, daysUntil }
-                })
-                    .filter(a => a.urgency !== 'NORMAL' && !a.isPaid)
-                    .sort((a, b) => a.daysUntil - b.daysUntil)
-
-                if (alerts.length === 0) return null
-
-                return (
-                    <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="md:col-span-2 lg:col-span-1 bg-slate-900/80 border border-orange-500/30 p-5 rounded-2xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-3 opacity-10">
-                                <ShieldAlert size={80} className="text-orange-500" />
-                            </div>
-                            <h3 className="font-bold text-orange-400 flex items-center gap-2 mb-3">
-                                <ShieldAlert size={20} /> Pagos Próximos
-                            </h3>
-                            <div className="space-y-3 max-h-40 overflow-y-auto custom-scrollbar pr-2">
-                                {alerts.map(acc => (
-                                    <div key={acc.id} className="flex justify-between items-center bg-slate-950/50 p-3 rounded-xl border border-white/5 group">
-                                        <div>
-                                            <div className="font-bold text-white text-sm">{acc.servicio}</div>
-                                            <div className="text-xs text-slate-400 font-mono">{acc.email}</div>
-                                            <div className="text-[10px] text-slate-500">Prov: {acc.provider?.nombre || 'Propio'}</div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <div className={`text-xs font-bold px-2 py-1 rounded-lg ${acc.urgency === 'TODAY' ? 'bg-rose-500 text-white animate-pulse' : 'bg-orange-500/20 text-orange-400'
-                                                }`}>
-                                                {acc.urgency === 'TODAY' ? '¡HOY!' : `En ${acc.daysUntil} días`}
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    setExpenseForm({
-                                                        category: 'PROVEEDOR',
-                                                        description: `Pago ${acc.servicio}`,
-                                                        amount: '',
-                                                        paymentMethod: 'NEQUI',
-                                                        supplier: acc.provider?.nombre || ''
-                                                    })
-                                                    setShowExpenseModal(true)
-                                                }}
-                                                className="hidden group-hover:flex bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg items-center gap-1 transition-all"
-                                            >
-                                                PAGAR
-                                            </button>
-                                        </div>
-                                    </div>
+                    <div className="flex items-center gap-4">
+                        {/* Desktop View Switcher & Actions */}
+                        <div className="hidden md:flex items-center gap-4">
+                            <div className="bg-slate-900 p-1 rounded-xl border border-white/5 flex">
+                                {['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].map(mode => (
+                                    <button key={mode} onClick={() => setViewMode(mode as any)} className={`px-4 py-2 rounded-lg text-sm font-bold transition ${viewMode === mode ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>
+                                        {mode === 'DAILY' ? 'Diario' : mode === 'WEEKLY' ? 'Semanal' : mode === 'MONTHLY' ? 'Mensual' : 'Anual'}
+                                    </button>
                                 ))}
                             </div>
+                            <div className="flex gap-2">
+                                <button onClick={() => setShowSaleModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition active:scale-95 text-sm"><Plus size={18} /> Nueva Venta</button>
+                                <button onClick={() => setShowExpenseModal(true)} className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-rose-500/20 flex items-center gap-2 transition active:scale-95 text-sm"><ArrowDownRight size={18} /> Nuevo Gasto</button>
+                            </div>
+                        </div>
+
+                        {/* Universal Menu Button */}
+                        <div className="relative">
+                            <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 text-slate-400 hover:text-white transition bg-slate-900 rounded-lg border border-white/5">
+                                <MoreVertical size={20} />
+                            </button>
+                            {showMobileMenu && (
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+                                    <button onClick={() => { signOut(); setShowMobileMenu(false) }} className="w-full text-left px-4 py-3 text-rose-400 hover:bg-white/5 flex items-center gap-2 text-sm font-medium">
+                                        <LogOut size={16} /> Cerrar Sesión
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
-                )
-            })()}
+                </div>
+
+                {/* Date Navigation Strip */}
+                <div className="bg-slate-900/50 p-1 rounded-xl border border-white/5 backdrop-blur-sm overflow-hidden select-none" >
+                    <div
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                        className="flex items-center justify-between md:justify-center gap-1 md:gap-4 overflow-x-auto custom-scrollbar pb-1 md:pb-0 relative"
+                    >
+                        <button onClick={() => navigateDate('PREV')} className="px-2 py-3 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition shrink-0"><ChevronLeft size={20} /></button>
+
+                        {/* Dynamic Strip */}
+                        {viewMode === 'DAILY' && [-2, -1, 0, 1, 2].map(offset => {
+                            const d = new Date(currentDate)
+                            d.setDate(d.getDate() + offset)
+                            const isSelected = offset === 0
+                            return (
+                                <button key={offset} onClick={() => setCurrentDate(d)} className={`flex flex-col items-center justify-center p-2 rounded-xl min-w-[60px] md:min-w-[80px] transition ${isSelected ? 'bg-violet-600 text-white shadow-lg' : 'hover:bg-white/5 text-slate-400 hover:text-slate-200'}`}>
+                                    <span className="text-[10px] uppercase font-bold tracking-wider">{d.toLocaleDateString('es-CO', { weekday: 'short' })}</span>
+                                    <span className="text-lg md:text-xl font-bold leading-none">{d.getDate()}</span>
+                                    {offset === 0 && <span className="text-[10px] opacity-75">{d.toLocaleDateString('es-CO', { month: 'short' })}</span>}
+                                </button>
+                            )
+                        })}
+
+                        {viewMode === 'MONTHLY' && [-2, -1, 0, 1, 2].map(offset => {
+                            const d = new Date(currentDate)
+                            d.setMonth(d.getMonth() + offset)
+                            const isSelected = offset === 0
+                            return (
+                                <button key={offset} onClick={() => setCurrentDate(d)} className={`flex flex-col items-center justify-center px-4 py-2 rounded-xl min-w-[90px] md:min-w-[120px] transition ${isSelected ? 'bg-violet-600 text-white shadow-lg' : 'hover:bg-white/5 text-slate-400 hover:text-slate-200'}`}>
+                                    <span className="text-sm md:text-base font-bold capitalize">{d.toLocaleDateString('es-CO', { month: 'long' })}</span>
+                                    <span className="text-xs opacity-50">{d.getFullYear()}</span>
+                                </button>
+                            )
+                        })}
+
+                        {(viewMode === 'WEEKLY' || viewMode === 'YEARLY') && (
+                            <div className="text-center px-6"><span className="text-white font-bold capitalize text-lg block">{getDateLabel()}</span></div>
+                        )}
+
+                        <button onClick={() => navigateDate('NEXT')} className="px-2 py-3 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition shrink-0"><ChevronRight size={20} /></button>
+                    </div>
+                </div >
+
+                {/* Mobile View Switcher */}
+                < div className="md:hidden flex overflow-x-auto pb-2 gap-2 custom-scrollbar" >
+                    {
+                        ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'].map(mode => (
+                            <button key={mode} onClick={() => setViewMode(mode as any)} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition border ${viewMode === mode ? 'bg-violet-600 border-violet-600 text-white' : 'bg-slate-900 border-white/5 text-slate-400'}`}>
+                                {mode === 'DAILY' ? 'Diario' : mode === 'WEEKLY' ? 'Semanal' : mode === 'MONTHLY' ? 'Mensual' : 'Anual'}
+                            </button>
+                        ))
+                    }
+                </div >
+            </div >
+
+            {/* ALERTS SECTION */}
+            {
+                dueAccounts.length > 0 && (() => {
+                    const today = new Date().getDate()
+                    const currentMonth = new Date().getMonth()
+
+                    const alerts = dueAccounts.map(acc => {
+                        const isPaid = history.some(h =>
+                            h.type === 'EGRESO' &&
+                            h.category === 'PROVEEDOR' &&
+                            h.client === acc.provider?.nombre &&
+                            new Date(h.date).getMonth() === currentMonth
+                        )
+
+                        let urgency = 'NORMAL'
+                        let daysUntil = acc.dia_corte - today
+
+                        if (isPaid) {
+                            // Paid for this month
+                            return { ...acc, urgency: 'NORMAL', daysUntil, isPaid: true }
+                        }
+
+                        // Not Paid
+                        if (daysUntil < -3) {
+                            // Hide if more than 3 days late (User request)
+                            urgency = 'NORMAL'
+                        } else if (daysUntil < 0) {
+                            // Overdue (Grace period of 3 days)
+                            urgency = 'OVERDUE'
+                        } else if (daysUntil === 0) {
+                            urgency = 'TODAY'
+                        } else if (daysUntil <= 3) {
+                            urgency = 'SOON'
+                        }
+
+                        return { ...acc, urgency, daysUntil }
+                    })
+                        .filter(a => a.urgency !== 'NORMAL')
+                        .sort((a, b) => a.daysUntil - b.daysUntil)
+
+                    if (alerts.length === 0) return null
+
+                    return (
+                        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="col-span-full bg-slate-900/50 border border-orange-500/20 p-6 rounded-3xl relative overflow-hidden backdrop-blur-xl">
+                                <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                                    <ShieldAlert size={120} className="text-orange-500" />
+                                </div>
+
+                                <h3 className="font-bold text-orange-400 flex items-center gap-2 mb-4 text-lg">
+                                    <ShieldAlert size={24} /> Próximos Vencimientos ({alerts.length})
+                                </h3>
+
+                                <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-track-transparent scrollbar-thumb-orange-500/20 hover:scrollbar-thumb-orange-500/50 transition-colors">
+                                    {alerts.map(acc => (
+                                        <div key={acc.id} className="min-w-[300px] snap-center bg-slate-950/80 p-5 rounded-2xl border border-white/5 hover:border-orange-500/50 transition-all group relative overflow-hidden shadow-lg">
+                                            {/* Status Stripe */}
+                                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${(acc.urgency === 'TODAY' || acc.urgency === 'OVERDUE') ? 'bg-rose-500 animate-pulse' : 'bg-orange-500'
+                                                }`} />
+
+                                            <div className="flex justify-between items-start mb-3 pl-3">
+                                                <div>
+                                                    <div className="font-bold text-white text-lg leading-tight">{acc.servicio}</div>
+                                                    <div className="text-[10px] text-slate-400 uppercase tracking-wider mt-1 font-bold">
+                                                        {acc.provider?.nombre || 'PROPIO'}
+                                                    </div>
+                                                </div>
+                                                <div className={`text-xs font-bold px-2 py-1 rounded-full ${(acc.urgency === 'TODAY' || acc.urgency === 'OVERDUE') ? 'bg-rose-500 text-white shadow-rose-500/50 shadow-sm' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                                                    }`}>
+                                                    {acc.urgency === 'TODAY' ? '¡HOY!' :
+                                                        acc.urgency === 'OVERDUE' ? `¡VENCIDO!` :
+                                                            `${acc.daysUntil} días`}
+                                                </div>
+                                            </div>
+
+                                            <div className="pl-3 mb-4">
+                                                <div className="text-xs text-slate-400 font-mono bg-black/30 rounded px-2 py-1 truncate border border-white/5">
+                                                    {acc.email}
+                                                </div>
+                                            </div>
+
+                                            <div className="pl-3 pt-2 border-t border-white/5 flex items-center justify-between">
+                                                <span className="text-xs text-slate-500">Acción Requerida</span>
+                                                <button
+                                                    onClick={() => {
+                                                        setExpenseForm({
+                                                            category: 'PROVEEDOR',
+                                                            description: `Pago ${acc.servicio}`,
+                                                            amount: '',
+                                                            paymentMethod: 'NEQUI',
+                                                            supplier: acc.provider?.nombre || '',
+                                                            date: new Date().toISOString().split('T')[0]
+                                                        })
+                                                        setShowExpenseModal(true)
+                                                    }}
+                                                    className="bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg shadow-orange-500/20 active:scale-95 transition-all flex items-center gap-2"
+                                                >
+                                                    <DollarSign size={14} /> PAGAR
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )
+                })()
+            }
 
             {/* BALANCE CARD */}
-            <div className="bg-slate-900/80 border border-white/10 p-6 rounded-3xl mb-8 relative overflow-hidden backdrop-blur-sm shadow-2xl">
+            <div className="bg-slate-900/80 border border-white/10 p-5 md:p-6 rounded-3xl mb-6 md:mb-8 relative overflow-hidden backdrop-blur-sm shadow-2xl">
                 <div className="absolute top-0 right-0 p-6 opacity-5"><DollarSign size={120} className="text-white" /></div>
 
-                <div className="relative z-10 w-full">
-                    <div className="flex justify-between items-start w-full">
-                        <div>
-                            <p className="text-slate-400 text-sm font-medium mb-1">Balance Total</p>
-                            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">${balance.toLocaleString()}</h2>
+                <div className="relative z-10 w-full md:flex md:items-center md:justify-between md:gap-8">
+                    <div className="flex-1">
+                        <div className="flex justify-between items-start w-full">
+                            <div>
+                                <p className="text-slate-400 text-xs md:text-sm font-medium mb-1">Balance Total</p>
+                                <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-0">${balance.toLocaleString()}</h2>
+                            </div>
+                            <button onClick={loadData} className="md:hidden text-[10px] text-violet-400 hover:text-violet-300 underline bg-violet-500/10 px-2 py-1 rounded-lg">Refrescar</button>
+                            <button onClick={loadData} className="hidden md:block text-xs text-violet-400 hover:text-violet-300 underline bg-violet-500/10 px-3 py-1 rounded-lg self-start">Refrescar</button>
                         </div>
-                        <button onClick={loadData} className="text-xs text-violet-400 hover:text-violet-300 underline bg-violet-500/10 px-3 py-1 rounded-lg">Refrescar</button>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 w-full">
-                        <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 hover:bg-emerald-500/10 transition">
-                            <div className="flex items-center gap-2 text-emerald-400 text-xs md:text-sm font-bold mb-1"><ArrowUpRight size={14} /> Ingresos</div>
-                            <p className="text-lg md:text-xl text-white font-mono font-bold">${totalIncome.toLocaleString()}</p>
+                    <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/5 w-full md:w-auto md:border-t-0 md:pt-0 md:flex md:gap-6">
+                        <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 hover:bg-emerald-500/10 transition md:min-w-[140px]">
+                            <div className="flex items-center gap-2 text-emerald-400 text-[10px] md:text-sm font-bold mb-1"><ArrowUpRight size={14} /> Ingresos</div>
+                            <p className="text-base md:text-xl text-white font-mono font-bold">${totalIncome.toLocaleString()}</p>
                         </div>
-                        <div className="bg-rose-500/5 p-3 rounded-xl border border-rose-500/10 hover:bg-rose-500/10 transition">
-                            <div className="flex items-center gap-2 text-rose-400 text-xs md:text-sm font-bold mb-1"><ArrowDownRight size={14} /> Egresos</div>
-                            <p className="text-lg md:text-xl text-white font-mono font-bold">${totalExpense.toLocaleString()}</p>
+                        <div className="bg-rose-500/5 p-3 rounded-xl border border-rose-500/10 hover:bg-rose-500/10 transition md:min-w-[140px]">
+                            <div className="flex items-center gap-2 text-rose-400 text-[10px] md:text-sm font-bold mb-1"><ArrowDownRight size={14} /> Egresos</div>
+                            <p className="text-base md:text-xl text-white font-mono font-bold">${totalExpense.toLocaleString()}</p>
                         </div>
                     </div>
                 </div>
@@ -429,6 +581,50 @@ export default function SalesPage() {
                     {activeTab === 'EGRESOS' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-rose-500 rounded-t-full"></div>}
                 </button>
             </div>
+
+            {/* RENEWABLE REMINDERS SECTION (ALWAYS VISIBLE) */}
+            {renewableReminders.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2 animate-pulse uppercase tracking-wider bg-amber-500/10 w-fit px-3 py-1 rounded-full border border-amber-500/20">
+                        <ShieldAlert size={16} className="text-amber-400" />
+                        <span className="text-amber-400">Vencimientos Próximos ({renewableReminders.length})</span>
+                    </h3>
+                    <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
+                        {renewableReminders.map((rem, i) => (
+                            <div key={i} className={`min-w-[280px] bg-slate-900 border-l-4 border-amber-500 rounded-r-xl p-4 flex flex-col justify-between shadow-lg relative group border border-white/5 snap-start ${i >= 3 ? 'hidden md:flex' : ''}`}>
+                                <div className="absolute top-2 right-2 text-[10px] font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">
+                                    {rem.isOverdue ? 'VENCIDO' : `Día ${rem.cutoffDay}`}
+                                </div>
+                                <div className="mb-2">
+                                    <div className="font-bold text-white text-base truncate pr-16">{rem.service}</div>
+                                    <div className="text-xs text-slate-400 truncate w-full" title={rem.providerName}>
+                                        Prov: {rem.providerName}
+                                    </div>
+                                    <div className="text-xs text-slate-500 truncate w-full mt-1 font-mono bg-black/20 p-1 rounded">
+                                        {rem.email}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setExpenseForm({
+                                            ...expenseForm,
+                                            category: 'PROVEEDOR',
+                                            paymentMethod: 'NEQUI',
+                                            supplier: rem.providerName,
+                                            description: `Renovación ${rem.service} (${rem.email})`,
+                                            amount: ''
+                                        })
+                                        setShowExpenseModal(true)
+                                    }}
+                                    className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition-colors mt-auto uppercase tracking-wide"
+                                >
+                                    <DollarSign size={14} /> Pagar Ahora
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* LIST */}
             <div className="space-y-3 mb-24 min-h-[300px]">
@@ -490,144 +686,156 @@ export default function SalesPage() {
                         <ArrowDownRight size={20} /> Nuevo Gasto
                     </button>
                 </div>
-                <button onClick={() => signOut({ callbackUrl: '/login' })} className="absolute top-3 right-3 flex items-center justify-center w-10 h-10 bg-slate-900 border border-white/10 text-slate-400 rounded-xl active:scale-95">
-                    <LogOut size={18} />
-                </button>
+
             </div>
 
-            {showSaleModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
-                    <div className="bg-slate-900 w-full max-w-lg rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-white">Nueva Venta</h2>
-                            <button onClick={() => setShowSaleModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 transition"><X size={20} className="text-slate-400" /></button>
-                        </div>
+            {
+                showSaleModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
+                        <div className="bg-slate-900 w-full max-w-lg rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-white">Nueva Venta</h2>
+                                <button onClick={() => setShowSaleModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 transition"><X size={20} className="text-slate-400" /></button>
+                            </div>
 
-                        {/* Tabs - Fixed CSS */}
-                        <div className="flex bg-slate-950 p-1 rounded-xl">
-                            <button onClick={() => setSaleType('PRODUCT')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${saleType === 'PRODUCT' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Productos</button>
-                            <button onClick={() => setSaleType('FREE')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${saleType === 'FREE' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Venta Libre</button>
-                        </div>
+                            {/* Tabs - Fixed CSS */}
+                            <div className="flex bg-slate-950 p-1 rounded-xl">
+                                <button onClick={() => setSaleType('PRODUCT')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${saleType === 'PRODUCT' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Productos</button>
+                                <button onClick={() => setSaleType('FREE')} className={`flex-1 py-2 text-sm font-bold rounded-lg transition ${saleType === 'FREE' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>Venta Libre</button>
+                            </div>
 
-                        {/* Client Search */}
-                        <div className="space-y-1 relative z-20">
-                            <label className="text-xs text-slate-500 ml-1">Cliente</label>
-                            <div className="relative">
-                                <Search size={16} className="absolute left-3 top-3 text-slate-500" />
-                                <input
-                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-9 text-white outline-none focus:border-violet-500 transition"
-                                    placeholder="Buscar por nombre o celular..."
-                                    value={searchTerm}
-                                    onChange={e => { setSearchTerm(e.target.value); setSaleForm({ ...saleForm, clientName: e.target.value }) }}
-                                />
-                                {searchResults.length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-white/10 rounded-xl shadow-xl overflow-hidden">
-                                        {searchResults.map(c => (
-                                            <button key={c.id} onClick={() => selectClient(c)} className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 last:border-0">
-                                                <div className="font-bold text-white text-sm">{c.nombre}</div>
-                                                <div className="text-xs text-slate-400">{c.celular}</div>
+                            {/* Client Search */}
+                            <div className="space-y-1 relative z-20">
+                                <label className="text-xs text-slate-500 ml-1">Cliente</label>
+                                <div className="relative">
+                                    <Search size={16} className="absolute left-3 top-3 text-slate-500" />
+                                    <input
+                                        className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-9 text-white outline-none focus:border-violet-500 transition"
+                                        placeholder="Buscar por nombre o celular..."
+                                        value={searchTerm}
+                                        onChange={e => { setSearchTerm(e.target.value); setSaleForm({ ...saleForm, clientName: e.target.value }) }}
+                                    />
+                                    {searchResults.length > 0 && (
+                                        <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-white/10 rounded-xl shadow-xl overflow-hidden">
+                                            {searchResults.map(c => (
+                                                <button key={c.id} onClick={() => selectClient(c)} className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 last:border-0">
+                                                    <div className="font-bold text-white text-sm">{c.nombre}</div>
+                                                    <div className="text-xs text-slate-400">{c.celular}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Celular" value={saleForm.clientId} onChange={e => setSaleForm({ ...saleForm, clientId: e.target.value })} />
+                                <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Nombre" value={saleForm.clientName} onChange={e => setSaleForm({ ...saleForm, clientName: e.target.value })} />
+                            </div>
+
+                            {saleType === 'PRODUCT' ? (
+                                <div className="space-y-2">
+                                    <h3 className="text-xs font-bold text-slate-400 uppercase ml-1">Seleccionar Producto</h3>
+                                    <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                                        {inventory.map(inv => (
+                                            <button key={inv.id} onClick={() => setSelectedProduct(inv)} className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}>
+                                                <div><div className="text-sm font-bold text-white">{inv.service}</div><div className="text-xs text-slate-500">{inv.name}</div></div>
+                                                {selectedProduct?.id === inv.id && <Check size={16} className="text-emerald-500" />}
                                             </button>
                                         ))}
                                     </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Celular" value={saleForm.clientId} onChange={e => setSaleForm({ ...saleForm, clientId: e.target.value })} />
-                            <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Nombre" value={saleForm.clientName} onChange={e => setSaleForm({ ...saleForm, clientName: e.target.value })} />
-                        </div>
-
-                        {saleType === 'PRODUCT' ? (
-                            <div className="space-y-2">
-                                <h3 className="text-xs font-bold text-slate-400 uppercase ml-1">Seleccionar Producto</h3>
-                                <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                                    {inventory.map(inv => (
-                                        <button key={inv.id} onClick={() => setSelectedProduct(inv)} className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}>
-                                            <div><div className="text-sm font-bold text-white">{inv.service}</div><div className="text-xs text-slate-500">{inv.name}</div></div>
-                                            {selectedProduct?.id === inv.id && <Check size={16} className="text-emerald-500" />}
-                                        </button>
-                                    ))}
                                 </div>
-                            </div>
-                        ) : (
-                            <textarea className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none h-20 resize-none" placeholder="Descripción..." value={saleForm.description} onChange={e => setSaleForm({ ...saleForm, description: e.target.value })} />
-                        )}
+                            ) : (
+                                <textarea className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none h-20 resize-none" placeholder="Descripción..." value={saleForm.description} onChange={e => setSaleForm({ ...saleForm, description: e.target.value })} />
+                            )}
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="relative">
-                                <span className="absolute left-3 top-3 text-slate-500">$</span>
-                                <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition" value={saleForm.price} onChange={e => setSaleForm({ ...saleForm, price: e.target.value })} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="relative">
+                                    <span className="absolute left-3 top-3 text-slate-500">$</span>
+                                    <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition" value={saleForm.price} onChange={e => setSaleForm({ ...saleForm, price: e.target.value })} />
+                                </div>
+                                <select className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={saleForm.paymentMethod} onChange={e => setSaleForm({ ...saleForm, paymentMethod: e.target.value })}>
+                                    <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
+                                </select>
                             </div>
-                            <select className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={saleForm.paymentMethod} onChange={e => setSaleForm({ ...saleForm, paymentMethod: e.target.value })}>
-                                <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
-                            </select>
+                            <button onClick={handleCreateSale} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95">Confirmar Venta</button>
                         </div>
-                        <button onClick={handleCreateSale} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95">Confirmar Venta</button>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* EXPENSE MODAL */}
-            {showExpenseModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
-                    <div className="bg-slate-900 w-full max-w-md rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-white">Nuevo Gasto</h2>
-                            <button onClick={() => setShowExpenseModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 transition"><X size={20} className="text-slate-400" /></button>
-                        </div>
-                        {/* Category Selection */}
-                        <div className="space-y-1">
-                            <label className="text-xs text-slate-500">Categoría</label>
-                            <select
-                                className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
-                                value={expenseForm.category}
-                                onChange={e => setExpenseForm({ ...expenseForm, category: e.target.value })}
-                            >
-                                <option value="GASTO_ADMIN">Gasto Administrativo</option>
-                                <option value="NOMINA">Nómina</option>
-                                <option value="PROVEEDOR">Pago a Proveedor</option>
-                                <option value="PUBLICIDAD">Publicidad</option>
-                                <option value="OTRO">Otro</option>
-                            </select>
-                        </div>
-                        {/* Enabled Provider Search if Category is PROVEEDOR */}
-                        {expenseForm.category === 'PROVEEDOR' ? (
-                            <div className="space-y-1 relative z-20">
-                                <div className="relative">
-                                    <select
-                                        className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-rose-500 transition appearance-none"
-                                        value={expenseForm.supplier || ''}
-                                        onChange={e => setExpenseForm({ ...expenseForm, supplier: e.target.value })}
-                                    >
-                                        <option value="">Seleccionar Proveedor...</option>
-                                        {providers?.map((p: any) => (
-                                            <option key={p.id} value={p.nombre}>{p.nombre}</option>
-                                        ))}
-                                        <option value="NEW">+ Nuevo Proveedor (Escribir en descripción)</option>
-                                    </select>
-                                    <div className="absolute right-3 top-3 pointer-events-none text-slate-500">▼</div>
-                                </div>
-
-                                {expenseForm.supplier === 'NEW' && (
-                                    <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none mt-2" placeholder="Nombre del nuevo proveedor" onChange={e => setExpenseForm({ ...expenseForm, supplier: e.target.value, description: e.target.value + ' - ' + expenseForm.description })} />
-                                )}
-
-                                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Descripción del Gasto (Ej: 30 Netflix)" value={expenseForm.description} onChange={e => setExpenseForm({ ...expenseForm, description: e.target.value })} />
+            {
+                showExpenseModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
+                        <div className="bg-slate-900 w-full max-w-md rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-white">Nuevo Gasto</h2>
+                                <button onClick={() => setShowExpenseModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 transition"><X size={20} className="text-slate-400" /></button>
                             </div>
-                        ) : (
-                            <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Descripción" value={expenseForm.description} onChange={e => setExpenseForm({ ...expenseForm, description: e.target.value })} />
-                        )}
-                        <div className="grid grid-cols-2 gap-4">
-                            <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Monto" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} />
-                            <select className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={expenseForm.paymentMethod} onChange={e => setExpenseForm({ ...expenseForm, paymentMethod: e.target.value })}>
-                                <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option>
-                            </select>
+                            {/* Category Selection */}
+                            <div className="space-y-1">
+                                <label className="text-xs text-slate-500">Categoría</label>
+                                <select
+                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                    value={expenseForm.category}
+                                    onChange={e => setExpenseForm({ ...expenseForm, category: e.target.value })}
+                                >
+                                    <option value="GASTO_ADMIN">Gasto Administrativo</option>
+                                    <option value="NOMINA">Nómina</option>
+                                    <option value="PROVEEDOR">Pago a Proveedor</option>
+                                    <option value="PUBLICIDAD">Publicidad</option>
+                                    <option value="OTRO">Otro</option>
+                                </select>
+                            </div>
+
+                            {/* Date Selection (Universal) */}
+                            <div className="space-y-1">
+                                <label className="text-xs text-slate-500">Fecha del Gasto</label>
+                                <input
+                                    type="date"
+                                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                    value={expenseForm.date}
+                                    onChange={e => setExpenseForm({ ...expenseForm, date: e.target.value })}
+                                />
+                            </div>
+                            {/* Enabled Provider Search if Category is PROVEEDOR */}
+                            {expenseForm.category === 'PROVEEDOR' ? (
+                                <div className="space-y-1 relative z-20">
+                                    <div className="relative">
+                                        <select
+                                            className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-rose-500 transition appearance-none"
+                                            value={expenseForm.supplier || ''}
+                                            onChange={e => setExpenseForm({ ...expenseForm, supplier: e.target.value })}
+                                        >
+                                            <option value="">Seleccionar Proveedor...</option>
+                                            {providers?.map((p: any) => (
+                                                <option key={p.id} value={p.nombre}>{p.nombre}</option>
+                                            ))}
+                                            <option value="NEW">+ Nuevo Proveedor (Escribir en descripción)</option>
+                                        </select>
+                                        <div className="absolute right-3 top-3 pointer-events-none text-slate-500">▼</div>
+                                    </div>
+
+                                    {expenseForm.supplier === 'NEW' && (
+                                        <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none mt-2" placeholder="Nombre del nuevo proveedor" onChange={e => setExpenseForm({ ...expenseForm, supplier: e.target.value, description: e.target.value + ' - ' + expenseForm.description })} />
+                                    )}
+
+                                    <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Descripción del Gasto (Ej: 30 Netflix)" value={expenseForm.description} onChange={e => setExpenseForm({ ...expenseForm, description: e.target.value })} />
+                                </div>
+                            ) : (
+                                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Descripción" value={expenseForm.description} onChange={e => setExpenseForm({ ...expenseForm, description: e.target.value })} />
+                            )}
+                            <div className="grid grid-cols-2 gap-4">
+                                <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Monto" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} />
+                                <select className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={expenseForm.paymentMethod} onChange={e => setExpenseForm({ ...expenseForm, paymentMethod: e.target.value })}>
+                                    <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option>
+                                </select>
+                            </div>
+                            <button onClick={handleCreateExpense} className="w-full bg-rose-600 hover:bg-rose-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-rose-500/20 active:scale-95 transition">Registrar Gasto</button>
                         </div>
-                        <button onClick={handleCreateExpense} className="w-full bg-rose-600 hover:bg-rose-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-rose-500/20 active:scale-95 transition">Registrar Gasto</button>
                     </div>
-                </div>
-            )
+                )
             }
 
 
@@ -672,6 +880,15 @@ export default function SalesPage() {
                                                 </select>
                                             </div>
                                         )}
+                                        <div className="space-y-1">
+                                            <label className="text-xs text-slate-500">Fecha del Gasto</label>
+                                            <input
+                                                type="date"
+                                                className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                                value={editingTx.date ? new Date(editingTx.date).toISOString().split('T')[0] : ''}
+                                                onChange={e => setEditingTx({ ...editingTx, date: e.target.value })}
+                                            />
+                                        </div>
                                         <div className="space-y-1">
                                             <label className="text-xs text-slate-500">Descripción</label>
                                             <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.description} onChange={e => setEditingTx({ ...editingTx, description: e.target.value })} />

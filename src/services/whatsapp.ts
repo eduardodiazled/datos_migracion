@@ -1,12 +1,12 @@
 
 export async function sendToBot(phone: string, message: string) {
-    const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || process.env.VITE_BOT_URL;
+    const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || process.env.VITE_BOT_URL || 'http://localhost:4000';
     const API_KEY = process.env.NEXT_PUBLIC_BOT_API_KEY || process.env.VITE_BOT_API_KEY;
 
     if (!BOT_URL) {
         console.error("Bot URL not configured");
-        alert("Error: Bot URL no configurada");
-        return;
+        // alert("Error: Bot URL no configurada"); // Removed for Server Action compatibility
+        throw new Error("Bot URL missing"); // Throw instead
     }
 
     try {

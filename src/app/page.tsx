@@ -1,492 +1,349 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, DollarSign, Layers, Pencil, UserPlus, X, Check } from 'lucide-react'
-import { MessageGenerator } from '@/lib/messageGenerator'
-import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAvailableInventory } from './actions'
+import {
+  TrendingUp,
+  AlertTriangle,
+  Users,
+  DollarSign,
+  ShoppingCart,
+  Plus,
+  FileText,
+  Zap,
+  MessageCircle,
+  CheckCircle,
+  XCircle,
+  Clock,
+  ShieldAlert
+} from 'lucide-react'
+import Link from 'next/link'
+import { toast } from 'sonner'
+import { getDashboardStats, triggerBatchReminders, getPayrollStatus, resetPayroll } from './actions'
 
 export default function Dashboard() {
-  const [urgent, setUrgent] = useState<any[]>([])
-  const [alert, setAlert] = useState<any[]>([])
-  const [followUp, setFollowUp] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [totalSales, setTotalSales] = useState(0)
-  const [selectedReceipt, setSelectedReceipt] = useState<any>(null)
+  const [stats, setStats] = useState<any>({
+    financials: { revenue: 0, expenses: 0, profit: 0 },
+    inventory: { lowStock: [], total: 0 },
+    clients: []
+  })
+  const [payroll, setPayroll] = useState({ accumulated: 0, days: 0, lastReset: new Date() })
 
-  const [selectedMonth, setSelectedMonth] = useState(11) // Default to Nov (User Request)
-  const [selectedYear, setSelectedYear] = useState(2025)
+  const handleManualBotTrigger = async () => {
+    if (!confirm('¿Estás seguro de enviar recordatorios a todos los clientes con 0-2 días restantes?')) return
+
+    const toastId = toast.loading('Enviando recordatorios...')
+    try {
+      const res = await triggerBatchReminders()
+      if (res.success) {
+        toast.success(res.message, { id: toastId })
+      } else {
+        toast.error('Error enviando recordatorios: ' + res.error, { id: toastId })
+      }
+    } catch (e) {
+      toast.error('Error de conexión', { id: toastId })
+    }
+  }
+
+  const handlePayPayroll = async () => {
+    if (!confirm(`¿Confirmas Pagar Nómina por ${payroll.accumulated.toLocaleString()}? Esto reiniciará el contador.`)) return
+    const toastId = toast.loading('Procesando pago...')
+    const res = await resetPayroll()
+    if (res.success) {
+      toast.success('Nómina pagada y contador reiniciado', { id: toastId })
+      loadDashboard()
+    } else {
+      toast.error('Error: ' + res.error, { id: toastId })
+    }
+  }
+
+
+  // Date State
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
 
   useEffect(() => {
-    async function loadData() {
-      setLoading(true)
-      try {
-        console.log(`Loading Dashboard data for ${selectedMonth}/${selectedYear}...`)
-        const data = await getDashboardStats(selectedYear, selectedMonth)
-        setTotalSales(data.totalSales)
-
-        // Categorize clients
-        const urgentList: any[] = []
-        const alertList: any[] = []
-        const followUpList: any[] = []
-
-        data.clients.forEach((client: any) => {
-          // User Request: "3 dias, 2 dias, 1 dia, vencidos"
-          // Vencidos (< 0) -> Urgent
-          // 0, 1, 2, 3 -> Alert
-          // > 3 -> Normal
-
-          if (client.daysLeft < 0) {
-            urgentList.push(client)
-          } else if (client.daysLeft <= 3) {
-            alertList.push(client)
-          } else {
-            followUpList.push(client)
-          }
-        })
-
-        setUrgent(urgentList)
-        setAlert(alertList)
-        setFollowUp(followUpList)
-      } catch (error) {
-        console.error('Failed to load dashboard data', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadData()
+    loadDashboard()
   }, [selectedMonth, selectedYear])
 
-  const handleWhatsApp = (phone: string, name: string, days: number, service: string) => {
-    const message = MessageGenerator.generate('REMINDER', { clientName: name, service, daysLeft: days })
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
+  async function loadDashboard() {
+    setLoading(true)
+    const [data, payrollData] = await Promise.all([
+      getDashboardStats(selectedYear, selectedMonth),
+      getPayrollStatus()
+    ])
+    setStats(data)
+    setPayroll(payrollData)
+    setLoading(false)
   }
 
-  const handleReceipt = (client: any) => {
-    setSelectedReceipt(client)
-    console.log('Generate receipt for:', client)
+  // Filter Logic
+  const urgentClients = stats.clients.filter((c: any) => c.urgency === 'CRITICAL') // Overdue
+  const highPriorityClients = stats.clients.filter((c: any) => c.urgency === 'HIGH') // 0-2 Days (Bot Target)
+  const mediaPriorityClients = stats.clients.filter((c: any) => c.urgency === 'MEDIUM') // 3 Days
+
+  // Helper to generate WhatsApp Link
+  const getWhatsAppLink = (client: any) => {
+    const message = `Hola ${client.name}, tu servicio de ${client.service} vence pronto. Por favor realiza el pago para renovar.`
+    return `https://wa.me/57${client.phone}?text=${encodeURIComponent(message)}`
   }
-
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-[50vh]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-violet-500"></div>
-    </div>
-  )
-
-  // Calculate stats
-  const totalClients = urgent.length + alert.length + followUp.length
-  const expiringCount = urgent.length + alert.length
 
   return (
-    <div className="space-y-8 pb-24 md:pb-0">
-      {/* Header & Filter */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Hola, Admin 👋</h1>
-          <p className="text-slate-400">Aquí tienes el resumen de tu negocio hoy.</p>
-        </div>
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 pb-24">
 
-        {/* Month/Year Filter */}
-        <div className="flex items-center gap-2 bg-slate-900/50 p-2 rounded-xl border border-white/5">
-          <span className="text-sm text-slate-400 pl-2">Ventas de:</span>
+      {/* HERDER */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">Torre de Control</h1>
+          <p className="text-slate-400">Resumen y Operaciones del Negocio</p>
+        </div>
+        <div className="flex bg-slate-900/50 p-1 rounded-xl border border-white/5 backdrop-blur-sm">
+          {/* Month Selector (Simple) */}
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            className="bg-transparent text-white text-sm font-medium focus:outline-none border-none p-2 cursor-pointer"
+            className="bg-transparent text-white font-bold text-sm px-3 py-1 outline-none appearance-none cursor-pointer hover:text-violet-400 transition"
           >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-              <option key={m} value={m} className="bg-slate-900">{new Date(0, m - 1).toLocaleString('es-CO', { month: 'long' }).toUpperCase()}</option>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i + 1}>{new Date(2024, i, 1).toLocaleDateString('es-CO', { month: 'long' }).toUpperCase()}</option>
             ))}
           </select>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="bg-transparent text-white text-sm font-medium focus:outline-none border-none p-2 cursor-pointer"
-          >
-            <option value={2024} className="bg-slate-900">2024</option>
-            <option value={2025} className="bg-slate-900">2025</option>
-          </select>
         </div>
-      </div>
+      </header>
 
-      {/* Summary Cards (Top) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Total Ventas (Mocked for now as requested) */}
-        <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <DollarSign size={80} />
-          </div>
+      {/* 1. FINANCIAL & STOCK ROW */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+        {/* Sales Card */}
+        <div className="bg-slate-900/50 border border-white/5 p-6 rounded-3xl relative overflow-hidden group hover:border-violet-500/30 transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/10 rounded-bl-[100px] -mr-8 -mt-8 transition group-hover:bg-violet-600/20"></div>
           <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Total Ventas</p>
-            <h3 className="text-4xl font-bold text-white mt-2">
-              {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(totalSales)}
-            </h3>
-            <div className="flex items-center gap-1 mt-2 text-emerald-400 text-sm font-medium">
-              <span>Historico</span>
-              <span className="text-slate-500">acumulado</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Cuentas Por Vencer */}
-        <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <AlertCircle size={80} className="text-rose-500" />
-          </div>
-          <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Por Vencer</p>
-            <h3 className="text-4xl font-bold text-white mt-2">{expiringCount}</h3>
-            <div className="flex items-center gap-1 mt-2 text-rose-400 text-sm font-medium">
-              <span>Requieren atención</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Inventario Disponible (Mocked) */}
-        <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Layers size={80} className="text-blue-500" />
-          </div>
-          <div className="relative z-10">
-            <p className="text-sm font-medium text-slate-400 uppercase tracking-wider">Inventario</p>
-            <h3 className="text-4xl font-bold text-white mt-2">85%</h3>
-            <div className="flex items-center gap-1 mt-2 text-blue-400 text-sm font-medium">
-              <span>Ocupación actual</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Próximos Vencimientos (HIDDEN TEMPORARILY AS REQUESTED) */}
-      {false && (
-        <div className="space-y-6">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Clock className="text-violet-500" /> Próximos Vencimientos
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* URGENT */}
-            {urgent.map(client => (
-              <ClientCard key={client.id} client={client} status="urgent" onAction={handleWhatsApp} onReceipt={handleReceipt} />
-            ))}
-
-            {/* ALERT */}
-            {alert.map(client => (
-              <ClientCard key={client.id} client={client} status="alert" onAction={handleWhatsApp} onReceipt={handleReceipt} />
-            ))}
-
-            {/* FOLLOW UP */}
-            {followUp.map(client => (
-              <ClientCard key={client.id} client={client} status="normal" onAction={handleWhatsApp} onReceipt={handleReceipt} />
-            ))}
-
-            {totalClients === 0 && (
-              <div className="col-span-full py-12 text-center text-slate-500">
-                <p>No hay vencimientos próximos.</p>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-400">
+                <TrendingUp size={20} />
               </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Hidden Receipt Generator */}
-      <div className="hidden">
-        {/* {selectedReceipt && ( ... )} */}
-      </div>
-    </div>
-  )
-}
-
-// ... (in ClientCard)
-
-function ClientCard({ client, status, onAction, onReceipt }: { client: any, status: 'urgent' | 'alert' | 'normal' | 'renewed', onAction: any, onReceipt: any }) {
-  const [showRenewModal, setShowRenewModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showAssignModal, setShowAssignModal] = useState(false)
-
-  const [renewalDate, setRenewalDate] = useState(new Date().toISOString().split('T')[0])
-  const [editDate, setEditDate] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState('NEQUI')
-  const [isProcessing, setIsProcessing] = useState(false)
-
-  // Assign Modal State
-  const [inventory, setInventory] = useState<any[]>([])
-  const [loadingInventory, setLoadingInventory] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<any>(null)
-  const [assignPrice, setAssignPrice] = useState('')
-
-  useEffect(() => {
-    if (showAssignModal) {
-      setLoadingInventory(true)
-      getAvailableInventory().then(inv => {
-        setInventory(inv)
-        setLoadingInventory(false)
-      })
-    }
-  }, [showAssignModal])
-
-  const confirmAssign = async () => {
-    if (!selectedProduct || !assignPrice) return alert('Selecciona producto y precio')
-    setIsProcessing(true)
-
-    // Create Sale handles the assignment as a new transaction
-    await createSale(client.id, client.name, selectedProduct.id, Number(assignPrice), paymentMethod)
-    window.location.reload()
-  }
-
-  const handleRelease = async () => {
-    if (confirm(`¿Confirmas que ${client.name} NO renueva? Su perfil quedará LIBRE en inventario.`)) {
-      setIsProcessing(true)
-      await releaseService(client.profileId)
-      window.location.reload()
-    }
-  }
-
-  const confirmRenewal = async () => {
-    setIsProcessing(true)
-    await renewService(client.id, client.lastTxId, renewalDate, paymentMethod)
-    window.location.reload()
-  }
-
-  const confirmEdit = async () => {
-    if (!editDate) return
-    setIsProcessing(true)
-    await updateDueDate(client.lastTxId, editDate)
-    window.location.reload()
-  }
-
-  const statusConfig = {
-    urgent: { color: 'bg-rose-500', text: 'text-rose-500', border: 'border-rose-500/20', bg: 'bg-rose-500/5' },
-    alert: { color: 'bg-amber-500', text: 'text-amber-500', border: 'border-amber-500/20', bg: 'bg-amber-500/5' },
-    normal: { color: 'bg-emerald-500', text: 'text-emerald-500', border: 'border-emerald-500/20', bg: 'bg-emerald-500/5' },
-    renewed: { color: 'bg-blue-500', text: 'text-blue-500', border: 'border-blue-500/20', bg: 'bg-blue-500/5' }
-  }
-
-  const config = statusConfig[client.renewed ? 'renewed' : status] || statusConfig.normal
-
-  return (
-    <>
-      <div className={`glass-panel p-4 rounded-2xl flex items-center justify-between group hover:border-violet-500/30 transition-all duration-300 relative`}>
-        <div className="flex items-center gap-4">
-          {/* Traffic Light Dot */}
-          <div className={`w-3 h-3 rounded-full ${config.color} shadow-[0_0_10px_currentColor]`} />
-
-          <div>
-            <h3 className="font-bold text-white text-base">{client.name}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">{client.service}</p>
-            <p className={`text-[10px] font-bold mt-1 ${config.text} uppercase tracking-wide flex items-center gap-2`}>
-              {client.renewed ? '✅ Renovado' : client.daysLeft === 0 ? 'Vence Hoy' : client.daysLeft < 0 ? 'Vencido' : `${client.daysLeft} Días restantes`}
-
-              {/* Quick Edit Trigger */}
-              <button
-                onClick={() => setShowEditModal(true)}
-                className="opacity-0 group-hover:opacity-100 hover:text-white transition-opacity p-1"
-                title="Corregir Fecha"
-              >
-                <Pencil size={12} />
-              </button>
-            </p>
+              <span className="text-slate-400 font-medium text-sm">Ventas Netas</span>
+            </div>
+            <h3 className="text-3xl font-black text-white">${stats.financials.revenue.toLocaleString()}</h3>
+            <p className="text-xs text-slate-500 mt-1">Este Mes</p>
           </div>
         </div>
 
-        <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => onAction(client.phone, client.name, client.daysLeft, client.service)}
-            className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400"
-            title="Enviar WhatsApp"
-          >
-            <MessageCircle size={18} />
-          </button>
+        {/* Net Profit Card */}
+        <div className="bg-slate-900/50 border border-white/5 p-6 rounded-3xl relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-600/10 rounded-bl-[100px] -mr-8 -mt-8 transition group-hover:bg-emerald-600/20"></div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                <DollarSign size={20} />
+              </div>
+              <span className="text-slate-400 font-medium text-sm">Ganancia Neta</span>
+            </div>
+            <h3 className="text-3xl font-black text-emerald-400">+${stats.financials.profit.toLocaleString()}</h3>
+            <p className="text-xs text-slate-500 mt-1">Ventas - Gastos</p>
+          </div>
+        </div>
 
-          {!client.renewed && (
-            <>
-              {/* DO NOT RENEW (Release) */}
-              <button
-                onClick={handleRelease}
-                disabled={isProcessing}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 flex items-center justify-center transition-colors text-slate-400"
-                title="NO Renueva (Liberar Perfil)"
-              >
-                <div className="font-bold text-xs">X</div>
-              </button>
+        {/* Payroll Card (NOMINA) - NEW */}
+        <div className="bg-slate-900/50 border border-white/5 p-6 rounded-3xl relative overflow-hidden group hover:border-indigo-500/30 transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 rounded-bl-[100px] -mr-8 -mt-8 transition group-hover:bg-indigo-600/20"></div>
+          <div className="relative z-10">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+                  <Clock size={20} />
+                </div>
+                <span className="text-slate-400 font-medium text-sm">Nómina</span>
+              </div>
+              <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-indigo-300 border border-indigo-500/20">{payroll.days} Días</span>
+            </div>
 
-              {/* RENEW (Modal Trigger) */}
-              <button
-                onClick={() => setShowRenewModal(true)}
-                disabled={isProcessing}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400"
-                title="Renovar Servicio"
-              >
-                <CheckCircle size={18} />
-              </button>
+            <h3 className="text-3xl font-black text-white">${payroll.accumulated.toLocaleString()}</h3>
 
-              {/* RE-ASSIGN (New Inventory) */}
+            <div className="mt-3 flex items-center gap-2">
               <button
-                onClick={() => setShowAssignModal(true)}
-                disabled={isProcessing}
-                className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-blue-500/20 hover:text-blue-400 flex items-center justify-center transition-colors text-slate-400"
-                title="Asignar Nueva Cuenta (Migrar)"
+                onClick={handlePayPayroll}
+                disabled={payroll.accumulated === 0}
+                className={`text-xs font-bold px-3 py-1.5 rounded-lg transition ${payroll.accumulated > 0 ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}`}
               >
-                <UserPlus size={18} />
+                Pagar
               </button>
-            </>
+            </div>
+          </div>
+        </div>
+
+        {/* Stock Alert Card */}
+        <div className={`bg-slate-900/50 border p-6 rounded-3xl relative overflow-hidden group transition-all ${stats.inventory.lowStock.length > 0 ? 'border-orange-500/50 shadow-[0_0_30px_-5px_rgba(249,115,22,0.3)]' : 'border-white/5'}`}>
+          <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
+            <ShoppingCart size={80} className={stats.inventory.lowStock.length > 0 ? "text-orange-500" : "text-slate-500"} />
+          </div>
+          <p className="text-slate-400 font-medium mb-1 flex items-center gap-2">
+            {stats.inventory.lowStock.length > 0 ? <AlertTriangle size={16} className="text-orange-500 animate-pulse" /> : <CheckCircle size={16} />}
+            Alertas de Inventario
+          </p>
+          {stats.inventory.lowStock.length > 0 ? (
+            <div className="mt-2 space-y-1">
+              {stats.inventory.lowStock.slice(0, 3).map((item: any, idx: number) => (
+                <div key={idx} className="flex justify-between items-center text-sm font-bold text-orange-200 bg-orange-500/10 px-2 py-1 rounded">
+                  <span>{item.service}</span>
+                  <span className="text-orange-500">Quedan {item.count}</span>
+                </div>
+              ))}
+              {stats.inventory.lowStock.length > 3 && <p className="text-xs text-orange-400 mt-1">...y {stats.inventory.lowStock.length - 3} más.</p>}
+            </div>
+          ) : (
+            <h2 className="text-2xl font-bold text-emerald-400 flex items-center gap-2 mt-2">
+              Todo en Orden <CheckCircle size={24} />
+            </h2>
           )}
         </div>
       </div>
 
-      {/* RENEW MODAL */}
-      {showRenewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-2">Renovar Servicio</h3>
-            <p className="text-sm text-slate-400 mb-4">Selecciona los detalles para <b>{client.name}</b>:</p>
+      {/* 2. OPERATIONAL CENTER (RENEWALS) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT COL: Quick Actions */}
+        <div className="lg:col-span-1 space-y-4">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><Zap className="text-amber-400" /> Acciones Rápidas</h3>
 
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block">Fecha de Inicio</label>
-                <input
-                  type="date"
-                  value={renewalDate}
-                  onChange={(e) => setRenewalDate(e.target.value)}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 transition-colors outline-none"
-                  style={{ colorScheme: 'dark' }}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block">Método de Pago</label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 transition-colors outline-none"
-                >
-                  <option value="NEQUI">Nequi</option>
-                  <option value="BANCOLOMBIA">Bancolombia</option>
-                  <option value="EFECTIVO">Efectivo</option>
-                  <option value="DAVIPLATA">Daviplata</option>
-                </select>
-              </div>
-            </div>
+          <Link href="/sales" className="block w-full">
+            <button className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white p-4 rounded-2xl font-bold text-lg shadow-lg shadow-violet-500/20 flex items-center justify-between group transition-all transform hover:scale-[1.02]">
+              <span className="flex items-center gap-3"><Plus className="bg-white/20 p-1 rounded-lg box-content" size={20} /> Nueva Venta</span>
+              <ShoppingCart className="opacity-50 group-hover:opacity-100 transition-opacity" />
+            </button>
+          </Link>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowRenewModal(false)}
-                className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors font-medium text-sm"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmRenewal}
-                disabled={isProcessing}
-                className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 transition-colors font-bold shadow-lg shadow-violet-500/20 text-sm"
-              >
-                {isProcessing ? '...' : 'Confirmar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          <Link href="/inventory" className="block w-full">
+            <button className="w-full bg-slate-800 hover:bg-slate-700 text-white p-4 rounded-2xl font-bold text-lg border border-white/5 flex items-center justify-between group transition-all">
+              <span className="flex items-center gap-3"><ShoppingCart className="text-emerald-400" size={20} /> Ver Inventario</span>
+            </button>
+          </Link>
 
-      {/* EDIT MODAL */}
-      {showEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2"><Pencil size={18} /> Corregir Fecha</h3>
-            <p className="text-sm text-slate-400 mb-4">Cambiar fecha de vencimiento actual para <b>{client.name}</b>:</p>
+          <Link href="/clients" className="block w-full">
+            <button className="w-full bg-slate-800 hover:bg-slate-700 text-white p-4 rounded-2xl font-bold text-lg border border-white/5 flex items-center justify-between group transition-all">
+              <span className="flex items-center gap-3"><Users className="text-blue-400" size={20} /> Base de Clientes</span>
+            </button>
+          </Link>
 
-            <input
-              type="date"
-              value={editDate}
-              onChange={(e) => setEditDate(e.target.value)}
-              className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white mb-6 focus:border-violet-500 transition-colors outline-none"
-              style={{ colorScheme: 'dark' }}
-            />
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors font-medium text-sm"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmEdit}
-                disabled={isProcessing}
-                className="flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition-colors font-bold shadow-lg shadow-emerald-500/20 text-sm"
-              >
-                {isProcessing ? '...' : 'Guardar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ASSIGN / MIGRATE MODAL */}
-      {showAssignModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="glass-panel w-full max-w-md rounded-3xl p-6 space-y-4 border border-white/10 shadow-2xl h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2"><UserPlus size={18} /> Asignar Inventario</h3>
-              <button onClick={() => setShowAssignModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition"><X size={20} /></button>
-            </div>
-
-            <p className="text-sm text-slate-400">Asignar una cuenta nueva a <b>{client.name}</b> (Renovación con cambio de cuenta).</p>
-
-            {/* Inventory List */}
-            <div className="space-y-2">
-              <h3 className="text-xs font-bold text-slate-400 uppercase ml-1">Seleccionar Producto</h3>
-              {loadingInventory ? <p className="text-slate-500 text-sm p-4 text-center">Cargando inventario...</p> : (
-                <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                  {inventory.map(inv => (
-                    <button
-                      key={inv.id}
-                      onClick={() => setSelectedProduct(inv)}
-                      className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}
-                    >
-                      <div>
-                        <div className="text-sm font-bold text-white">{inv.service}</div>
-                        <div className="text-xs text-slate-500">{inv.email}</div>
-                      </div>
-                      {selectedProduct?.id === inv.id && <Check size={16} className="text-emerald-500" />}
-                    </button>
-                  ))}
-                  {inventory.length === 0 && <p className="text-xs text-slate-500 text-center py-4">No hay cuentas libres.</p>}
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500 ml-1">Precio</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-3 text-slate-500">$</span>
-                  <input
-                    type="number"
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition"
-                    value={assignPrice}
-                    onChange={e => setAssignPrice(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500 ml-1">Método Pago</label>
-                <select
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-violet-500 transition"
-                  value={paymentMethod}
-                  onChange={e => setPaymentMethod(e.target.value)}
-                >
-                  <option value="NEQUI">Nequi</option>
-                  <option value="BANCOLOMBIA">Bancolombia</option>
-                  <option value="EFECTIVO">Efectivo</option>
-                </select>
-              </div>
-            </div>
-
-            <button onClick={confirmAssign} disabled={isProcessing} className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-500/20 text-lg transition active:scale-95 mt-4">
-              {isProcessing ? 'Procesando...' : 'Confirmar & Asignar'}
+          {/* Bot Manual Trigger */}
+          <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl mt-8">
+            <h4 className="font-bold text-blue-400 text-sm mb-2 flex items-center gap-2"><MessageCircle size={16} /> Bot de Recordatorios</h4>
+            <p className="text-xs text-blue-200/70 mb-3 leading-relaxed">
+              El bot notifica automáticamente a los clientes con <b>2 días</b> restantes.
+            </p>
+            <button
+              onClick={handleManualBotTrigger}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 transition-all flex justify-center items-center gap-2 active:scale-95"
+            >
+              📢 Ejecutar Manualmente
             </button>
           </div>
         </div>
-      )}
-    </>
+
+        {/* RIGHT COL: Semáforo de Renovaciones */}
+        <div className="lg:col-span-2">
+          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><ShieldAlert className="text-rose-500" /> Radar de Renovaciones (Prioridad)</h3>
+
+          <div className="space-y-6">
+            {/* 1. CRITICAL (Overdue) */}
+            {urgentClients.length > 0 && (
+              <div className="bg-rose-950/30 border border-rose-500/20 rounded-3xl overflow-hidden">
+                <div className="bg-rose-500/10 px-6 py-3 border-b border-rose-500/20 flex justify-between items-center">
+                  <h4 className="text-rose-400 font-bold flex items-center gap-2"><AlertTriangle size={18} /> Vencidos / Hoy</h4>
+                  <span className="bg-rose-500 text-white text-xs font-bold px-2 py-1 rounded-full">{urgentClients.length}</span>
+                </div>
+                <div className="p-4 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                  {urgentClients.map((c: any) => (
+                    <ClientRow key={c.id} client={c} color="rose" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 2. HIGH (0-2 Days - Bot Zone) */}
+            {highPriorityClients.length > 0 && (
+              <div className="bg-amber-950/30 border border-amber-500/20 rounded-3xl overflow-hidden">
+                <div className="bg-amber-500/10 px-6 py-3 border-b border-amber-500/20 flex justify-between items-center">
+                  <h4 className="text-amber-400 font-bold flex items-center gap-2"><Clock size={18} /> Próximos (0-2 Días) - Zona Bot 🤖</h4>
+                  <span className="bg-amber-500 text-slate-900 text-xs font-bold px-2 py-1 rounded-full">{highPriorityClients.length}</span>
+                </div>
+                <div className="p-4 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                  {highPriorityClients.map((c: any) => (
+                    <ClientRow key={c.id} client={c} color="amber" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 3. MEDIUM (3 Days) */}
+            {mediaPriorityClients.length > 0 && (
+              <div className="bg-yellow-900/10 border border-yellow-500/10 rounded-3xl overflow-hidden opacity-80 hover:opacity-100 transition">
+                <div className="bg-yellow-500/5 px-6 py-3 border-b border-yellow-500/10 flex justify-between items-center">
+                  <h4 className="text-yellow-400 font-bold flex items-center gap-2"><Clock size={18} /> Pre-Aviso (3 Días)</h4>
+                  <span className="bg-yellow-500/20 text-yellow-400 text-xs font-bold px-2 py-1 rounded-full">{mediaPriorityClients.length}</span>
+                </div>
+                <div className="p-4 space-y-2">
+                  {mediaPriorityClients.map((c: any) => (
+                    <ClientRow key={c.id} client={c} color="yellow" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {stats.clients.length === 0 && !loading && (
+              <div className="text-center py-12 opacity-50">
+                <CheckCircle size={48} className="mx-auto text-emerald-500 mb-4" />
+                <p className="text-white font-bold text-lg">¡Todo al día!</p>
+                <p className="text-sm">No hay renovaciones urgentes pendientes.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
+
+function ClientRow({ client, color }: { client: any, color: 'rose' | 'amber' | 'yellow' }) {
+  const colorClasses = {
+    rose: 'border-rose-500/20 hover:bg-rose-500/5',
+    amber: 'border-amber-500/20 hover:bg-amber-500/5',
+    yellow: 'border-yellow-500/10 hover:bg-yellow-500/5'
+  }
+
+  const textColors = {
+    rose: 'text-rose-400',
+    amber: 'text-amber-400',
+    yellow: 'text-yellow-400'
+  }
+
+  return (
+    <div className={`bg-slate-900/40 border p-3 rounded-xl flex items-center justify-between transition-colors ${colorClasses[color]}`}>
+      <div className="min-w-0 flex-1 pr-4">
+        <div className="flex items-center gap-2 mb-1">
+          <span className={`font-bold text-sm md:text-base text-white truncate`}>{client.name}</span>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${textColors[color]} border-current bg-transparent`}>
+            {client.daysLeft < 0 ? `${Math.abs(client.daysLeft)} Días Vencido` : client.daysLeft === 0 ? 'Vence Hoy' : `${client.daysLeft} Días`}
+          </span>
+        </div>
+        <div className="text-xs text-slate-400 truncate">{client.service}</div>
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0">
+        <a
+          href={`https://wa.me/57${client.phone}?text=Hola ${client.name}, tu servicio de ${client.service} vence pronto.`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white transition"
+        >
+          <MessageCircle size={18} />
+        </a>
+        <Link href={`/sales?renew=${client.id}`} >
+          <button className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white transition">
+            <Zap size={18} />
+          </button>
+        </Link>
+      </div>
+    </div>
+  )
+}
+
