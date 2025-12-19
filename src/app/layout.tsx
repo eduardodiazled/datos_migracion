@@ -1,9 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Header } from '@/components/Header'
 import { ClientLayoutWrapper } from '@/components/ClientLayoutWrapper'
 import { Toaster } from 'sonner'
+import { Providers } from '@/components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -32,12 +32,14 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
-        <div className="flex min-h-screen bg-background text-foreground">
-          <ClientLayoutWrapper>
-            {children}
-          </ClientLayoutWrapper>
-        </div>
-        <Toaster richColors position="top-center" />
+        <Providers>
+          <div className="flex min-h-screen bg-background text-foreground">
+            <ClientLayoutWrapper>
+              {children}
+            </ClientLayoutWrapper>
+          </div>
+          <Toaster richColors position="top-center" />
+        </Providers>
       </body>
     </html>
   )

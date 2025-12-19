@@ -1,0 +1,14 @@
+
+*/
+
+  return (
+    <div className="p-10 text-center">
+        <h1 className="text-4xl text-yellow-500 font-bold">DEBUG: STATE INITIALIZED</h1>
+        <p className="text-white">Si ves esto, los Hooks (useState) funcionan bien.</p>
+    </div>
+  )
+}
+
+function ProfileCard({ profile, onSell, onEdit, onRotate, onMigrate, onAssign }: any) {
+    return <div>Card Placeholder</div>
+}

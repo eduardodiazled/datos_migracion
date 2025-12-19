@@ -1,8 +1,9 @@
-export type MessageType = 'SALE' | 'WARRANTY' | 'ROTATION' | 'REMINDER' | 'FULL_ACCOUNT_SALE' | 'WELCOME_BOT'
+
+export type MessageType = 'SALE' | 'WARRANTY' | 'ROTATION' | 'REMINDER' | 'FULL_ACCOUNT_SALE' | 'WELCOME_BOT' | 'COMBO' | 'RENEWAL' | 'MIGRATION'
 
 type MessageData = {
     clientName: string
-    service: string
+    service?: string
     email?: string
     password?: string
     profileName?: string
@@ -12,6 +13,9 @@ type MessageData = {
     daysLeft?: number
     phone?: string
     magicLink?: string
+    items?: { service: string, email: string, password: string, profile: string, pin?: string | null }[]
+    expirationDate?: string
+    reason?: 'FALLA_PIN' | 'CAIDA_PAGO' | 'MES_FINALIZADO' | 'OTRO' | 'FALLA_CODIGO'
 }
 
 export const MessageGenerator = {
@@ -90,26 +94,121 @@ Avísame si ya lograste entrar. 👍
 
 ${isNetflix ? '📺 Recuerda cerrar la sesión anterior así: https://youtu.be/l5FGGCbZLbw' : ''}`
 
+            case 'RENEWAL':
+                return `¡Hola ${data.clientName}! 🚀 Gracias por renovar tu servicio.
+                
+Tu cuenta de ${data.service} ha sido extendida con éxito. ✅ 🗓️ Nuevo corte: ${data.date}
+
+${buildCredentials()}
+
+⚠️ RECUERDA:
+- Si tuviste problemas de acceso, intenta cerrar sesión y volver a entrar con estos datos.
+- Mantén el PIN si tu perfil lo tiene.
+
+¡Que sigas disfrutando! 🍿`
+
             case 'REMINDER':
-                const timeText = data.daysLeft === 0 ? 'HOY' : 'Mañana'
+                let timeText = ''
+                const days = data.daysLeft ?? 0
+
+                // Payment Methods Block
+                const paymentMethods = `
+🏦 *Medios de Pago Autorizados:*
+
+🟣 *Nequi / Daviplata:* 3245044457
+🟣 *Nequi #2:* 3122622709
+🟡 *Bancolombia Ahorro:* 48354749681
+🔵 *Bre-B:* @diaz8387
+🟣 *Nu Bank:* LDO387
+🔵 *PayPal:* lueddios17@gmail.com
+
+📲 *No olvides enviar el comprobante al número de siempre.*`
+
+                let showPayments = false
+
+                if (days < 0) {
+                    timeText = '⛔ *TU SERVICIO VENCIÓ Y SE SUSPENDERÁ EN BREVE.*'
+                    showPayments = true
+                }
+                else if (days === 0) {
+                    timeText = '⚠️ *TU SERVICIO VENCE HOY.*'
+                    showPayments = true
+                }
+                else if (days === 1) timeText = '⚠️ Tu servicio vence MAÑANA.'
+                else timeText = `⚠️ Tu servicio vence en ${days} días.`
+
                 return `Hola ${data.clientName} 👋
+                
+${timeText}
 
-Pasaba a recordarte que tu servicio de ${data.service} está próximo a vencer.
+📅 Fecha de corte: ${data.date} 💲 Valor: $${data.price?.toLocaleString() || '...'}
+${showPayments ? paymentMethods : '\nQuedo atento a tu comprobante para renovarte sin interrupciones. ¡Gracias! 🙏'}
 
-📅 Fecha de corte: ${data.date} (${timeText}) 💲 Valor: $${data.price?.toLocaleString() || '...'}
-
-Quedo atento a tu comprobante para renovarte sin interrupciones. ¡Gracias!`
+⚠️ _Nota: Envía el pago al número de siempre 📱. Yo solo soy un Bot 🤖 que da recordatorios._`
 
             case 'WELCOME_BOT':
+                const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://estratosfera-app.vercel.app'
                 return `Hola ${data.clientName} 👋 Soy el BOT nuevo de Estratosfera 🤖.
 
 Pronto estaré activo para brindarte información sobre notificaciones de tus servicios. Guárdame como "Bot Estratosfera".
 
 Por ahora, puedes ver tus servicios activos y renovaciones desde el mes de diciembre en el siguiente link:
 👇👇
-${data.magicLink || `https://estratosfera-app.vercel.app/portal?phone=${data.phone}`}
+${data.magicLink || `${appUrl}/portal?phone=${data.phone}`}
 
 ¡Gracias por confiar en nosotros!`
+
+            case 'COMBO':
+                const itemsList = data.items?.map(i =>
+                    `📺 *${i.service}*: ${i.email}\n🔑: ${i.password}\n📌 Perfil: ${i.profile} ${i.pin ? `(PIN: ${i.pin})` : ''}`
+                ).join('\n\n------------------\n\n')
+
+                return `¡Hola ${data.clientName}! 🚀 Gracias por tu compra del Combo.
+                
+Aquí tienes tus servicios activos:
+
+${itemsList}
+
+🗓️ Corte General: ${data.expirationDate}
+
+⚠️ REGLAS:
+- No cambiar claves ni correos.
+- No eliminar perfiles.
+- Disfruta tu contenido. 🍿`
+
+            case 'MIGRATION':
+                let reasonText = ''
+                switch (data.reason) {
+                    case 'FALLA_PIN':
+                        reasonText = '⚠️ Detectamos una inconsistencia con tu PIN o acceso.'
+                        break
+                    case 'FALLA_CODIGO':
+                        reasonText = '⚠️ Estamos teniendo problemas para recibir los códigos de acceso/hogar en el correo actual.'
+                        break
+                    case 'CAIDA_PAGO':
+                        reasonText = '⚠️ La cuenta anterior presentó problemas de pago/suspensión.'
+                        break
+                    case 'MES_FINALIZADO':
+                        reasonText = '⚠️ El periodo de la cuenta anterior finalizó.'
+                        break
+                    default:
+                        reasonText = '⚠️ Estamos realizando mejoras operativas en el servicio.'
+                }
+
+                return `Hola ${data.clientName} 👋.
+
+${reasonText}
+
+Hemos migrado tu servicio de ${data.service} a este nuevo perfil activo ✅:
+
+${buildCredentials()}
+
+Tu fecha de vencimiento y días restantes se mantienen intactos. 🗓️
+
+${isNetflix ? '📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw' : ''}
+
+¡Gracias por tu paciencia! 🙏`
+
 
             default:
                 return ''

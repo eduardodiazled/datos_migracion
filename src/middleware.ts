@@ -4,7 +4,7 @@ export default withAuth
 
 export const config = {
     matcher: [
-        '/',
+        '/administracion/:path*',
         '/dashboard/:path*',
         '/inventory/:path*',
         '/sales/:path*',

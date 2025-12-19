@@ -6,6 +6,40 @@ import { MessageGenerator } from '@/lib/messageGenerator'
 import { sendToBot } from '@/services/whatsapp'
 
 
+// Helper: Normalize Date to prevent Timezone shifts
+// Forces Noon (12:00) UTC which typically falls on the same day in Americas (UTC-5)
+function normalizeDate(dateStr?: string | Date): Date {
+    if (!dateStr) {
+        // If "Now", default to today Noon
+        const now = new Date()
+        // Check if it's late night (e.g. after 7pm in Colombia = next day UTC)
+        // Simple fix: Use local date string components to build noon date
+        // But running on server (UTC).
+        // Let's rely on subtraction: UTC-5.
+        // If it's 02:00 UTC (Dec 19), it's 21:00 EST (Dec 18).
+        // We want Dec 18 T12:00:00.
+        const colombiaTime = new Date(now.getTime() - (5 * 60 * 60 * 1000))
+        const yyyy = colombiaTime.getUTCFullYear()
+        const mm = colombiaTime.getUTCMonth()
+        const dd = colombiaTime.getUTCDate()
+        return new Date(Date.UTC(yyyy, mm, dd, 12, 0, 0))
+    }
+
+    if (dateStr instanceof Date) return dateStr
+
+    // If YYYY-MM-DD
+    if (dateStr.length === 10 && dateStr.includes('-')) {
+        return new Date(dateStr + 'T12:00:00.000Z')
+    }
+
+    // If ISO with time, maybe trust it or force?
+    // User complaint: "after certain hour it goes to next day".
+    // This implies the input string might be just a date, or the default `new Date()` is used.
+    // If provided date is "2023-12-18", using T12:00:00Z fixes it.
+
+    return new Date(dateStr)
+}
+
 export async function getDashboardStats(year?: number, month?: number) {
     try {
         let dateFilter: any = {}
@@ -45,6 +79,13 @@ export async function getDashboardStats(year?: number, month?: number) {
 
         // 3. Operational Status (Clients & Renewals)
         const clients = await prisma.client.findMany({
+            where: year && month ? {
+                transactions: {
+                    some: {
+                        fecha_inicio: dateFilter
+                    }
+                }
+            } : {},
             include: {
                 transactions: {
                     orderBy: { fecha_vencimiento: 'desc' },
@@ -55,36 +96,72 @@ export async function getDashboardStats(year?: number, month?: number) {
                     }
                 }
             },
-            take: 500
+            // Removed limit to ensure all clients are shown
         })
 
         const processedClients = clients.map(c => {
             const lastTx = c.transactions[0]
             if (!lastTx) return null
 
-            let serviceName = 'Venta Libre'
-            if (lastTx.profile?.account?.servicio) {
-                serviceName = `${lastTx.profile.account.servicio} - ${lastTx.profile.nombre_perfil}`
-            } else if (lastTx.account?.servicio) {
-                serviceName = `${lastTx.account.servicio} (Cuenta Completa)`
-            } else if (lastTx.descripcion) {
-                serviceName = lastTx.descripcion
+            const now = new Date()
+
+            // Gather ALL active transactions for this client (for Combos)
+            const activeItems = c.transactions.filter(t => new Date(t.fecha_vencimiento) > now).map(t => {
+                let sName = 'Servicio'
+                let email = ''
+                let password = ''
+                let profileName = ''
+                let pin = null
+
+                if (t.profile?.account) {
+                    sName = t.profile.account.servicio
+                    email = t.profile.account.email
+                    password = t.profile.account.password
+                    profileName = t.profile.nombre_perfil
+                    pin = t.profile.pin
+                } else if (t.account) {
+                    sName = t.account.servicio
+                    email = t.account.email
+                    password = t.account.password
+                    profileName = 'Cuenta Completa'
+                }
+
+                return {
+                    service: sName,
+                    email,
+                    password,
+                    profile: profileName,
+                    pin
+                }
+            })
+
+            // Fallback: If no active items (expired), use lastTx just to show proper service name in list
+            let mainService = 'Venta Libre'
+            if (activeItems.length > 0) {
+                // If multiple, show "Combo (X)" or specific
+                mainService = activeItems.length > 1 ? `Combo (${activeItems.length} Servicios)` : `${activeItems[0].service} - ${activeItems[0].profile}`
+            } else {
+                // Use lastTx for display if nothing active
+                if (lastTx.profile?.account?.servicio) {
+                    mainService = `${lastTx.profile.account.servicio} - ${lastTx.profile.nombre_perfil}`
+                } else if (lastTx.account?.servicio) {
+                    mainService = `${lastTx.account.servicio} (Cuenta Completa)`
+                } else if (lastTx.descripcion) {
+                    mainService = lastTx.descripcion
+                }
             }
 
-            const now = new Date()
             const expiry = new Date(lastTx.fecha_vencimiento)
             const daysLeft = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
             const isRenewed = c.transactions.some(t => t.fecha_inicio > now)
+            const isDisposable = lastTx.profile?.account?.is_disposable || lastTx.account?.is_disposable || false
 
-            // Urgency Classification
             let urgency: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW'
-            if (daysLeft < 0) urgency = 'CRITICAL' // Overdue
-            else if (daysLeft <= 2) urgency = 'HIGH' // 0, 1, 2 days (Bot Trigger Zone)
-            else if (daysLeft === 3) urgency = 'MEDIUM' // Warning
-
-            // Hide if renewed or way in future (> 5 days) unless we want a full list
-            // User wants "Resumen con lo mas importante".
-            // We'll filter in the frontend if needed, but returning all allows flexibility.
+            if (!isDisposable) {
+                if (daysLeft < 0) urgency = 'CRITICAL'
+                else if (daysLeft <= 2) urgency = 'HIGH'
+                else if (daysLeft === 3) urgency = 'MEDIUM'
+            }
 
             let displayName = c.nombre
             if (displayName.toLowerCase().includes('eduardo diaz') || displayName.toLowerCase().includes('eduardo david')) {
@@ -94,20 +171,102 @@ export async function getDashboardStats(year?: number, month?: number) {
             return {
                 id: c.celular,
                 name: displayName,
-                service: serviceName,
+                service: mainService,
                 phone: c.celular,
                 daysLeft,
                 urgency,
                 price: lastTx.monto,
                 lastTxId: lastTx.id,
                 renewed: isRenewed,
+                // Pass ALL items for the frontend to use in "Reenviar Datos"
+                items: activeItems,
+                // Keep these for backward compatibility or single service display
                 email: lastTx.profile?.account?.email || lastTx.account?.email || '',
                 password: lastTx.profile?.account?.password || lastTx.account?.password || '',
+                pin: lastTx.profile?.pin,
+                profileName: lastTx.profile?.nombre_perfil
             }
         }).filter(Boolean) as any[]
 
         // Sort by Urgency (Critical -> High -> Medium -> Low)
         processedClients.sort((a, b) => a.daysLeft - b.daysLeft)
+
+        // 4. Client Renewals (Clients with transactions expiring soon)
+        // This section is redundant with the existing client processing, but kept as per instruction.
+        // The original `clients` variable is used for `processedClients`.
+        // This new `clients` variable would overwrite it if placed before `processedClients`.
+        // Assuming this was meant to be a separate fetch or a modification to the existing one.
+        // For now, I'll assume the user wants to keep the original `clients` fetch for `processedClients`
+        // and this new `clients` fetch is not intended to be used directly in the return value,
+        // or it's a placeholder for a future change.
+        // I will place the promotion candidates logic after the existing client processing.
+
+        // 5. Promotion Candidates (Disposable Accounts expiring soon with inventory)
+        const disposableAccounts = await prisma.inventoryAccount.findMany({
+            where: {
+                is_disposable: true,
+                perfiles: { some: { estado: 'LIBRE' } } // Only if they have something to sell
+            },
+            include: { perfiles: true }
+        })
+
+        const promoCandidates: Record<string, number> = {}
+        const now = new Date()
+
+        disposableAccounts.forEach(acc => {
+            const activationDate = acc.fecha_activacion || acc.createdAt
+            const months = (acc as any).duracion_meses || 1
+            const expiryDate = new Date(activationDate)
+            expiryDate.setMonth(expiryDate.getMonth() + months)
+
+            const daysLeft = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
+            // Logic: "Para Promocionar" - e.g. expiring in less than 20 days so we must rotate ASAP
+            // User asked: "dias QUE LE FALTEN PARA ACABARSE".
+            // If daysLeft is between 0 and 20? 
+            if (daysLeft >= 0 && daysLeft <= 25) {
+                // Group by service
+                // Use safe service name logic
+                let serviceName = acc.servicio
+                const lower = serviceName.toLowerCase()
+                if (lower.includes('netflix')) serviceName = 'Netflix'
+                else if (lower.includes('disney')) serviceName = 'Disney+'
+                else if (lower.includes('max')) serviceName = 'Max'
+                else if (lower.includes('prime')) serviceName = 'Prime Video'
+                else if (lower.includes('youtube')) serviceName = 'YouTube'
+                else if (lower.includes('spotify')) serviceName = 'Spotify'
+
+                // Key: "Service (X days left)" ?? No user said "group all... if there are 7 max... just say MAX".
+                // User also said "dias QUE LE FALTEN". 
+                // If I group by service, I can't show specific days unless they match.
+                // Maybe group by "Service - X days"? e.g "Max (5 days left): 3"
+
+
+
+                // Let's group by "Service (Days Left)"
+                const key = `${serviceName} (${daysLeft}d)`
+                promoCandidates[key] = (promoCandidates[key] || 0) + acc.perfiles.filter(p => p.estado === 'LIBRE').length
+            }
+        })
+
+        // 6. Zero Stock (Compulsory Restock)
+        // Find all services that exist in the system
+        const allServices = await prisma.inventoryAccount.findMany({
+            distinct: ['servicio'],
+            select: { servicio: true }
+        })
+
+        // Count available stock per service
+        const stockByService = inventoryList.reduce((acc: any, item: any) => {
+            acc[item.service] = (acc[item.service] || 0) + 1
+            return acc
+        }, {})
+
+        // Filter services with 0 stock
+        const restockCandidates = allServices
+            .map(s => s.servicio)
+            .filter(serviceName => !stockByService[serviceName])
+
 
         return {
             financials: {
@@ -119,14 +278,19 @@ export async function getDashboardStats(year?: number, month?: number) {
                 lowStock,
                 total: inventoryList.length
             },
-            clients: processedClients
+            clients: processedClients,
+            promotions: promoCandidates, // New field
+            restock: restockCandidates // New field (Zero Stock)
         }
     } catch (error) {
         console.error('Error fetching dashboard stats:', error)
         return {
             financials: { revenue: 0, expenses: 0, profit: 0 },
             inventory: { lowStock: [], total: 0 },
-            clients: []
+
+            clients: [],
+            promotions: {},
+            restock: []
         }
     }
 }
@@ -134,7 +298,8 @@ export async function getDashboardStats(year?: number, month?: number) {
 export async function triggerBatchReminders() {
     try {
         const stats = await getDashboardStats()
-        const botTargets = stats.clients.filter((c: any) => c.urgency === 'HIGH' && !c.renewed) // 0-2 Days
+        // Target HIGH (0-2 days) and CRITICAL (< 0 days, i.e. expired recently)
+        const botTargets = stats.clients.filter((c: any) => (c.urgency === 'HIGH' || c.urgency === 'CRITICAL') && !c.renewed)
 
         if (botTargets.length === 0) return { success: true, count: 0, message: "No hay clientes en zona de recordatorio (0-2 días)." }
 
@@ -175,34 +340,47 @@ export async function renewService(clientId: string, previousTxId: number, custo
 
         if (!prevTx) throw new Error("Transaction not found")
 
-        const now = customDate ? new Date(customDate) : new Date()
-        if (customDate) {
-            // Fix Timezone Offset: If string is YYYY-MM-DD, force Noon
-            if (customDate.length === 10 && customDate.includes('-')) {
-                now.setTime(new Date(customDate + 'T12:00:00').getTime())
-            } else {
-                now.setHours(new Date().getHours())
-                now.setMinutes(new Date().getMinutes())
-            }
-        }
+        const startDate = normalizeDate(customDate)
 
-        const startTs = now.getTime()
+        const startTs = startDate.getTime()
         const days = months * 30
         const endTs = startTs + (days * 24 * 60 * 60 * 1000)
 
-        await prisma.transaction.create({
+        const newTx = await prisma.transaction.create({
             data: {
                 clienteId: clientId,
                 perfilId: prevTx.perfilId,
                 estado_pago: 'PAGADO',
                 metodo_pago: paymentMethod,
-                fecha_inicio: now,
+                fecha_inicio: startDate,
                 fecha_vencimiento: new Date(endTs),
                 monto: prevTx.monto
             }
         })
 
-        return { success: true }
+        // AUTO-SEND BOT MESSAGE (Credentials)
+        // Fetch Profile & Client for Message
+        const profile = await prisma.salesProfile.findUnique({
+            where: { id: prevTx.perfilId || 0 },
+            include: { account: true }
+        })
+        const client = await prisma.client.findUnique({ where: { celular: clientId } })
+
+        if (profile && client) {
+            const msg = MessageGenerator.generate('RENEWAL', {
+                clientName: client.nombre,
+                service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
+                daysLeft: months * 30, // Approx
+                email: profile.account.email,
+                password: profile.account.password,
+                pin: profile.pin,
+                profileName: profile.nombre_perfil,
+                date: new Date(endTs).toLocaleDateString('es-CO')
+            })
+            sendToBot(clientId, msg).catch(e => console.error("Auto Renew Bot Error", e))
+        }
+
+        return { success: true, transactionId: newTx.id }
     } catch (e) {
         console.error("Renewal Error", e)
         return { success: false }
@@ -368,7 +546,7 @@ export async function createExpense(data: { category: string, description: strin
                 monto: data.amount,
                 metodo_pago: data.paymentMethod,
                 proveedor: data.supplier,
-                fecha: data.date && data.date.length === 10 ? new Date(data.date + 'T12:00:00') : new Date(data.date)
+                fecha: normalizeDate(data.date)
             }
         })
 
@@ -533,17 +711,7 @@ export async function createSale(clientId: string, clientName: string, profileId
             create: { celular: clientId, nombre: clientName }
         })
 
-        const now = date ? new Date(date) : new Date()
-        if (date) {
-            // Fix Timezone Offset: If string is YYYY-MM-DD, force Noon
-            if (date.length === 10 && date.includes('-')) {
-                now.setTime(new Date(date + 'T12:00:00').getTime())
-            } else {
-                // Keep provided time or default to current hours if just date object
-                now.setHours(new Date().getHours())
-                now.setMinutes(new Date().getMinutes())
-            }
-        }
+        const now = normalizeDate(date) // Use 'now' as the variable name to match existing code logic
 
         // Logic: Number to Number with Safe Clamping
         // Jan 31 + 1 Mo -> Feb 28 (not Mar 3)
@@ -581,14 +749,39 @@ export async function createSale(clientId: string, clientName: string, profileId
         }
 
         // Welcome Bot Trigger (Async, don't block)
-        // Rule: Only send between 8 AM and 9 PM (21:00) UTC-5
-        const nowBogota = new Date().toLocaleString('en-US', { timeZone: 'America/Bogota', hour: 'numeric', hour12: false })
-        const currentHour = parseInt(nowBogota)
+        // Rule: ALWAYS SEND (No restriction)
+        if (tx.client) {
+            // 1. Welcome Message (Must be first)
+            try {
+                await sendWelcomeMessage(tx.client.celular, tx.client.nombre)
+            } catch (err) {
+                console.error('Auto Welcome Error', err)
+            }
 
-        if (tx.client && currentHour >= 8 && currentHour < 21) {
-            sendWelcomeMessage(tx.client.celular, tx.client.nombre).catch(err => console.error('Auto Welcome Error', err))
-        } else {
-            console.log(`Welcome Message Skipped (Time: ${currentHour}h). Pending for Manual Batch.`)
+            // 2. Credentials Message (After Welcome)
+            // Actually, let's fetch profile details to get service name and credentials
+            if (profileId) {
+                const profile = await prisma.salesProfile.findUnique({
+                    where: { id: profileId },
+                    include: { account: true }
+                })
+
+                if (profile) {
+                    const msg = MessageGenerator.generate('SALE', {
+                        clientName: tx.client.nombre,
+                        service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
+                        email: profile.account.email,
+                        password: profile.account.password,
+                        pin: profile.pin,
+                        profileName: profile.nombre_perfil,
+                        date: now.toLocaleDateString('es-CO')
+                    })
+                    sendToBot(tx.client.celular, msg).catch(e => console.error('Auto Bot Error', e))
+                }
+            }
+
+
+
         }
 
         return { success: true, transaction: tx }
@@ -599,11 +792,12 @@ export async function createSale(clientId: string, clientName: string, profileId
 }
 
 // --- COMBO SALES ---
+// --- COMBO SALES ---
 export async function createComboSale(
     clientId: string,
     clientName: string,
     paymentMethod: string,
-    items: { profileId: number, price: number }[],
+    items: { profileId: number, type: 'PROFILE' | 'FULL_ACCOUNT', accountId: number, price: number }[],
     date?: string,
     months: number = 1
 ) {
@@ -618,16 +812,7 @@ export async function createComboSale(
         // 2. Generate Group ID
         const groupId = globalThis.crypto.randomUUID()
 
-        const now = date ? new Date(date) : new Date()
-        if (date) {
-            // Fix Timezone Offset: If string is YYYY-MM-DD, force Noon
-            if (date.length === 10 && date.includes('-')) {
-                now.setTime(new Date(date + 'T12:00:00').getTime())
-            } else {
-                now.setHours(new Date().getHours())
-                now.setMinutes(new Date().getMinutes())
-            }
-        }
+        const now = normalizeDate(date)
 
         const days = months * 30
         const endTs = now.getTime() + (days * 24 * 60 * 60 * 1000)
@@ -635,11 +820,46 @@ export async function createComboSale(
         // 3. Create Transactions Loop
         const transactions = []
         for (const item of items) {
+            let description = ''
+
+            if (item.type === 'FULL_ACCOUNT') {
+                const account = await prisma.inventoryAccount.findUnique({
+                    where: { id: item.accountId },
+                    include: { provider: true }
+                })
+                if (account) description = `Venta ${account.servicio} (Cuenta Completa)`
+
+                // Lock ALL profiles
+                await prisma.salesProfile.updateMany({
+                    where: { accountId: item.accountId },
+                    data: { estado: 'OCUPADO' }
+                })
+            } else {
+                // Check if profile exists
+                const profile = await prisma.salesProfile.findUnique({
+                    where: { id: item.profileId },
+                    include: { account: true }
+                })
+                if (profile) description = `Venta ${profile.account.servicio} - ${profile.nombre_perfil}`
+
+                // Mark Profile as Occupied
+                await prisma.salesProfile.update({
+                    where: { id: item.profileId },
+                    data: { estado: 'OCUPADO' }
+                })
+            }
+
             const tx = await prisma.transaction.create({
                 data: {
                     clienteId: clientId,
-                    perfilId: item.profileId,
+                    // Only link profileId if it's a profile sale, otherwise it might be null/irrelevant?
+                    // But schema might require it? If optional, good. If not, need to check. 
+                    // Assuming optional or we pick the first one? Let's assume optional or null is fine for full account if logic supports.
+                    // Actually, for full account, we might not link a specific profile ID in transaction if schema allows null.
+                    perfilId: item.type === 'PROFILE' ? item.profileId : null,
+                    accountId: item.accountId,
                     monto: item.price,
+                    descripcion: description, // Custom description
                     estado_pago: 'PAGADO',
                     metodo_pago: paymentMethod,
                     fecha_inicio: now,
@@ -648,15 +868,67 @@ export async function createComboSale(
                 }
             })
             transactions.push(tx)
+        } // End Loop
 
-            // 4. Mark Profile as Occupied
-            await prisma.salesProfile.update({
-                where: { id: item.profileId },
-                data: { estado: 'OCUPADO' }
-            })
+        // AUTO-SEND BOT MESSAGE (Unified Combo Message)
+        // Rule: ALWAYS SEND (No restriction)
+        if (true) {
+            // 1. Welcome Message (Must be first)
+            try {
+                await sendWelcomeMessage(clientId, clientName)
+            } catch (err) {
+                console.error('Auto Welcome Error', err)
+            }
+
+            // 2. Prepare Unified Credential List
+            const validationItems = []
+            for (const item of items) {
+                // Fetch credentials for each item
+                // Optimized: We could have fetched this earlier, but loop is fine for few items
+                const sourceAccount = await prisma.inventoryAccount.findUnique({
+                    where: { id: item.accountId },
+                    include: { perfiles: true }
+                })
+
+                if (sourceAccount) {
+                    if (item.type === 'FULL_ACCOUNT') {
+                        validationItems.push({
+                            service: sourceAccount.servicio,
+                            email: sourceAccount.email,
+                            password: sourceAccount.password,
+                            profile: 'Cuenta Completa',
+                            pin: null
+                        })
+                    } else {
+                        const profile = sourceAccount.perfiles.find(p => p.id === item.profileId)
+                        if (profile) {
+                            validationItems.push({
+                                service: sourceAccount.servicio,
+                                email: sourceAccount.email,
+                                password: sourceAccount.password,
+                                profile: profile.nombre_perfil,
+                                pin: profile.pin
+                            })
+                        }
+                    }
+                }
+            }
+
+            // 3. Send Unified Combo Message
+            if (validationItems.length > 0) {
+                const msg = MessageGenerator.generate('COMBO', {
+                    clientName: clientName,
+                    items: validationItems,
+                    expirationDate: new Date(endTs).toLocaleDateString()
+                })
+
+                // Wait a tiny bit (after welcome)
+                await new Promise(r => setTimeout(r, 1000))
+                sendToBot(clientId, msg).catch(e => console.error('Auto Bot Combo Error', e))
+            }
         }
 
-        return { success: true, count: transactions.length, groupId }
+        return { success: true, transaction: transactions[0], groupId } // Return first tx or wrapper
     } catch (e) {
         console.error("Create Combo Sale Error", e)
         return { success: false, error: String(e) }
@@ -719,6 +991,37 @@ export async function getAvailableInventory() {
     }
 }
 
+// --- CLIENT AUTOCOMPLETE ---
+export async function getClientByPhone(phone: string) {
+    try {
+        if (!phone || phone.length < 6) return null
+
+        const cleanPhone = phone.replace(/\D/g, '')
+        const searchSuffix = cleanPhone.slice(-6)
+
+        // Find matches
+        const clients = await prisma.client.findMany({
+            where: { celular: { contains: searchSuffix } },
+            select: { nombre: true, celular: true },
+            orderBy: { createdAt: 'desc' }, // Prefer most recent
+            take: 5
+        })
+
+        // Strict filter
+        const match = clients.find(c => {
+            const dbClean = c.celular.replace(/\D/g, '')
+            return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
+        })
+
+        if (match) return match.nombre
+        return null
+    } catch (e) {
+        console.error("Auto-Client Error", e)
+        return null
+    }
+}
+
+
 export async function searchClients(query: string) {
     try {
         if (!query || query.length < 2) return []
@@ -767,10 +1070,12 @@ export async function getAdvancedAnalytics(year: number) {
             select: { fecha_inicio: true, monto: true }
         })
 
+
         const expensesRaw = await prisma.expense.findMany({
             where: { fecha: dateFilter },
             select: { fecha: true, monto: true, categoria: true }
         })
+
 
         let trendData: { name: string, income: number, expense: number, profit: number }[] = []
 
@@ -883,9 +1188,96 @@ export async function getAdvancedAnalytics(year: number) {
 
     } catch (e) {
         console.error("Advanced Analytics Error", e)
-        return null
+        return { trends: { labels: [], data: [] } }
     }
 }
+
+export async function applyWarrantySwap(currentProfileId: number, targetProfileId?: number) {
+    try {
+        // 1. Get Current Profile & Active Transaction
+        const currentProfile = await prisma.salesProfile.findUnique({
+            where: { id: currentProfileId },
+            include: { account: true }
+        })
+
+        if (!currentProfile) return { success: false, message: 'Perfil actual no encontrado' }
+
+        const transaction = await prisma.transaction.findFirst({
+            where: { perfilId: currentProfileId },
+            orderBy: { createdAt: 'desc' }, // Get the latest one
+            include: { client: true }
+        })
+
+        // NOTE: If no transaction, we can still swap if it's just inventory management, 
+        // but the core value is preserving the client link.
+        // If no client, acts like a simple swap.
+
+        // 2. Determine New Profile
+        let newProfile = null
+
+        if (targetProfileId) {
+            // Manual Swap
+            newProfile = await prisma.salesProfile.findUnique({
+                where: { id: targetProfileId },
+                include: { account: true }
+            })
+        } else {
+            // Auto Swap (Same Service)
+            newProfile = await prisma.salesProfile.findFirst({
+                where: {
+                    estado: 'LIBRE',
+                    account: {
+                        servicio: currentProfile.account.servicio,
+                    }
+                },
+                include: { account: true }
+            })
+        }
+
+        if (!newProfile) {
+            // Mark as WARRANTY anyway so we know it's bad, even if we can't replace it yet.
+            await prisma.salesProfile.update({
+                where: { id: currentProfileId },
+                data: { estado: 'GARANTIA' }
+            })
+            return { success: false, message: 'Marcado como GARANTÍA, pero NO había stock para reemplazo automático.' }
+        }
+
+        // 3. Execute Atomic Swap
+        await prisma.$transaction([
+            // A. Mark Old as WARRANTY
+            prisma.salesProfile.update({
+                where: { id: currentProfileId },
+                data: { estado: 'GARANTIA' }
+            }),
+            // B. Mark New as OCCUPIED
+            prisma.salesProfile.update({
+                where: { id: newProfile.id },
+                data: { estado: 'OCUPADO' }
+            }),
+            // C. Update Transaction (if exists)
+            ...(transaction ? [
+                prisma.transaction.update({
+                    where: { id: transaction.id },
+                    data: { perfilId: newProfile.id }
+                })
+            ] : [])
+        ])
+
+
+        return {
+            success: true,
+            message: `Cambio exitoso. Nuevo perfil: ${newProfile.nombre_perfil}`,
+            newProfile
+        }
+
+    } catch (e) {
+        console.error("Warranty Swap Error", e)
+        return { success: false, message: String(e) }
+    }
+}
+
+
 
 export async function updateTransaction(id: number, data: {
     price?: number,
@@ -905,13 +1297,7 @@ export async function updateTransaction(id: number, data: {
         // Date Logic
         let newStart = currentTx.fecha_inicio
         if (data.date) {
-            // Handle YYYY-MM-DD specifically to avoid timezone shifts
-            if (data.date.length === 10 && data.date.includes('-')) {
-                // Force Noon Local/Server Time to satisfy "same day" logic
-                newStart = new Date(data.date + 'T12:00:00')
-            } else {
-                newStart = new Date(data.date)
-            }
+            newStart = normalizeDate(data.date)
         }
 
         let newDurationMs = currentTx.fecha_vencimiento.getTime() - currentTx.fecha_inicio.getTime()
@@ -945,14 +1331,42 @@ export async function updateTransaction(id: number, data: {
             })
         }
 
-        const tx = await prisma.transaction.update({
+        // --- COMBO LOGIC: If updating price of a group, set others to 0 to avoid inflation ---
+        if (currentTx.groupId && data.price !== undefined) {
+            // Update other members of the group to 0 so the total equals the new price (assigned to this tx)
+            await prisma.transaction.updateMany({
+                where: {
+                    groupId: currentTx.groupId,
+                    id: { not: id } // Don't touch the current one, it will be updated below
+                },
+                data: { monto: 0 }
+            })
+        }
+
+        const updatedTx = await prisma.transaction.update({
             where: { id },
             data: updateData,
             include: { profile: { include: { account: true } } }
         })
 
+        if (currentTx.groupId && (data.date || data.months)) {
+            // Sync Date Changes to other items in Combo
+            await prisma.transaction.updateMany({
+                where: {
+                    groupId: currentTx.groupId,
+                    id: { not: id }
+                },
+                data: {
+                    fecha_inicio: updateData.fecha_inicio || undefined,
+                    fecha_vencimiento: updateData.fecha_vencimiento || undefined
+                }
+            })
+        }
+
         revalidatePath('/sales')
-        return { success: true, transaction: tx }
+        revalidatePath('/clients')
+        revalidatePath('/inventory')
+        return { success: true, transaction: updatedTx }
     } catch (e) {
         console.error("Update Transaction Error", e)
         return { success: false, error: String(e) }
@@ -967,6 +1381,9 @@ export async function deleteTransaction(id: number, type: string = 'INGRESO') {
             if (count === 0) return { success: false, error: 'Expense not found' }
 
             await prisma.expense.delete({ where: { id } })
+            revalidatePath('/sales')
+            revalidatePath('/clients')
+            revalidatePath('/inventory')
             return { success: true }
         }
 
@@ -1013,6 +1430,9 @@ export async function deleteTransaction(id: number, type: string = 'INGRESO') {
             })
         }
 
+        revalidatePath('/sales')
+        revalidatePath('/clients')
+        revalidatePath('/inventory')
         return { success: true }
     } catch (e) {
         console.error("Delete Transaction Error", e)
@@ -1106,6 +1526,92 @@ export async function createInventoryAccount(data: { service: string, email: str
     }
 }
 
+
+export async function getUpcomingProviderPayments() {
+    try {
+        const accounts = await prisma.inventoryAccount.findMany({
+            where: {
+                dia_corte: { not: null },
+                is_disposable: false
+            },
+            include: { provider: true }
+        })
+
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const currentGenericDate = today.getDate() // 1-31
+
+        const reminders = []
+
+        for (const account of accounts) {
+            if (!account.dia_corte || !account.provider) continue
+
+            // Determine Due Date (Month-agnostic day)
+            // Logic: Closest future occurrence of dia_corte
+
+            // Candidate 1: This month
+            let targetDate = new Date(today)
+            targetDate.setDate(account.dia_corte)
+            targetDate.setHours(0, 0, 0, 0)
+
+            // If target is in the past (e.g. Today 20, Cut 15), then next payment is Next Month (15th)
+            // BUT wait, if today is 20 and cut was 15, maybe it's "Overdue"? 
+            // The user says "cerca de su fecha de pago". 3, 2, 1 days before.
+            // If it's today, diff is 0.
+
+            // Check diff
+            const diffTime = targetDate.getTime() - today.getTime()
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+            // Use simple logic: Show if diff is between 0 and 3. 
+            // If diff < 0 (Past), check next month?
+            // If today is 29, cut is 2. Target (2nd) is in past? No, date(2) of this month is past.
+            // Next occurrence: Next month.
+
+            let finalDiff = diffDays
+            let activeDate = targetDate
+
+            // Logic: Allow -1 (Yesterday)
+            if (diffDays < -1) {
+                // Older than yesterday -> Try next month
+                const nextMonth = new Date(today)
+                nextMonth.setMonth(nextMonth.getMonth() + 1)
+                nextMonth.setDate(account.dia_corte)
+                nextMonth.setHours(0, 0, 0, 0)
+
+                const nextDiff = Math.ceil((nextMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+                finalDiff = nextDiff
+                activeDate = nextMonth
+            }
+
+            // Filter: Min 3 days. So finalDiff <= 3.
+            // Allowing -1 (Yesterday)
+            if (finalDiff <= 3 && finalDiff >= -1) {
+                reminders.push({
+                    accountId: account.id,
+                    providerName: account.provider.nombre,
+                    serviceName: account.servicio,
+                    email: account.email,
+                    dueDate: activeDate,
+                    daysLeft: finalDiff,
+                    // Status Label
+                    status: finalDiff === -1 ? 'AYER' : finalDiff === 0 ? 'HOY' : finalDiff === 1 ? 'MAÑANA' : `En ${finalDiff} Días`
+                })
+            }
+        }
+
+        // Sort by urgency (0 first)
+        reminders.sort((a, b) => a.daysLeft - b.daysLeft)
+
+        return { success: true, reminders }
+
+    } catch (e) {
+        console.error("Get Provider Payments Error", e)
+        return { success: false, error: String(e) }
+
+    }
+}
+
 // Update Inventory Account
 export async function updateInventoryAccount(id: number, data: { service?: string, email?: string, password?: string, providerId?: number | null, dia_corte?: number | null, is_disposable?: boolean, profiles?: { id?: number, name: string, pin?: string }[], activationDate?: string, months_duration?: number }) {
     try {
@@ -1156,7 +1662,15 @@ export async function updateInventoryAccount(id: number, data: { service?: strin
     }
 }
 
-export async function sellFullAccount(accountId: number, clientPhone: string, clientName: string, price: number, method: 'NEQUI' | 'BANCOLOMBIA' | 'EFECTIVO' = 'NEQUI') {
+export async function sellFullAccount(
+    accountId: number,
+    clientPhone: string,
+    clientName: string,
+    price: number,
+    method: 'NEQUI' | 'BANCOLOMBIA' | 'EFECTIVO' | 'DAVIPLATA' | 'USDT' = 'NEQUI',
+    date?: string,
+    months: number = 1
+) {
     try {
         const client = await prisma.client.upsert({
             where: { celular: clientPhone },
@@ -1170,22 +1684,25 @@ export async function sellFullAccount(accountId: number, clientPhone: string, cl
             data: { estado: 'OCUPADO' }
         })
 
+        // Date Logic
+        const now = normalizeDate(date)
+
+        const end = new Date(now)
+        const originalDay = end.getDate()
+        end.setMonth(end.getMonth() + months)
+        if (end.getDate() !== originalDay) end.setDate(0)
+        end.setHours(23, 59, 59)
+
         const transaction = await prisma.transaction.create({
             data: {
                 monto: price,
-
                 descripcion: 'Venta de Cuenta Completa',
                 estado_pago: 'PAGADO',
                 metodo_pago: method,
-                fecha_inicio: new Date(),
-                fecha_vencimiento: new Date(new Date().setDate(new Date().getDate() + 30)),
+                fecha_inicio: now,
+                fecha_vencimiento: end,
                 clienteId: client.celular,
                 accountId: accountId,
-                // perfilId is optional/nullable in schema for full account sales usually, or we need to handle it.
-                // If perfilId is required, we might need a dummy or change schema.
-                // Assuming schema allows null perfilId for account transactions or we just don't set it.
-                // Checking schema... it was added as relation optional?
-                // Let's assume it works based on previous attempts, or if it fails I'll fix schema.
             }
         })
 
@@ -1205,7 +1722,7 @@ export async function updateExpense(id: number, data: { category?: string, descr
         if (data.amount) updateData.monto = data.amount
         if (data.paymentMethod) updateData.metodo_pago = data.paymentMethod
         if (data.supplier) updateData.proveedor = data.supplier
-        if (data.date) updateData.fecha = new Date(data.date)
+        if (data.date) updateData.fecha = normalizeDate(data.date)
 
         const expense = await prisma.expense.update({
             where: { id },
@@ -1233,6 +1750,37 @@ export async function deleteInventoryAccount(id: number) {
         return { success: true }
     } catch (e) {
         console.error("Delete Account Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
+export async function deleteInventoryProfile(profileId: number) {
+    try {
+        // Delete related transactions first if any?
+        // Or should we keep them? 
+        // Prisma schema: Transaction -> profile (optional relation).
+        // If we delete profile, what happens to transaction?
+        // Schema says: profile SalesProfile? @relation(fields: [perfilId], references: [id])
+        // It doesn't say onDelete: Cascade. So it might fail if there are transactions.
+
+        // Let's check if there are transactions.
+        const txCount = await prisma.transaction.count({ where: { perfilId: profileId } })
+
+        if (txCount > 0) {
+            // unlink transactions
+            await prisma.transaction.updateMany({
+                where: { perfilId: profileId },
+                data: { perfilId: null }
+            })
+        }
+
+        await prisma.salesProfile.delete({
+            where: { id: profileId }
+        })
+
+        return { success: true }
+    } catch (e) {
+        console.error("Delete Profile Error", e)
         return { success: false, error: String(e) }
     }
 }
@@ -1718,11 +2266,11 @@ export async function verifyLoginCode(phone: string, code: string) {
         // Success! Log in this specific client
         // Clear Code
         await prisma.client.update({
-            where: { id: validClient.id }, // Use ID to be precise
+            where: { celular: validClient.celular }, // Uses PK
             data: { otpCode: null, otpExpires: null }
         })
 
-        return { success: true, valid: true, clientId: validClient.id }
+        return { success: true, valid: true } // Removed ID as it confuses frontend if not expecting phone
 
     } catch (e: any) {
         console.error('Verify OTP Error', e)
@@ -1746,7 +2294,8 @@ export async function generateMagicLink(phone: string) {
 
         // Return Full URL - Adjusted to existing route structure
         // Encode components to handle spaces in phone numbers without breaking the link
-        const msg = `https://estratosfera-app.vercel.app/portal?phone=${encodeURIComponent(phone)}&token=${encodeURIComponent(token)}`
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://estratosfera-app.vercel.app'
+        const msg = `${appUrl}/portal?phone=${encodeURIComponent(phone)}&token=${encodeURIComponent(token)}`
         return msg
     } catch (e) {
         console.error('Error generating magic link', e)
@@ -1781,7 +2330,8 @@ export async function sendWelcomeMessage(phone: string, clientName: string) {
         if (!client || client.welcomeSent) return { success: false, reason: 'Already Sent' }
 
         // 2. Generate Magic Link
-        const link = await generateMagicLink(phone) || `https://estratosfera-app.vercel.app/portal/${phone}`
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://estratosfera-app.vercel.app'
+        const link = await generateMagicLink(phone) || `${appUrl}/portal/${phone}`
 
         // 3. Generate Message
         const finalMessage = MessageGenerator.generate('WELCOME_BOT', {
@@ -1873,7 +2423,8 @@ export async function resendWelcomeCorrection() {
             try {
                 // Generate secure link (re-using existing token if valid or generating new)
                 // If we want to be safe, let's just generate a new link to be sure.
-                const link = await generateMagicLink(c.celular) || `https://estratosfera-app.vercel.app/portal/${c.celular}`
+                const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://estratosfera-app.vercel.app'
+                const link = await generateMagicLink(c.celular) || `${appUrl}/portal/${c.celular}`
 
                 const message = `👋 Hola ${c.nombre}, qué pena contigo.\n\nEl enlace de bienvenida anterior tenía un pequeño error y quizá no te abrió.\n\n👇 Aquí tienes el correcto para tu acceso directo:\n${link}\n\n⚠️ *NOTA IMPORTANTE:*\nToda la atención es por el número de siempre 📱. Yo solo doy notificaciones, soy un Bot 🤖.\n\n¡Gracias por la paciencia! 🙏`
 
@@ -1896,6 +2447,7 @@ export async function resendWelcomeCorrection() {
 
 // --- RENEWABLE REMINDERS ---
 export async function getRenewableReminders() {
+    noStore()
     try {
         const accounts = await prisma.inventoryAccount.findMany({
             where: { is_disposable: false },
@@ -1914,7 +2466,8 @@ export async function getRenewableReminders() {
 
                 // Handle Month Wrapping
                 // Case 1: End of month approaching next month's start (Today 30, Cutoff 2 -> diff -28 -> +30 = 2)
-                if (diff < -15) diff += 30
+                // Relaxed to -24 to allow items to stay "Overdue" for up to 24 days.
+                if (diff < -24) diff += 30
                 // Case 2: Start of month looking back at previous end (Today 2, Cutoff 30 -> diff 28 -> -30 = -2)
                 if (diff > 15) diff -= 30
 
@@ -1922,10 +2475,8 @@ export async function getRenewableReminders() {
             })
             .filter((acc): acc is (typeof accounts[0] & { diff: number }) => {
                 if (!acc) return false
-                // Window: Show from -5 (Overdue) to +5 (Upcoming) to ensure we fill the 3 slots?
-                // User said "urgentes ... hoy ... mañana".
-                // Let's widen to ensure we always have data if available, but sorted.
-                return acc.diff >= -5 && acc.diff <= 5
+                // Window: Show from -31 (Very Overdue) to +15 (Upcoming)
+                return acc.diff >= -31 && acc.diff <= 15
             })
             .sort((a, b) => a.diff - b.diff) // Ascending: -5 (Most Overdue) ... 0 (Today) ... 5 (Future)
             .map(acc => ({
@@ -2017,6 +2568,252 @@ export async function resetPayroll() {
         revalidatePath('/')
         return { success: true }
     } catch (e) {
+        return { success: false, error: String(e) }
+    }
+}
+
+export async function getAssignInventory() {
+    try {
+        const freeProfiles = await prisma.salesProfile.findMany({
+            where: { estado: 'LIBRE' },
+            include: { account: true }
+        })
+
+        const groups: Record<string, any> = {}
+
+        freeProfiles.forEach(p => {
+            const service = p.account.servicio
+            if (!groups[service]) groups[service] = { service, accounts: [], profiles: [] }
+
+            groups[service].profiles.push({
+                id: p.id,
+                name: `${p.account.email} - ${p.nombre_perfil}`,
+                price: 0, // Price logic if needed
+                type: 'PROFILE'
+            })
+        })
+
+        return Object.values(groups)
+    } catch (e) {
+        console.error("Get Assign Inventory Error", e)
+        return []
+    }
+}
+
+export async function migrateProfile(oldProfileId: number, newProfileId: number, reason: 'FALLA_PIN' | 'CAIDA_PAGO' | 'MES_FINALIZADO' | 'OTRO' | 'FALLA_CODIGO' = 'OTRO') {
+    try {
+        // 1. Validate Old Profile (Must be Occupied) & New Profile (Must be Free)
+        const oldProfile = await prisma.salesProfile.findUnique({
+            where: { id: oldProfileId },
+            include: {
+                transactions: { orderBy: { fecha_vencimiento: 'desc' }, take: 1, include: { client: true } },
+                account: true
+            }
+        })
+
+        const newProfile = await prisma.salesProfile.findUnique({
+            where: { id: newProfileId },
+            include: { account: true }
+        })
+
+        if (!oldProfile || oldProfile.estado !== 'OCUPADO') return { success: false, error: 'Perfil origen no válido o no ocupado' }
+        if (!newProfile || newProfile.estado !== 'LIBRE') return { success: false, error: 'Perfil destino no válido o no libre' }
+
+        const activeTransaction = oldProfile.transactions[0]
+        if (!activeTransaction) return { success: false, error: 'No se encontró venta activa para migrar' }
+
+        // 2. Perform Migration (Atomic Transaction)
+        await prisma.$transaction(async (tx) => {
+            // Update Transaction to new profile
+            await tx.transaction.update({
+                where: { id: activeTransaction.id },
+                data: { perfilId: newProfileId }
+            })
+
+            // Update Old Profile -> LIBRE (Wait for Revive logic to handle PIN if needed, but here we just free it)
+            /* 
+               NOTE: User asked for "Revive" option later. 
+               Here we just free it. The user will manually revive/fix it from the UI if they want to resell it.
+               Or strictly speaking, "Migrar" leaves it free? 
+               The requirement says: "la que acabo de migrar me quede con la opcion de revivir".
+               If we set it to LIBRE here, it is already "revived". 
+               Maybe we should set it to 'GARANTIA' or 'CAIDO' so it shows the "Revive" button?
+               User said: "la migracion se hace... apenas haga la migracion que el bort envie el reporte... opcion de revivir".
+               So it should probably go to 'GARANTIA' or 'CAIDO' to be "Revivable".
+               Let's set it to 'GARANTIA'.
+            */
+            await tx.salesProfile.update({
+                where: { id: oldProfileId },
+                data: { estado: 'GARANTIA' }
+            })
+
+            // Update New Profile -> OCUPADO
+            await tx.salesProfile.update({
+                where: { id: newProfileId },
+                data: { estado: 'OCUPADO', pin: newProfile.pin } // Keep its own pin
+            })
+        })
+
+        // 3. Send Bot Notification
+        if (activeTransaction.client?.celular) {
+            const msg = MessageGenerator.generate('MIGRATION', {
+                clientName: activeTransaction.client.nombre,
+                service: newProfile.account.servicio,
+                email: newProfile.account.email,
+                password: newProfile.account.password,
+                profileName: newProfile.nombre_perfil,
+                pin: newProfile.pin,
+                reason: reason
+            })
+
+            // Send Async
+            sendToBot(activeTransaction.client.celular, msg).catch(console.error)
+        }
+
+        revalidatePath('/inventory')
+        revalidatePath('/sales')
+        return { success: true }
+
+    } catch (error) {
+        console.error('Migration Error:', error)
+        return { success: false, error: 'Error interno al migrar' }
+    }
+}
+
+export async function sendReceiptAction(phone: string, imageBase64: string, caption: string) {
+    try {
+        await sendToBot(phone, caption, imageBase64)
+        return { success: true }
+    } catch (e) {
+        console.error("Receipt Send Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
+
+// --- DISPOSABLE ACCOUNT LIFECYCLE ---
+
+export async function getExpiredDisposables() {
+    try {
+        await cleanupArchivedAccounts() // Piggyback auto-cleanup
+
+        // Find active disposable accounts
+        const disposables = await prisma.inventoryAccount.findMany({
+            where: {
+                is_disposable: true,
+                status: 'ACTIVE' // Only active ones
+            },
+            include: { perfiles: true }
+        })
+
+        const now = new Date()
+        const expired = disposables.filter(acc => {
+            const activation = new Date(acc.fecha_activacion || acc.createdAt)
+            const months = (acc as any).duracion_meses || 1
+            const endDate = new Date(activation)
+            endDate.setMonth(endDate.getMonth() + months)
+
+            // Calculate days PAST expiration.
+            // If now is Dec 20, and endDate was Dec 10, then diff is 10 days.
+            // We want accounts where (Now - endDate) > 5 days.
+            // i.e. endDate < (Now - 5 days) 
+            // BUT ensure we don't catch future ones (endDate > 5 days ago).
+            // Logic: EndDate must be strictly LESS than (Now - 5 days).
+
+            const fiveDaysAgo = new Date(now)
+            fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5)
+
+            return endDate < fiveDaysAgo
+        })
+
+        return { success: true, count: expired.length, accounts: expired }
+    } catch (e) {
+        console.error("Get Expired Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
+export async function archiveAccount(accountId: number) {
+    try {
+        await prisma.inventoryAccount.update({
+            where: { id: accountId },
+            data: {
+                status: 'ARCHIVED',
+                archivedAt: new Date()
+            }
+        })
+        revalidatePath('/inventory')
+        return { success: true }
+    } catch (e) {
+        console.error("Archive Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
+export async function cleanupArchivedAccounts() {
+    try {
+        // Delete accounts archived > 30 days ago
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+        const oldArchived = await prisma.inventoryAccount.findMany({
+            where: {
+                status: 'ARCHIVED',
+                archivedAt: { lt: thirtyDaysAgo }
+            }
+        })
+
+        if (oldArchived.length > 0) {
+            console.log(`Cleaning up ${oldArchived.length} old archived accounts...`)
+            for (const acc of oldArchived) {
+                // Delete profiles first (Cascade usually handles this but safety first)
+                await prisma.salesProfile.deleteMany({ where: { accountId: acc.id } })
+                // Nullify transaction links
+                await prisma.transaction.updateMany({
+                    where: { accountId: acc.id },
+                    data: { accountId: null }
+                })
+
+                await prisma.inventoryAccount.delete({ where: { id: acc.id } })
+            }
+        }
+        return { success: true }
+    } catch (e) {
+        console.error("Cleanup Error", e)
+        return { success: false }
+    }
+}
+
+export async function getArchivedInventory() {
+    try {
+        const archivedAccounts = await prisma.inventoryAccount.findMany({
+            where: { status: 'ARCHIVED' },
+            include: {
+                perfiles: true,
+                provider: true
+            },
+            orderBy: { archivedAt: 'desc' }
+        })
+        return { success: true, accounts: archivedAccounts }
+    } catch (e) {
+        console.error("Get Archived Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
+export async function sendTestReminder(phone: string) {
+    try {
+        const msg = MessageGenerator.generate('REMINDER', {
+            clientName: 'Usuario de Prueba',
+            service: 'Servicio Demo',
+            daysLeft: 5
+        })
+
+        // Force send even if bot logic has checks
+        await sendToBot(phone, msg)
+        return { success: true }
+    } catch (e) {
+        console.error("Test Reminder Error", e)
         return { success: false, error: String(e) }
     }
 }

@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp, Download } from 'lucide-react'
 import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
-import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAvailableInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection } from '../actions'
+import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction } from '../actions'
 import { sendToBot } from '@/services/whatsapp'
 import { signOut } from 'next-auth/react'
+import html2canvas from 'html2canvas'
 
 export default function ClientsPage() {
     const [clients, setClients] = useState<any[]>([])
@@ -309,6 +310,7 @@ export default function ClientsPage() {
     )
 }
 
+
 function ClientCard({ client, status, onAction, onReceipt }: { client: any, status: 'urgent' | 'alert' | 'normal' | 'renewed', onAction: any, onReceipt: any }) {
     const [showRenewModal, setShowRenewModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
@@ -320,8 +322,11 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     const [editDate, setEditDate] = useState('')
     const [paymentMethod, setPaymentMethod] = useState('NEQUI')
     const [isProcessing, setIsProcessing] = useState(false)
+    const [invoiceData, setInvoiceData] = useState<any>(null)
+    const invoiceRef = useRef<HTMLDivElement>(null)
 
-    // Assign Modal State
+    // Assign/Migrate Modal State
+    const [assignMode, setAssignMode] = useState<'NEW' | 'MIGRATE'>('NEW')
     const [inventory, setInventory] = useState<any[]>([])
     const [loadingInventory, setLoadingInventory] = useState(false)
     const [selectedProduct, setSelectedProduct] = useState<any>(null)
@@ -332,7 +337,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     useEffect(() => {
         if (showAssignModal) {
             setLoadingInventory(true)
-            getAvailableInventory().then(inv => {
+            getAssignInventory().then(inv => {
                 setInventory(inv)
                 setLoadingInventory(false)
             })
@@ -340,32 +345,68 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     }, [showAssignModal])
 
     const confirmAssign = async () => {
-        if (!selectedProduct || !assignPrice) return alert('Selecciona producto y precio')
+        if (!selectedProduct) return alert('Selecciona un producto')
         setIsProcessing(true)
 
-        // Create Sale handles the assignment as a new transaction
-        await createSale(client.id, client.name, selectedProduct.id, Number(assignPrice), paymentMethod, assignDate, assignMonths)
-        window.location.reload()
+        if (assignMode === 'MIGRATE') {
+            const res = await applyWarrantySwap(client.profileId, selectedProduct.id)
+            if (res.success) {
+                alert('✅ Migración Exitosa: ' + res.message)
+                window.location.reload()
+            } else {
+                alert('❌ Error: ' + res.message)
+                setIsProcessing(false)
+            }
+        } else {
+            if (!assignPrice) return alert('Ingresa el precio')
+            // Create Sale handles the assignment as a new transaction
+            await createSale(client.id, client.name, selectedProduct.id, Number(assignPrice), paymentMethod, assignDate, assignMonths)
+            window.location.reload()
+        }
+    }
+
+    const handleWarranty = async () => {
+        if (!confirm(`¿Aplicar GARANTÍA AUTOMÁTICA a ${client.name}?\n\nSe buscará un perfil LIBRE del mismo servicio y se intercambiará, manteniendo la fecha de vencimiento actual.`)) return
+
+        setIsProcessing(true)
+        const res = await applyWarrantySwap(client.profileId)
+        if (res.success) {
+            alert('✅ Garantía Aplicada: ' + res.message)
+            window.location.reload()
+        } else {
+            alert('⚠️ ' + res.message)
+            setIsProcessing(false)
+        }
     }
 
     const handleBotAction = async (type: MessageType) => {
-        // if (!confirm(`¿Estás seguro de enviar mensaje tipo ${type} a ${client.name}?`)) return
         setIsProcessing(true)
         try {
-            const message = MessageGenerator.generate(type, {
-                clientName: client.name,
-                service: client.service,
-                daysLeft: client.daysLeft,
-                // Credentials
-                email: client.email,
-                password: client.password,
-                pin: client.pin,
-                profileName: client.profileName,
-                date: client.date || new Date().toLocaleDateString('es-CO')
-            })
+            let message = ''
 
-            const res = await sendToBot(client.phone, message)
-            // alert(`Mensaje enviado: ${res.status}`)
+            // Intelligent Resend Selection
+            if (type === 'SALE' && client.items && client.items.length > 1) {
+                // IT IS A COMBO / MULTIPLE SERVICE
+                message = MessageGenerator.generate('COMBO', {
+                    clientName: client.name,
+                    items: client.items,
+                    expirationDate: new Date().toLocaleDateString() // Or meaningful max date
+                })
+            } else {
+                // SINGLE SERVICE
+                message = MessageGenerator.generate(type, {
+                    clientName: client.name,
+                    service: client.service,
+                    daysLeft: client.daysLeft,
+                    email: client.email,
+                    password: client.password,
+                    pin: client.pin,
+                    profileName: client.profileName,
+                    date: client.date || new Date().toLocaleDateString('es-CO')
+                })
+            }
+
+            await sendToBot(client.phone, message)
         } catch (e: any) {
             alert(`Error enviando bot: ${e.message}`)
         } finally {
@@ -374,24 +415,46 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     }
 
     const handleRelease = async () => {
-        // 1. Ask for Confirmation
         if (!confirm(`¿Confirmas que ${client.name} NO renueva?`)) return
-
-        // 2. Ask for New PIN (Mandatory per user request to "ensure pin change")
         let newPin = prompt(`⚠️ IMPORTANTE ⚠️\n\nPara liberar el perfil, debes cambiar el PIN.\n\nIngresa el NUEVO PIN para el perfil ${client.service}:`)
-
-        if (!newPin) return // Cancel if no PIN provided
-
+        if (!newPin) return
         setIsProcessing(true)
-        // 3. Call service with new PIN
         await releaseService(client.profileId, newPin)
         window.location.reload()
     }
 
     const confirmRenewal = async () => {
         setIsProcessing(true)
+        // 1. Prepare Invoice Data
+        const receiptData = {
+            amount: 0, // Need to know price? Maybe assume standard or fetch? For now 0 or hidden.
+            // Wait, renewService doesn't return price. Let's assume standard price or prompt?
+            // For now, let's use a placeholder or try to find price.
+            // Actually, renewal usually implies same price.
+            client: client.name,
+            category: client.service,
+            date: new Date().toISOString(),
+            paymentMethod: paymentMethod,
+            isCombo: false
+        }
+        setInvoiceData(receiptData)
+
+        // 2. Process Renewal
         await renewService(client.id, client.lastTxId, renewalDate, paymentMethod, renewalMonths)
-        window.location.reload()
+
+        // 3. Generate & Send Receipt (After small delay for render)
+        setTimeout(async () => {
+            if (invoiceRef.current) {
+                try {
+                    const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617' })
+                    const base64Image = canvas.toDataURL('image/png')
+                    await sendReceiptAction(client.phone, base64Image, `🧾 Renovación exitosa. Aquí tienes tu recibo.`)
+                } catch (e) {
+                    console.error("Receipt Error", e)
+                }
+            }
+            window.location.reload()
+        }, 1000)
     }
 
     const confirmEdit = async () => {
@@ -415,18 +478,12 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
             <div className={`glass-panel p-4 rounded-2xl flex items-center justify-between group hover:border-violet-500/30 transition-all duration-300 relative ${showMenu ? 'z-50 ring-1 ring-violet-500/50' : ''}`}>
                 <div className="flex items-center gap-4">
                     <div className={`w-3 h-3 rounded-full ${config.color} shadow-[0_0_10px_currentColor]`} />
-
                     <div>
                         <h3 className="font-bold text-white text-base">{client.name}</h3>
                         <p className="text-xs text-slate-400 mt-0.5">{client.service}</p>
                         <p className={`text-[10px] font-bold mt-1 ${config.text} uppercase tracking-wide flex items-center gap-2`}>
                             {client.renewed ? '✅ Renovado' : client.daysLeft === 0 ? 'Vence Hoy' : client.daysLeft < 0 ? 'Vencido' : `${client.daysLeft} Días restantes`}
-
-                            <button
-                                onClick={() => setShowEditModal(true)}
-                                className="opacity-0 group-hover:opacity-100 hover:text-white transition-opacity p-1"
-                                title="Corregir Fecha"
-                            >
+                            <button onClick={() => setShowEditModal(true)} className="opacity-0 group-hover:opacity-100 hover:text-white transition-opacity p-1" title="Corregir Fecha">
                                 <Pencil size={12} />
                             </button>
                         </p>
@@ -434,55 +491,33 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                 </div>
 
                 <div className={`flex gap-2 transition-opacity relative ${showMenu ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
-                    <button
-                        onClick={() => onAction(client.phone, client.name, client.daysLeft, client.service)}
-                        className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400"
-                        title="Enviar Recordatorio (WhatsApp Web)"
-                    >
+                    <button onClick={() => onAction(client.phone, client.name, client.daysLeft, client.service)} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400" title="Enviar Recordatorio">
                         <MessageCircle size={18} />
                     </button>
 
                     {!client.renewed && (
-                        <button
-                            onClick={() => setShowRenewModal(true)}
-                            disabled={isProcessing}
-                            className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400"
-                            title="Renovar Servicio"
-                        >
+                        <button onClick={() => setShowRenewModal(true)} disabled={isProcessing} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400" title="Renovar Servicio">
                             <CheckCircle size={18} />
                         </button>
                     )}
 
                     <div className="relative">
-                        <button
-                            onClick={() => setShowMenu(!showMenu)}
-                            className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-violet-500/20 hover:text-violet-400 flex items-center justify-center transition-colors text-slate-400"
-                        >
+                        <button onClick={() => setShowMenu(!showMenu)} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-violet-500/20 hover:text-violet-400 flex items-center justify-center transition-colors text-slate-400">
                             <MoreHorizontal size={18} />
                         </button>
 
                         {showMenu && (
                             <div className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 p-1">
-                                {/* BOT ACTIONS */}
-                                <button
-                                    onClick={() => { handleBotAction('SALE'); setShowMenu(false) }}
-                                    disabled={isProcessing}
-                                    className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2"
-                                >
+                                <button onClick={() => { handleBotAction('SALE'); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2">
                                     <FileText size={14} className="text-violet-400" /> Reenviar Datos
                                 </button>
-                                <button
-                                    onClick={() => { handleBotAction('WARRANTY'); setShowMenu(false) }}
-                                    disabled={isProcessing}
-                                    className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2"
-                                >
-                                    <ShieldCheck size={14} className="text-amber-400" /> Garantía
+                                <button onClick={() => { handleWarranty(); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2">
+                                    <ShieldCheck size={14} className="text-amber-400" /> Garantía (Auto)
                                 </button>
-                                <button
-                                    onClick={() => { handleBotAction('ROTATION'); setShowMenu(false) }}
-                                    disabled={isProcessing}
-                                    className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2"
-                                >
+                                <button onClick={() => { setAssignMode('MIGRATE'); setShowAssignModal(true); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2">
+                                    <RefreshCcw size={14} className="text-pink-400" /> Migrar (Manual)
+                                </button>
+                                <button onClick={() => { handleBotAction('ROTATION'); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2">
                                     <Key size={14} className="text-cyan-400" /> Pass / Pin
                                 </button>
 
@@ -490,18 +525,10 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
 
                                 {!client.renewed && (
                                     <>
-                                        <button
-                                            onClick={() => { setShowAssignModal(true); setShowMenu(false) }}
-                                            disabled={isProcessing}
-                                            className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2"
-                                        >
-                                            <UserPlus size={14} className="text-blue-400" /> Asignar / Migrar
+                                        <button onClick={() => { setAssignMode('NEW'); setShowAssignModal(true); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2">
+                                            <UserPlus size={14} className="text-blue-400" /> Asignar Nuevo
                                         </button>
-                                        <button
-                                            onClick={() => { handleRelease(); setShowMenu(false) }}
-                                            disabled={isProcessing}
-                                            className="w-full text-left px-3 py-2 text-sm text-rose-300 hover:bg-rose-500/10 hover:text-rose-400 rounded-lg flex items-center gap-2"
-                                        >
+                                        <button onClick={() => { handleRelease(); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-rose-300 hover:bg-rose-500/10 hover:text-rose-400 rounded-lg flex items-center gap-2">
                                             <X size={14} /> Liberar Perfil
                                         </button>
                                     </>
@@ -520,22 +547,13 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-xs uppercase text-slate-500 font-bold mb-1">Fecha de Inicio</label>
-                                <input
-                                    type="date"
-                                    value={renewalDate}
-                                    onChange={e => setRenewalDate(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
-                                />
+                                <input type="date" value={renewalDate} onChange={e => setRenewalDate(e.target.value)} className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white" />
                             </div>
                             <div>
                                 <label className="block text-xs uppercase text-slate-500 font-bold mb-1">Duración (Meses)</label>
                                 <div className="flex gap-2">
                                     {[1, 3, 6, 12].map(m => (
-                                        <button
-                                            key={m}
-                                            onClick={() => setRenewalMonths(m)}
-                                            className={`flex-1 py-2 rounded-lg font-bold transition ${renewalMonths === m ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}
-                                        >
+                                        <button key={m} onClick={() => setRenewalMonths(m)} className={`flex-1 py-2 rounded-lg font-bold transition ${renewalMonths === m ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
                                             {m}M
                                         </button>
                                     ))}
@@ -543,11 +561,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                             </div>
                             <div>
                                 <label className="block text-xs uppercase text-slate-500 font-bold mb-1">Método de Pago</label>
-                                <select
-                                    value={paymentMethod}
-                                    onChange={e => setPaymentMethod(e.target.value)}
-                                    className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
-                                >
+                                <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white">
                                     <option value="NEQUI">Nequi</option>
                                     <option value="BANCOLOMBIA">Bancolombia</option>
                                     <option value="DAVIPLATA">Daviplata</option>
@@ -555,12 +569,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     <option value="USDT">USDT</option>
                                 </select>
                             </div>
-
-                            <button
-                                onClick={confirmRenewal}
-                                disabled={isProcessing}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50"
-                            >
+                            <button onClick={confirmRenewal} disabled={isProcessing} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50">
                                 {isProcessing ? 'Procesando...' : 'Confirmar Renovación'}
                             </button>
                             <button onClick={() => setShowRenewModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
@@ -576,17 +585,8 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                         <h3 className="text-xl font-bold text-white mb-4">Corregir Vencimiento</h3>
                         <p className="text-sm text-slate-400 mb-4">Cambiar solo la fecha de corte sin registrar pago nuevo.</p>
                         <div className="space-y-4">
-                            <input
-                                type="date"
-                                value={editDate}
-                                onChange={e => setEditDate(e.target.value)}
-                                className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
-                            />
-                            <button
-                                onClick={confirmEdit}
-                                disabled={isProcessing}
-                                className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50"
-                            >
+                            <input type="date" value={editDate} onChange={e => setEditDate(e.target.value)} className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white" />
+                            <button onClick={confirmEdit} disabled={isProcessing} className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50">
                                 {isProcessing ? 'Guardando...' : 'Guardar Fecha'}
                             </button>
                             <button onClick={() => setShowEditModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
@@ -595,11 +595,18 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                 </div>
             )}
 
-            {/* ASSIGN MODAL */}
+            {/* ASSIGN/MIGRATE MODAL */}
             {showAssignModal && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
                     <div className="bg-slate-900 border border-white/10 p-6 rounded-2xl w-full max-w-md h-[80vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold text-white mb-4">Asignar Nuevo Servicio</h3>
+                        <h3 className="text-xl font-bold text-white mb-4">
+                            {assignMode === 'MIGRATE' ? 'Migrar Cliente' : 'Asignar Nuevo'}
+                        </h3>
+                        {assignMode === 'MIGRATE' && (
+                            <div className="mb-4 bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg text-amber-200 text-xs">
+                                <p>⚠️ Estás en <b>MIGRACIÓN</b>. Al seleccionar un perfil, se intercambiará por el actual y se mantendrá la fecha de vencimiento.</p>
+                            </div>
+                        )}
 
                         {loadingInventory ? (
                             <div className="text-center py-8 text-slate-500 animate-pulse">Cargando inventario...</div>
@@ -614,9 +621,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                                 {group.accounts.map((acc: any) => (
                                                     <button
                                                         key={acc.id}
-                                                        onClick={() => setSelectedProduct({ id: acc.id, name: acc.name, type: 'ACCOUNT' })} // Inventory usually returns profiles? 
-                                                        // Wait, getAvailableInventory returns grouped profiles. Let's assume structure.
-                                                        // Actually let's assume valid structure
+                                                        onClick={() => setSelectedProduct({ id: acc.id, name: acc.name, type: 'ACCOUNT' })}
                                                         className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === acc.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
                                                     >
                                                         {acc.name}
@@ -639,48 +644,31 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     ))}
                                 </div>
 
-                                <div>
-                                    <label className="block text-xs uppercase text-slate-500 font-bold mb-1">2. Precio Venta</label>
-                                    <input
-                                        type="number"
-                                        value={assignPrice}
-                                        onChange={e => setAssignPrice(e.target.value)}
-                                        placeholder="Ej: 15000"
-                                        className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
-                                    />
-                                </div>
+                                {assignMode === 'NEW' && (
+                                    <>
+                                        <div>
+                                            <label className="block text-xs uppercase text-slate-500 font-bold mb-1">2. Precio Venta</label>
+                                            <input type="number" value={assignPrice} onChange={e => setAssignPrice(e.target.value)} placeholder="Ej: 15000" className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs uppercase text-slate-500 font-bold mb-1">3. Fecha Inicio</label>
+                                            <input type="date" value={assignDate} onChange={e => setAssignDate(e.target.value)} className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs uppercase text-slate-500 font-bold mb-1">4. Duración</label>
+                                            <div className="flex gap-2">
+                                                {[1, 3, 6, 12].map(m => (
+                                                    <button key={m} onClick={() => setAssignMonths(m)} className={`flex-1 py-2 rounded-lg font-bold transition ${assignMonths === m ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                                                        {m}M
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
 
-                                <div>
-                                    <label className="block text-xs uppercase text-slate-500 font-bold mb-1">3. Fecha Inicio</label>
-                                    <input
-                                        type="date"
-                                        value={assignDate}
-                                        onChange={e => setAssignDate(e.target.value)}
-                                        className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs uppercase text-slate-500 font-bold mb-1">4. Duración</label>
-                                    <div className="flex gap-2">
-                                        {[1, 3, 6, 12].map(m => (
-                                            <button
-                                                key={m}
-                                                onClick={() => setAssignMonths(m)}
-                                                className={`flex-1 py-2 rounded-lg font-bold transition ${assignMonths === m ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}
-                                            >
-                                                {m}M
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={confirmAssign}
-                                    disabled={!selectedProduct || !assignPrice || isProcessing}
-                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50"
-                                >
-                                    {isProcessing ? 'Asignando...' : 'Confirmar Asignación'}
+                                <button onClick={confirmAssign} disabled={!selectedProduct || (assignMode === 'NEW' && !assignPrice) || isProcessing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50">
+                                    {isProcessing ? 'Procesando...' : (assignMode === 'MIGRATE' ? 'Confirmar Migración' : 'Confirmar Asignación')}
                                 </button>
                                 <button onClick={() => setShowAssignModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                             </div>
@@ -688,6 +676,55 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                     </div>
                 </div>
             )}
+            {/* INVOICE TEMPLATE (Hidden) */}
+            {
+                invoiceData && (
+                    <div className="fixed top-0 left-0 w-full h-full -z-50 flex items-center justify-center opacity-0 pointer-events-none">
+                        <div ref={invoiceRef} className="w-[400px] bg-slate-950 p-8 rounded-none border border-white/10 text-center relative overflow-hidden">
+                            {/* DECORATION */}
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-600 to-blue-600"></div>
+                            <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-violet-600"></div>
+
+                            {/* HEADER */}
+                            <div className="flex flex-col items-center mb-6">
+                                {/* <img src="/logo-navidad.jpg" className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-4 shadow-lg shadow-violet-500/20" alt="Logo" /> */}
+                                <h1 className="text-2xl font-bold text-white tracking-tight">ESTRATOSFERA</h1>
+                                <p className="text-violet-400 text-sm font-medium tracking-widest uppercase">Comprobante de Renovación</p>
+                            </div>
+
+                            {/* DETAILS */}
+                            <div className="space-y-6">
+                                <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5">
+                                    <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Servicio Renovado</p>
+                                    <p className="text-xl font-bold text-emerald-400 font-mono">{invoiceData.category}</p>
+                                </div>
+
+                                <div className="space-y-4 text-sm">
+                                    <div className="flex justify-between items-start border-b border-white/5 pb-2">
+                                        <span className="text-slate-400 shrink-0">Cliente</span>
+                                        <span className="font-bold text-white text-right">{invoiceData.client}</span>
+                                    </div>
+
+                                    <div className="flex justify-between border-b border-white/5 pb-2">
+                                        <span className="text-slate-400">Fecha</span>
+                                        <span className="font-bold text-white">{new Date().toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex justify-between border-b border-white/5 pb-2">
+                                        <span className="text-slate-400">Método de Pago</span>
+                                        <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* FOOTER */}
+                            <div className="mt-8 pt-6 border-t border-white/5">
+                                <p className="text-slate-500 text-xs">¡Gracias por seguir con nosotros!</p>
+                                <p className="text-slate-600 text-[10px] mt-1">Generado automáticamente</p>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </>
     )
 }

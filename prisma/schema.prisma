@@ -29,6 +29,8 @@ model InventoryAccount {
   providerId       Int?
   dia_corte        Int?
   is_disposable    Boolean        @default(false)
+  status           String         @default("ACTIVE") // ACTIVE, ARCHIVED
+  archivedAt       DateTime?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   fecha_activacion DateTime       @default(now())

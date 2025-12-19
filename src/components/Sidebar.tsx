@@ -9,7 +9,7 @@ export function Sidebar() {
     const pathname = usePathname()
 
     const navItems = [
-        { name: 'Inicio', href: '/', icon: Home },
+        { name: 'Inicio', href: '/administracion', icon: Home },
         { name: 'Ventas', href: '/sales', icon: DollarSign },
         { name: 'Inventario', href: '/inventory', icon: Layers },
         { name: 'Estadísticas', href: '/analytics', icon: BarChart2 },

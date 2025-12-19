@@ -6,9 +6,10 @@ import { BottomNav } from '@/components/BottomNav'
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
-    const isPortal = pathname?.startsWith('/portal')
+    // Update: Root '/' is now the Portal (Public). Check for explicit Portal routes too.
+    const isPublic = pathname === '/' || pathname?.startsWith('/portal')
 
-    if (isPortal) {
+    if (isPublic) {
         return (
             <main className="flex-1 min-h-screen bg-slate-950">
                 {children}

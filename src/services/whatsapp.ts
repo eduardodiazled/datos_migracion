@@ -1,5 +1,5 @@
 
-export async function sendToBot(phone: string, message: string) {
+export async function sendToBot(phone: string, message: string, media?: string) {
     const BOT_URL = process.env.NEXT_PUBLIC_BOT_URL || process.env.VITE_BOT_URL || 'http://localhost:4000';
     const API_KEY = process.env.NEXT_PUBLIC_BOT_API_KEY || process.env.VITE_BOT_API_KEY;
 
@@ -18,7 +18,8 @@ export async function sendToBot(phone: string, message: string) {
             },
             body: JSON.stringify({
                 phone,
-                message
+                message, // Can be caption if media is present
+                media
             })
         });
 
