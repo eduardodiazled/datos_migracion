@@ -43,6 +43,8 @@
 body {
   @apply bg-slate-950 text-slate-50 antialiased;
   font-feature-settings: "rlig" 1, "calt" 1;
+  overscroll-behavior-y: contain; /* Disable Pull-to-Refresh */
+  overflow-x: hidden; /* Prevent horizontal swipe nav */
 }
 
 /* Custom Utilities for Stratosphere Look */
