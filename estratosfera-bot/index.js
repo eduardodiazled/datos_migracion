@@ -50,11 +50,12 @@ async function startBot() {
         auth: state,
         printQRInTerminal: false,
         logger: pino ? pino({ level: 'silent' }) : undefined,
-        browser: ["Estratósfera Bot", "Chrome", "1.0.0"],
-        connectTimeoutMs: 60000, // Wait longer for connection
-        defaultQueryTimeoutMs: undefined, // Keep waiting for queries
-        retryRequestDelayMs: 250, // Retry faster
-        keepAliveIntervalMs: 10000, // Ping interval
+        browser: ['Ubuntu', 'Chrome', '20.0.04'], // Standard Linux signature
+        syncFullHistory: false, // Don't sync old messages to speed up
+        connectTimeoutMs: 60000,
+        defaultQueryTimeoutMs: undefined,
+        retryRequestDelayMs: 250,
+        keepAliveIntervalMs: 10000,
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -94,6 +95,12 @@ async function startBot() {
         } else if (connection === 'open') {
             console.log('BOT LISTO CONECTADO 🟢');
             currentQR = null; // Clear QR
+
+            // Clear corruption flag if it exists (Successful login!)
+            try {
+                const flagPath = `${AUTH_DIR}/session_corrupt`;
+                if (fs.existsSync(flagPath)) fs.unlinkSync(flagPath);
+            } catch (e) { }
 
             // Keep Alive Mechanism (Active)
             if (global.keepAliveInterval) clearInterval(global.keepAliveInterval);
