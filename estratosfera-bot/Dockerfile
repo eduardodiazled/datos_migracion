@@ -3,8 +3,12 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copiar dependencias
-COPY package*.json ./
-RUN npm install
+# Copiar dependencias
+COPY package.json ./
+# Instalar dependencias de compilación (para bibliotecas nativas como sharp/bufferutil)
+# y borrar package-lock para evitar conflictos de plataforma
+RUN apk add --no-cache python3 make g++ git
+RUN npm install --no-package-lock
 
 # Copiar código fuente
 COPY . .
