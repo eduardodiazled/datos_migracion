@@ -2032,40 +2032,75 @@ export default function InventoryPage() {
               </a>
               <button
                 onClick={async () => {
-                  const btn = document.getElementById('btn-send-receipt') as HTMLButtonElement
+                  const btn = document.getElementById('btn-share-receipt') as HTMLButtonElement
                   if (btn) {
                     btn.disabled = true;
-                    btn.innerText = 'Enviando Recibo...';
+                    btn.innerText = 'Generando...';
                   }
 
                   if (invoiceRef.current) {
                     try {
-                      // 1. Generate Image
-                      const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 2 })
-                      const base64Image = canvas.toDataURL('image/png')
+                      // 1. Generate Image High Quality
+                      const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 3 })
 
-                      // 2. Send via Server Action (Caption is optional, maybe just "Recibo de Pago")
-                      await sendReceiptAction(saleData.phone, base64Image, "🧾 *Aquí tienes tu Recibo de Pago*")
+                      canvas.toBlob(async (blob) => {
+                        if (!blob) {
+                          throw new Error('Canvas Empty')
+                        }
+                        const file = new File([blob], `recibo_${Date.now()}.png`, { type: 'image/png' })
 
-                      toast.success("✅ Recibo enviado por Bot")
+                        // 2. Try Native Share (Mobile)
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                          try {
+                            await navigator.share({
+                              files: [file],
+                              title: 'Recibo de Pago',
+                              text: 'Adjunto recibo de pago.'
+                            })
+                            toast.success('Compartiendo...')
+                          } catch (shareError) {
+                            // User cancelled share, ignore
+                            console.log('Share cancelled', shareError)
+                          }
+                        } else {
+                          // 3. Fallback: Copy to Clipboard (Desktop)
+                          try {
+                            await navigator.clipboard.write([
+                              new ClipboardItem({
+                                [blob.type]: blob
+                              })
+                            ])
+                            toast.success('📸 Imagen copiada! Pégala en WhatsApp (Ctrl+V)')
+                          } catch (clipError) {
+                            console.error('Clipboard Error', clipError)
+                            toast.error('No se pudo compartir automáticamente. Intenta descargarla.')
+                            // Fallback 2: Download? Or just leave it.
+                          }
+                        }
+
+                        if (btn) {
+                          btn.disabled = false;
+                          btn.innerText = 'Compartir Recibo';
+                        }
+                      }, 'image/png')
+
                     } catch (err) {
-                      console.error("Receipt Send Error", err)
-                      toast.error("Error al enviar recibo: " + String(err))
-                    } finally {
+                      console.error("Receipt Share Error", err)
+                      toast.error("Error al generar imagen")
                       if (btn) {
                         btn.disabled = false;
-                        btn.innerText = 'Enviar Recibo (Imagen)';
+                        btn.innerText = 'Compartir Recibo';
                       }
                     }
                   } else {
-                    toast.error("Error: No se pudo generar la imagen")
+                    toast.error("Error: ref missing")
                     if (btn) btn.disabled = false;
                   }
                 }}
-                id="btn-send-receipt"
+                id="btn-share-receipt"
                 className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
               >
-                <ImageIcon size={18} /> Enviar Recibo
+                <ImageIcon size={18} /> Compartir Recibo
               </button>
             </div>
             <button onClick={() => setShowSuccessModal(false)} className="mt-3 text-slate-500 hover:text-white text-sm">Cerrar</button>
