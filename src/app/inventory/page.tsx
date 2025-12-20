@@ -486,19 +486,7 @@ export default function InventoryPage() {
             items: validationItems // Pass items to invoice
           })
 
-          setTimeout(async () => {
-            if (invoiceRef.current) {
-              try {
-                const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617' })
-                const base64Image = canvas.toDataURL('image/png')
-                await sendReceiptAction(saleData.phone, base64Image, `🧾 Aquí tienes tu recibo de compra (Combo).`)
-                toast.success("Recibo enviado al Bot WhatsApp")
-              } catch (err) {
-                console.error("Auto Receipt Error", err)
-              }
-              setInvoiceData(null)
-            }
-          }, 1500)
+
 
           setSelectedItems([])
         } else {
@@ -532,7 +520,6 @@ export default function InventoryPage() {
           password: profileInfo.account.password,
           profileName: profileInfo.nombre_perfil,
           pin: profileInfo.pin,
-          pin: profileInfo.pin,
           date: (() => {
             const d = new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00')
             d.setMonth(d.getMonth() + (saleData.months || 1))
@@ -562,19 +549,7 @@ export default function InventoryPage() {
           isCombo: false
         })
 
-        setTimeout(async () => {
-          if (invoiceRef.current) {
-            try {
-              const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617' })
-              const base64Image = canvas.toDataURL('image/png')
-              await sendReceiptAction(saleData.phone, base64Image, `🧾 Aquí tienes tu recibo de compra.`)
-              toast.success("Recibo enviado al Bot WhatsApp")
-            } catch (err) {
-              console.error("Auto Receipt Error", err)
-            }
-            setInvoiceData(null)
-          }
-        }, 1500)
+
       }
 
     } else {
@@ -2029,26 +2004,38 @@ export default function InventoryPage() {
                   const btn = document.getElementById('btn-send-bot') as HTMLButtonElement
                   if (btn) {
                     btn.disabled = true;
-                    btn.innerText = 'Enviando...'
+                    btn.innerText = 'Enviando...';
                   }
+
                   if (invoiceRef.current) {
                     try {
-                      const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617' })
+                      // 1. Generate Image
+                      const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 2 })
                       const base64Image = canvas.toDataURL('image/png')
-                      await sendReceiptAction(saleData.phone, base64Image, successData.message) // Send Message AND Image
+
+                      // 2. Send via Server Action
+                      await sendReceiptAction(saleData.phone, base64Image, successData.message)
+
                       toast.success("✅ Enviado por Bot (Texto + Imagen)")
                     } catch (err) {
                       console.error("Manual Bot Send Error", err)
-                      toast.error("Error al enviar")
+                      toast.error("Error al enviar: " + String(err))
+                    } finally {
+                      // Reset invoice data to clear memory/state if needed, or keep it open?
+                      // User might want to resend? Getting stuck "sending" was the issue.
+                      // Let's just reset the button state.
+                      if (btn) {
+                        btn.disabled = false;
+                        btn.innerText = 'Enviar por Bot (Reenviar)';
+                      }
                     }
-                  }
-                  if (btn) {
-                    btn.disabled = false;
-                    btn.innerText = 'Enviar por Bot'
+                  } else {
+                    toast.error("Error: No se pudo generar la imagen (Ref missing)")
+                    if (btn) btn.disabled = false;
                   }
                 }}
                 id="btn-send-bot"
-                className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition"
+                className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send size={18} /> Enviar por Bot
               </button>
