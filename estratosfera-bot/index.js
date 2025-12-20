@@ -29,9 +29,13 @@ async function startBot() {
 
     sock = makeWASocket({
         auth: state,
-        printQRInTerminal: false, // Deprecated, we handle it manually
-        logger: pino ? pino({ level: 'silent' }) : undefined, // Reduce logs
-        browser: ["Estratósfera Bot", "Chrome", "1.0.0"]
+        printQRInTerminal: false,
+        logger: pino ? pino({ level: 'silent' }) : undefined,
+        browser: ["Estratósfera Bot", "Chrome", "1.0.0"],
+        connectTimeoutMs: 60000, // Wait longer for connection
+        defaultQueryTimeoutMs: undefined, // Keep waiting for queries
+        retryRequestDelayMs: 250, // Retry faster
+        keepAliveIntervalMs: 10000, // Ping interval
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -46,27 +50,37 @@ async function startBot() {
         }
 
         if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
+            const statusCode = (lastDisconnect?.error)?.output?.statusCode;
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
             console.log('Conexión cerrada debido a ', lastDisconnect?.error, ', reconectando ', shouldReconnect);
-            // Force reconnect always for stability, unless explicit logout
-            if (shouldReconnect || (lastDisconnect?.error)?.output?.statusCode === DisconnectReason.loggedOut) {
-                // If logged out, we might need to clear auth? But for now let's try starting again or waiting.
-                // Actually standard logic is re-scan if logged out. But let's be aggressive if it was a mistake.
-                if ((lastDisconnect?.error)?.output?.statusCode === DisconnectReason.loggedOut) {
-                    console.log("⚠️ Dispositivo desvinculado. Intentando reiniciar sesión...");
-                }
-                setTimeout(() => startBot(), 3000);
+
+            if (statusCode === DisconnectReason.loggedOut) {
+                console.log("⚠️ Dispositivo desvinculado. Borrando sesión y reiniciando...");
+                // Ideally delete auth folder here, but it's risky if we are just starting.
+                // Just stop. User needs to restart manually or we restart process cleanly.
+                // But for now, we just let it try to restart and generate new QR.
+            }
+
+            if (shouldReconnect) {
+                setTimeout(() => startBot(), statusCode === DisconnectReason.restartRequired ? 0 : 3000);
+            } else {
+                // Logged out
+                startBot(); // Will generate new QR
             }
         } else if (connection === 'open') {
             console.log('BOT LISTO CONECTADO 🟢');
             currentQR = null; // Clear QR
 
-            // Keep Alive Mechanism
+            // Keep Alive Mechanism (Active)
             if (global.keepAliveInterval) clearInterval(global.keepAliveInterval);
-            global.keepAliveInterval = setInterval(() => {
-                console.log('💓 Keep Alive Ping...');
-                // Optional: sock.sendPresenceUpdate('available'); 
-            }, 5 * 60 * 1000); // Every 5 mins
+            global.keepAliveInterval = setInterval(async () => {
+                try {
+                    await sock.sendPresenceUpdate('available');
+                    console.log('💓 Keep Alive Ping (Presence Update)...');
+                } catch (e) {
+                    console.log('Keep Alive Error', e);
+                }
+            }, 2 * 60 * 1000); // Every 2 mins (more frequent)
         }
     });
 
