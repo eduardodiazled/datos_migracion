@@ -10,6 +10,9 @@ export async function sendToBot(phone: string, message: string, media?: string) 
     }
 
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s Timeout
+
         const response = await fetch(`${BOT_URL}/send-notification`, {
             method: 'POST',
             headers: {
@@ -20,8 +23,10 @@ export async function sendToBot(phone: string, message: string, media?: string) 
                 phone,
                 message, // Can be caption if media is present
                 media
-            })
+            }),
+            signal: controller.signal
         });
+        clearTimeout(timeoutId);
 
         const data = await response.json();
 
