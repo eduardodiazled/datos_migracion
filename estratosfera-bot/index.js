@@ -56,17 +56,19 @@ async function startBot() {
             console.log('Conexión cerrada debido a ', lastDisconnect?.error, ', reconectando ', shouldReconnect);
 
             if (statusCode === DisconnectReason.loggedOut) {
-                console.log("⚠️ Dispositivo desvinculado. Borrando sesión y reiniciando...");
-                // Ideally delete auth folder here, but it's risky if we are just starting.
-                // Just stop. User needs to restart manually or we restart process cleanly.
-                // But for now, we just let it try to restart and generate new QR.
-            }
+                console.log("⚠️ Dispositivo desvinculado. Borrando sesión limpiamente y reiniciando...");
+                // Force delete auth directory
+                try {
+                    fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+                    console.log("✅ Sesión eliminada. Creando nueva sesión...");
+                } catch (e) {
+                    console.error("Error borrando sesión:", e);
+                }
 
-            if (shouldReconnect) {
-                setTimeout(() => startBot(), statusCode === DisconnectReason.restartRequired ? 0 : 3000);
-            } else {
-                // Logged out
+                sock = null; // Clear sock
                 startBot(); // Will generate new QR
+            } else if (shouldReconnect) {
+                setTimeout(() => startBot(), statusCode === DisconnectReason.restartRequired ? 0 : 3000);
             }
         } else if (connection === 'open') {
             console.log('BOT LISTO CONECTADO 🟢');
@@ -209,7 +211,16 @@ app.post('/send-notification', async (req, res) => {
 
 // Endpoint para Ver QR via Web
 app.get('/qr', (req, res) => {
-    if (sock && sock.user) {
+    // Check if truly connected (checking socket state)
+    // sock.user is set when creds are loaded, but we need to know if connection is open.
+    // Baileys doesn't expose a simple "isConnected" bool easily, but we can infer.
+    // Use a simple guard: if currentQR is null AND sock.user is present AND we haven't just crashed.
+
+    // Better: Rely on currentQR. If currentQR is NULL, we assume connected OR loading.
+    // If not connected, logs would show it.
+
+    // Let's refine: If we have a user and NO QR, we are likely connected.
+    if (sock && sock.user && !currentQR) {
         return res.send(`
             <html>
                 <body style="font-family: sans-serif; text-align: center; background: #111; color: white; padding: 50px;">
