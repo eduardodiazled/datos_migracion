@@ -327,13 +327,14 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
     const invoiceRef = useRef<HTMLDivElement>(null)
 
     // Assign/Migrate Modal State
-    const [assignMode, setAssignMode] = useState<'NEW' | 'MIGRATE'>('NEW')
+    const [assignMode, setAssignMode] = useState<'NEW' | 'MIGRATE' | 'UPGRADE'>('NEW')
     const [inventory, setInventory] = useState<any[]>([])
     const [loadingInventory, setLoadingInventory] = useState(false)
     const [selectedProduct, setSelectedProduct] = useState<any>(null)
     const [assignPrice, setAssignPrice] = useState('')
     const [assignDate, setAssignDate] = useState(new Date().toISOString().split('T')[0])
     const [assignMonths, setAssignMonths] = useState(1)
+    const [releaseOldProfile, setReleaseOldProfile] = useState(true)
 
     useEffect(() => {
         if (showAssignModal) {
@@ -356,6 +357,25 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                 window.location.reload()
             } else {
                 alert('❌ Error: ' + res.message)
+                setIsProcessing(false)
+            }
+        } else if (assignMode === 'UPGRADE') {
+            try {
+                // 1. Release Old if checked
+                if (releaseOldProfile) {
+                    await releaseService(client.profileId) // No PIN change needed immediately if we just want to free it? Or maybe we should?
+                    // Usually upgrade implies old one stops.
+                    // Let's assume releaseService sets state to LIBRE.
+                }
+
+                // 2. Create Sale (New)
+                if (!assignPrice) return alert('Ingresa el precio')
+                await createSale(client.id, client.name, selectedProduct.id, Number(assignPrice), paymentMethod, assignDate, assignMonths)
+
+                alert('✅ Cambio de Plan Exitoso!')
+                window.location.reload()
+            } catch (e: any) {
+                alert('Error: ' + e.message)
                 setIsProcessing(false)
             }
         } else {
@@ -585,6 +605,18 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                             <button onClick={confirmRenewal} disabled={isProcessing} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl mt-2 disabled:opacity-50">
                                 {isProcessing ? 'Procesando...' : 'Confirmar Renovación'}
                             </button>
+
+                            <button
+                                onClick={() => {
+                                    setAssignMode('UPGRADE');
+                                    setReleaseOldProfile(true);
+                                    setShowRenewModal(false);
+                                    setShowAssignModal(true);
+                                }}
+                                className="w-full bg-slate-800 hover:bg-slate-700 text-violet-400 font-bold py-3 rounded-xl border border-violet-500/20 flex items-center justify-center gap-2"
+                            >
+                                <RefreshCcw size={16} /> Cambiar Plan / Servicio
+                            </button>
                             <button onClick={() => setShowRenewModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                         </div>
                     </div>
@@ -613,11 +645,26 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
                     <div className="bg-slate-900 border border-white/10 p-6 rounded-2xl w-full max-w-md h-[80vh] overflow-y-auto">
                         <h3 className="text-xl font-bold text-white mb-4">
-                            {assignMode === 'MIGRATE' ? 'Migrar Cliente' : 'Asignar Nuevo'}
+                            {assignMode === 'MIGRATE' ? 'Migrar Cliente' : assignMode === 'UPGRADE' ? 'Cambiar Plan' : 'Asignar Nuevo'}
                         </h3>
                         {assignMode === 'MIGRATE' && (
                             <div className="mb-4 bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg text-amber-200 text-xs">
                                 <p>⚠️ Estás en <b>MIGRACIÓN</b>. Al seleccionar un perfil, se intercambiará por el actual y se mantendrá la fecha de vencimiento.</p>
+                            </div>
+                        )}
+                        {assignMode === 'UPGRADE' && (
+                            <div className="mb-4 bg-violet-500/10 border border-violet-500/20 p-3 rounded-lg text-violet-200 text-xs">
+                                <p>🔄 Estás en <b>CAMBIO DE PLAN</b>. Selecciona el nuevo servicio.</p>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={releaseOldProfile}
+                                        onChange={e => setReleaseOldProfile(e.target.checked)}
+                                        className="rounded border-violet-500 bg-slate-950 text-violet-500"
+                                        id="release-check"
+                                    />
+                                    <label htmlFor="release-check" className="font-bold cursor-pointer">Liberar servicio anterior ({client.service})</label>
+                                </div>
                             </div>
                         )}
 
@@ -657,7 +704,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     ))}
                                 </div>
 
-                                {assignMode === 'NEW' && (
+                                {(assignMode === 'NEW' || assignMode === 'UPGRADE') && (
                                     <>
                                         <div>
                                             <label className="block text-xs uppercase text-slate-500 font-bold mb-1">2. Precio Venta</label>
@@ -680,8 +727,8 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     </>
                                 )}
 
-                                <button onClick={confirmAssign} disabled={!selectedProduct || (assignMode === 'NEW' && !assignPrice) || isProcessing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50">
-                                    {isProcessing ? 'Procesando...' : (assignMode === 'MIGRATE' ? 'Confirmar Migración' : 'Confirmar Asignación')}
+                                <button onClick={confirmAssign} disabled={!selectedProduct || ((assignMode === 'NEW' || assignMode === 'UPGRADE') && !assignPrice) || isProcessing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50">
+                                    {isProcessing ? 'Procesando...' : (assignMode === 'MIGRATE' ? 'Confirmar Migración' : assignMode === 'UPGRADE' ? 'Confirmar Cambio' : 'Confirmar Asignación')}
                                 </button>
                                 <button onClick={() => setShowAssignModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                             </div>
