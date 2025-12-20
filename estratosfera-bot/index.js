@@ -29,10 +29,14 @@ let currentQR = null;
 if (fs.existsSync(AUTH_DIR)) {
     const corruptFlagPath = `${AUTH_DIR}/session_corrupt`;
     if (fs.existsSync(corruptFlagPath)) {
-        console.log("🚩 Encontrada bandera de corrupción. Eliminando sesión anterior para reinicio limpio...");
+        console.log("🚩 Encontrada bandera de corrupción. Limpiando contenido de la sesión...");
         try {
-            fs.rmSync(AUTH_DIR, { recursive: true, force: true });
-            console.log("✅ Sesión corrupta eliminada.");
+            // Delete content only, not the directory itself (it's a volume mount)
+            const files = fs.readdirSync(AUTH_DIR);
+            for (const file of files) {
+                fs.rmSync(`${AUTH_DIR}/${file}`, { recursive: true, force: true });
+            }
+            console.log("✅ Contenido de sesión eliminado correctamente.");
         } catch (e) {
             console.error("❌ Error fatal limpiando sesión:", e);
         }
