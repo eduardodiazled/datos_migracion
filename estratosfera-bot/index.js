@@ -48,12 +48,25 @@ async function startBot() {
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log('Conexión cerrada debido a ', lastDisconnect?.error, ', reconectando ', shouldReconnect);
-            if (shouldReconnect) {
-                startBot();
+            // Force reconnect always for stability, unless explicit logout
+            if (shouldReconnect || (lastDisconnect?.error)?.output?.statusCode === DisconnectReason.loggedOut) {
+                // If logged out, we might need to clear auth? But for now let's try starting again or waiting.
+                // Actually standard logic is re-scan if logged out. But let's be aggressive if it was a mistake.
+                if ((lastDisconnect?.error)?.output?.statusCode === DisconnectReason.loggedOut) {
+                    console.log("⚠️ Dispositivo desvinculado. Intentando reiniciar sesión...");
+                }
+                setTimeout(() => startBot(), 3000);
             }
         } else if (connection === 'open') {
-            console.log('BOT LISTO 🟢');
+            console.log('BOT LISTO CONECTADO 🟢');
             currentQR = null; // Clear QR
+
+            // Keep Alive Mechanism
+            if (global.keepAliveInterval) clearInterval(global.keepAliveInterval);
+            global.keepAliveInterval = setInterval(() => {
+                console.log('💓 Keep Alive Ping...');
+                // Optional: sock.sendPresenceUpdate('available'); 
+            }, 5 * 60 * 1000); // Every 5 mins
         }
     });
 

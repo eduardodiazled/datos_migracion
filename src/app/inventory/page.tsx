@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle } from 'lucide-react'
+import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
@@ -35,6 +35,8 @@ type Account = {
   is_disposable?: boolean
   tipo: string
   activationDate?: string
+  fecha_activacion?: string
+  duracion_meses?: number
 }
 
 const DEFAULT_PRICES: Record<string, number> = {
@@ -50,7 +52,8 @@ const DEFAULT_PRICES: Record<string, number> = {
   'plex': 10000,
   'iptv': 15000,
   'apple': 25000,
-  'jellyfin': 12000
+  'jellyfin': 12000,
+  'Chat GPT': 25000
 }
 
 const getServicePrice = (serviceName: string): number => {
@@ -184,10 +187,6 @@ export default function InventoryPage() {
   }
 
   const generateInvoice = (data: any) => {
-    // Map successData to Invoice Format if needed, or use as is if structure matches
-    // SuccessData has: { message, clientName, service, price, date, paymentMethod, months }
-    // Invoice Template expects: { amount, client, category (service), date, paymentMethod, isCombo, items, endDate... }
-
     const invoicePayload = {
       amount: data.price,
       client: data.clientName,
@@ -195,8 +194,7 @@ export default function InventoryPage() {
       date: new Date().toISOString(), // Use current time for invoice generation or parse data.date
       paymentMethod: data.paymentMethod || 'EFECTIVO',
       isCombo: data.service === 'Combo / Selección',
-      // If combo, we don't have items detail in successData easily unless we passed it. 
-      // For now, simple invoice. 
+      items: data.items || [] // Capture items for combo display
     }
 
     setInvoiceData(invoicePayload)
@@ -322,7 +320,7 @@ export default function InventoryPage() {
 
   // Success Modal State
   const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [successData, setSuccessData] = useState<{ message: string, receiptId?: number, clientName?: string, service?: string, date?: string, price?: number, paymentMethod?: string, months?: number } | null>(null)
+  const [successData, setSuccessData] = useState<{ message: string, receiptId?: number, clientName?: string, service?: string, date?: string, price?: number, paymentMethod?: string, months?: number, items?: any[] } | null>(null)
 
 
 
@@ -462,7 +460,7 @@ export default function InventoryPage() {
           const msg = MessageGenerator.generate('COMBO', {
             clientName: saleData.name,
             items: validationItems,
-            expirationDate: expirationDate.toLocaleDateString()
+            expirationDate: expirationDate.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })
           })
 
           setSuccessData({
@@ -472,7 +470,8 @@ export default function InventoryPage() {
             price: parseInt(saleData.price),
             date: new Date().toLocaleDateString(),
             paymentMethod: saleData.paymentMethod,
-            months: saleData.months
+            months: saleData.months,
+            items: validationItems // Save items in successData too for reference
           })
           setShowSuccessModal(true)
 
@@ -483,7 +482,8 @@ export default function InventoryPage() {
             category: 'Combo / Selección',
             date: new Date().toISOString(),
             paymentMethod: saleData.paymentMethod,
-            isCombo: true
+            isCombo: true,
+            items: validationItems // Pass items to invoice
           })
 
           setTimeout(async () => {
@@ -532,7 +532,12 @@ export default function InventoryPage() {
           password: profileInfo.account.password,
           profileName: profileInfo.nombre_perfil,
           pin: profileInfo.pin,
-          date: new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00').toLocaleDateString(),
+          pin: profileInfo.pin,
+          date: (() => {
+            const d = new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00')
+            d.setMonth(d.getMonth() + (saleData.months || 1))
+            return d.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })
+          })(),
           price: parseInt(saleData.price)
         })
         setSuccessData({
@@ -795,7 +800,7 @@ export default function InventoryPage() {
     <>
       {/* FLOATING ACTION BAR FOR COMBOS */}
       {selectedItems.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-8 z-50 animate-in slide-in-from-bottom-6 fade-in duration-300">
+        <div className="fixed bottom-24 md:bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-8 z-50 animate-in slide-in-from-bottom-6 fade-in duration-300">
           <div className="glass-panel p-3 px-6 rounded-full flex items-center gap-6 shadow-2xl border border-violet-500/50 bg-slate-900/90 backdrop-blur-md">
             <div className="flex flex-col">
               <span className="text-xs font-bold text-violet-400 uppercase tracking-wider">Combo Activo</span>
@@ -890,7 +895,7 @@ export default function InventoryPage() {
                 <div className="flex items-center gap-3">
                   <div className="text-rose-400 font-bold">{acc.servicio}</div>
                   <div className="text-slate-500 text-xs">{acc.email}</div>
-                  <div className="text-xs bg-rose-500/20 text-rose-300 px-2 py-1 rounded">Venció: {new Date(new Date(acc.fecha_activacion).setMonth(new Date(acc.fecha_activacion).getMonth() + (acc as any).duracion_meses)).toLocaleDateString()}</div>
+                  <div className="text-xs bg-rose-500/20 text-rose-300 px-2 py-1 rounded">Venció: {new Date(new Date(acc.fecha_activacion || new Date().toISOString()).setMonth(new Date(acc.fecha_activacion || new Date().toISOString()).getMonth() + ((acc as any).duracion_meses || 1))).toLocaleDateString()}</div>
                 </div>
                 <button
                   onClick={() => handleArchive(acc.id)}
@@ -1209,6 +1214,7 @@ export default function InventoryPage() {
                                     else if (serviceLower.includes('apple')) iconPath = '/logos/apple tv.png'
                                     else if (serviceLower.includes('paramount')) iconPath = '/logos/paramount.png'
                                     else if (serviceLower.includes('jellyfin')) iconPath = '/logos/jellyfin.png'
+                                    else if (serviceLower.includes('chat')) iconPath = '/logos/chatgpt.png'
 
                                     if (iconPath) {
                                       let scaleClass = ''
@@ -1222,7 +1228,7 @@ export default function InventoryPage() {
                                       else if (serviceLower.includes('youtube')) scaleClass = 'scale-[1.3]'
                                       else if (serviceLower.includes('jellyfin')) scaleClass = 'scale-[1.9]' // Increased scale for Jellyfin
 
-                                      return <img src={iconPath} alt={account.servicio} className={`w-full h-full object-cover ${scaleClass}`} />
+                                      return <img src={iconPath} alt={account.servicio} loading="lazy" className={`w-full h-full object-cover ${scaleClass}`} />
                                     }
                                     return <Monitor size={24} />
                                   })()}
@@ -1524,6 +1530,7 @@ export default function InventoryPage() {
                   <option value="Plex">Plex</option>
                   <option value="IPTV">IPTV</option>
                   <option value="Jellyfin">Jellyfin</option>
+                  <option value="Chat GPT">Chat GPT</option>
                   <option value="Otro">Otro...</option>
                 </select>
                 {
@@ -1540,12 +1547,12 @@ export default function InventoryPage() {
               {/* Basic Creds */}
               < div >
                 <label className="text-xs text-slate-400 block mb-1">Email / Usuario</label>
-                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
+                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-violet-500"
                   value={newAccount.email} onChange={e => setNewAccount({ ...newAccount, email: e.target.value })} placeholder="correo@ejemplo.com" />
               </div >
               <div>
                 <label className="text-xs text-slate-400 block mb-1">Contraseña</label>
-                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
+                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-violet-500"
                   value={newAccount.password} onChange={e => setNewAccount({ ...newAccount, password: e.target.value })} placeholder="******" />
               </div>
 
@@ -1792,16 +1799,16 @@ export default function InventoryPage() {
               </div>
             </div>
           </div>
-        )
-      }
-      {/* ASSIGN MODAL */}
-      {
-        showAssignModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
-            <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
-              <h3 className="text-lg font-bold text-white mb-2">Asignar Manualmente</h3>
-              <p className="text-xs text-slate-400 mb-4">Vincula este perfil a un cliente existente con su fecha de vencimiento actual.</p>
+        )}
 
+      {/* ASSIGN MODAL */}
+      {showAssignModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
+          <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
+            <h3 className="text-lg font-bold text-white mb-2">Asignar Manualmente</h3>
+            <p className="text-xs text-slate-400 mb-4">Vincula este perfil a un cliente existente con su fecha de vencimiento actual.</p>
+
+            <div className="space-y-3">
               <div>
                 <label className="text-xs text-slate-400 block mb-1">Nombre Cliente</label>
                 <div className="relative">
@@ -1811,10 +1818,9 @@ export default function InventoryPage() {
                     placeholder="Buscar cliente..."
                     autoFocus
                   />
-                  {/* Autocomplete Dropdown */}
                   {clientSearchResults.length > 0 && (
                     <div className="absolute top-full left-0 right-0 bg-slate-900 border border-white/10 rounded-xl mt-1 max-h-40 overflow-y-auto z-50 shadow-xl">
-                      {clientSearchResults.map(client => (
+                      {clientSearchResults.map((client) => (
                         <button key={client.celular} onClick={() => selectClient(client)}
                           className="w-full text-left p-2 hover:bg-white/5 text-sm flex flex-col border-b border-white/5 last:border-0"
                         >
@@ -1850,411 +1856,272 @@ export default function InventoryPage() {
                   </select>
                 </div>
               </div>
+            </div>
 
-              {/* Calculated Output Display */}
-              <div className="bg-slate-950/50 p-3 rounded-xl border border-white/5 flex justify-between items-center mt-3">
-                <span className="text-xs text-slate-400">Vence el:</span>
-                <span className="text-sm font-bold text-emerald-400">
-                  {calculateSafeEndDate(assignData.startDate, assignData.months).toLocaleDateString()}
-                </span>
-              </div>
-
-              <div className="flex gap-3">
-                <button onClick={() => setShowAssignModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
-                <button onClick={handleAssign} className="flex-1 p-3 rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-bold">Asignar Cliente</button>
-              </div>
+            <div className="flex gap-3 mt-6 pt-4 border-t border-white/5">
+              <button onClick={() => setShowAssignModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
+              <button onClick={handleAssign} className="flex-1 p-3 rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-bold shadow-lg shadow-blue-600/20">Asignar Cliente</button>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
 
-      {/* MIGRATE MODAL (SWAP) */}
-      {
-        showMigrateModal && profileToMigrate && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
-            <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
-              <h3 className="text-lg font-bold text-white mb-2">Migrar Cliente (Swap)</h3>
-              <p className="text-xs text-slate-400 mb-4">
-                Mover cliente de <strong>{profileToMigrate.profileName}</strong> a otro perfil LIBRE de <strong>{profileToMigrate.serviceName}</strong>.
-                El perfil actual quedará LIBRE.
-              </p>
+      {/* REPLACE MODAL */}
+      {showReplaceModal && replacingAccount && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
+            <h3 className="text-xl font-bold text-white mb-4">Reponer Cuenta</h3>
+            <p className="text-xs text-slate-400 mb-4">Ingresa los datos de la cuenta de reemplazo. Los perfiles se mantendrán libres.</p>
 
+            <div className="space-y-3">
+              <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                placeholder="Nuevo Email" value={replaceData.email} onChange={e => setReplaceData({ ...replaceData, email: e.target.value })} />
+              <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                placeholder="Nueva Contraseña" value={replaceData.password} onChange={e => setReplaceData({ ...replaceData, password: e.target.value })} />
+              <input type="date" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                value={replaceData.date} onChange={e => setReplaceData({ ...replaceData, date: e.target.value })} />
+            </div>
 
-              <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto custom-scrollbar">
+            <div className="flex gap-3 mt-6 pt-4 border-t border-white/5">
+              <button onClick={() => setShowReplaceModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300">Cancelar</button>
+              <button onClick={handleReplaceSubmit} className="flex-1 p-3 rounded-xl bg-emerald-600 text-white font-bold">Confirmar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-                {/* Reason Selector */}
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Motivo de Migración</label>
-                  <select
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
-                    value={migrationReason}
-                    onChange={(e) => setMigrationReason(e.target.value as any)}
-                  >
-                    <option value="FALLA_PIN">🔐 Falla de PIN / Contraseffa</option>
-                    <option value="FALLA_CODIGO">📧 Falla Código / Correo</option>
-                    <option value="CAIDA_PAGO">💳 Caída por Pago / Suspensión</option>
-                    <option value="MES_FINALIZADO">📅 Mes Finalizado</option>
-                    <option value="OTRO">📝 Otro / Mejora</option>
-                  </select>
-                </div>
+      {/* MIGRATE MODAL */}
+      {showMigrateModal && profileToMigrate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
+            <h3 className="text-lg font-bold text-white mb-2">Migrar Cliente</h3>
+            <div className="bg-slate-950 p-3 rounded-xl border border-white/5 mb-4">
+              <p className="text-xs text-slate-400">Desde: <span className="text-white font-bold">{profileToMigrate.profileName}</span> ({profileToMigrate.serviceName})</p>
+            </div>
 
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Selecciona Destino:</label>
-                  {
-                    accounts
-                      .filter(a => a.servicio === profileToMigrate.serviceName) // Same Service
-                      .flatMap(a => a.perfiles.map(p => ({ ...p, accountEmail: a.email }))) // Flatten profiles
-                      .filter(p => p.estado === 'LIBRE') // Only Free
-                      .map(p => (
-                        <button
-                          key={p.id}
-                          onClick={() => setTargetProfileId(p.id)}
-                          className={`w-full text-left p-3 rounded-xl border transition-all flex justify-between items-center mb-2 ${targetProfileId === p.id
-                            ? 'bg-violet-600 border-violet-500 ring-2 ring-violet-500/20'
-                            : 'bg-slate-950/50 border-white/5 hover:border-white/10'
-                            }`}
-                        >
-                          <div>
-                            <div className="font-bold text-white text-sm">{p.nombre_perfil}</div>
-                            <div className="text-[10px] text-slate-500 truncate">{p.accountEmail}</div>
-                          </div>
-                          {targetProfileId === p.id && <CheckCircle size={16} className="text-white" />}
-                        </button>
-                      ))
-                  }
-                  {
-                    accounts
-                      .filter(a => a.servicio === profileToMigrate.serviceName)
-                      .flatMap(a => a.perfiles)
-                      .filter(p => p.estado === 'LIBRE').length === 0 && (
-                      <div className="text-center py-8 text-slate-500 text-xs">
-                        No hay perfiles libres disponibles para este servicio.
-                      </div>
-                    )
-                  }
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button onClick={() => setShowMigrateModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">Cancelar</button>
+            <p className="text-xs text-slate-400 mb-2">Selecciona la razón de la migración:</p>
+            <div className="space-y-2 mb-4">
+              {[
+                { id: 'FALLA_PIN', label: 'Falla PIN / Pantalla' },
+                { id: 'CAIDA_PAGO', label: 'Caída de Cuenta (Garantía)' },
+                { id: 'MES_FINALIZADO', label: 'Mes Finalizado (Renovación Manual)' },
+                { id: 'OTRO', label: 'Otro / Cambio Voluntario' }
+              ].map(r => (
                 <button
-                  onClick={async () => {
-                    if (!targetProfileId) return toast.error('Selecciona un destino')
+                  key={r.id}
+                  onClick={() => setMigrationReason(r.id as any)}
+                  className={`w-full p-2 rounded-lg text-xs font-bold border transition-colors ${migrationReason === r.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-800 border-white/5 text-slate-400 hover:bg-slate-700'}`}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
 
+            <p className="text-xs text-slate-400 mb-2">Selecciona el perfil DESTINO (Libre):</p>
+            <div className="max-h-40 overflow-y-auto custom-scrollbar space-y-2 mb-4">
+              {accounts
+                .filter(a => a.servicio === profileToMigrate.serviceName && a.id !== profileToMigrate.accountId) // Same service, different account
+                .flatMap(a => a.perfiles.filter(p => p.estado === 'LIBRE').map(p => ({ ...p, accountEmail: a.email })))
+                .map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => setTargetProfileId(p.id)}
+                    className={`w-full p-2 rounded-lg text-left text-xs border transition-colors ${targetProfileId === p.id ? 'bg-emerald-600/20 border-emerald-500 text-emerald-400' : 'bg-slate-950 border-white/10 text-slate-300 hover:bg-white/5'}`}
+                  >
+                    <span className="font-bold">{p.nombre_perfil}</span>
+                    <span className="block text-[10px] opacity-50">{p.accountEmail}</span>
+                  </button>
+                ))
+              }
+              {accounts.filter(a => a.servicio === profileToMigrate.serviceName && a.id !== profileToMigrate.accountId && a.perfiles.some(p => p.estado === 'LIBRE')).length === 0 && (
+                <div className="text-center text-xs text-slate-500 py-4">No hay perfiles libres disponibles en otras cuentas.</div>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-4 pt-4 border-t border-white/5">
+              <button onClick={() => setShowMigrateModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300">Cancelar</button>
+              <button
+                onClick={async () => {
+                  if (!targetProfileId) return toast.error("Selecciona un perfil destino")
+                  try {
                     const res = await migrateProfile(profileToMigrate.id, targetProfileId, migrationReason)
-
                     if (res.success) {
-                      toast.success('Migración Exitosa')
+                      toast.success("Migración Exitosa")
                       setShowMigrateModal(false)
                       fetchInventory()
-                      setTargetProfileId(null)
-                      setProfileToMigrate(null)
+
+                      // Generate Migration Message
+                      const targetAccount = accounts.find(a => a.perfiles.some(p => p.id === targetProfileId))
+                      const targetProfile = targetAccount?.perfiles.find(p => p.id === targetProfileId)
+
+                      if (targetAccount && targetProfile) {
+                        const msg = MessageGenerator.generate('MIGRATION', {
+                          clientName: 'Cliente', // Ideally fetch from DB or previous profile, simplified
+                          service: profileToMigrate.serviceName,
+                          email: targetAccount.email,
+                          password: targetAccount.password,
+                          profileName: targetProfile.nombre_perfil,
+                          pin: targetProfile.pin,
+                          reason: migrationReason
+                        })
+                        setSuccessData({
+                          message: msg,
+                          clientName: 'Migración',
+                          service: profileToMigrate.serviceName,
+                          price: 0,
+                          date: new Date().toLocaleDateString(),
+                          paymentMethod: 'TRANSFERENCIA', // Irrelevant for migration
+                          months: 1
+                        })
+                        setShowSuccessModal(true)
+                      }
+
                     } else {
-                      toast.error('Error: ' + res.error)
+                      toast.error("Error: " + res.error)
                     }
-                  }}
-                  disabled={!targetProfileId}
-                  className={`flex-1 p-3 rounded-xl font-bold transition flex items-center justify-center gap-2 ${targetProfileId ? 'bg-violet-600 text-white hover:bg-violet-500 shadow-lg shadow-violet-600/20' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}`}
-                >
-                  <RefreshCw size={18} /> Confirmar
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {/* EDIT ACCOUNT MODAL */}
-      {
-        showEditAccountModal && editingAccount && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className="bg-slate-900 w-full max-w-lg rounded-3xl p-6 border border-white/10 shadow-2xl">
-              <h2 className="text-xl font-bold mb-4">Editar Cuenta</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Servicio</label>
-                  <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white"
-                    value={editingAccount.servicio}
-                    onChange={e => setEditingAccount({ ...editingAccount, servicio: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Email</label>
-                  <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white"
-                    value={editingAccount.email}
-                    onChange={e => setEditingAccount({ ...editingAccount, email: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Contraseña</label>
-                  <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white"
-                    value={editingAccount.password}
-                    onChange={e => setEditingAccount({ ...editingAccount, password: e.target.value })}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-1">Proveedor (Opcional)</label>
-                    <select
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white"
-                      value={editingAccount.providerId || ''}
-                      onChange={(e) => setEditingAccount({ ...editingAccount, providerId: e.target.value ? Number(e.target.value) : null })}
-                    >
-                      <option value="">Ninguno (Propio)</option>
-                      {providers.map(p => (
-                        <option key={p.id} value={p.id}>{p.nombre}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-1">Día Corte (Recurrentes)</label>
-                    <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white"
-                      value={editingAccount.dia_corte || ''}
-                      onChange={e => setEditingAccount({ ...editingAccount, dia_corte: e.target.value ? parseInt(e.target.value) : null })}
-                      placeholder="Ej: 15"
-                    />
-                  </div>
-                </div>
-
-                {/* Activation Date (Always Visible or just for Disposable?) - Useful for all */}
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Fecha de Activación / Compra</label>
-                  <div className="relative">
-                    <Calendar size={16} className="absolute left-3 top-3.5 text-slate-500" />
-                    <input type="date" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-10 text-white"
-                      value={editingAccount.fecha_activacion || ''}
-                      onChange={e => setEditingAccount({ ...editingAccount, fecha_activacion: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* Disposable Toggle */}
-                <div className="flex items-center gap-3 p-3 bg-slate-950 border border-white/10 rounded-xl cursor-pointer" onClick={() => setEditingAccount({ ...editingAccount, is_disposable: !editingAccount.is_disposable })}>
-                  <div className={`w-5 h-5 rounded border flex items-center justify-center transition ${editingAccount.is_disposable ? 'bg-amber-500 border-amber-500' : 'border-slate-500'}`}>
-                    {editingAccount.is_disposable && <Check size={14} className="text-black" />}
-                  </div>
-                  <span className="text-sm text-slate-300 font-medium">Cuenta Desechable (No Renovable)</span>
-                </div>
-
-                {/* Duration Selector for Edit (Only show if Disposable) */}
-                {editingAccount.is_disposable && (
-                  <div>
-                    <label className="text-xs text-slate-400 block mb-1">Duración (Meses)</label>
-                    <select
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
-                      // @ts-ignore
-                      value={editingAccount.duracion_meses || 1}
-                      // @ts-ignore
-                      onChange={e => setEditingAccount({ ...editingAccount, duracion_meses: Number(e.target.value) })}
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
-                        <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-              </div>
-
-              {/* Profiles Editor */}
-              <div className="border-t border-white/5 pt-4">
-                <label className="text-sm font-bold text-white mb-2 block">Editar Perfiles</label>
-                <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar pr-2">
-                  {editingProfiles.map((profile, idx) => (
-                    <div key={profile.id || idx} className="flex gap-2 items-center">
-                      <input
-                        className="flex-1 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white"
-                        value={profile.name}
-                        onChange={(e) => {
-                          const newProfiles = [...editingProfiles]
-                          newProfiles[idx].name = e.target.value
-                          setEditingProfiles(newProfiles)
-                        }}
-                        placeholder="Nombre Perfil"
-                      />
-                      <input
-                        className="w-20 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white text-center"
-                        value={profile.pin || ''}
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        maxLength={4}
-                        onChange={(e) => {
-                          const newProfiles = [...editingProfiles]
-                          newProfiles[idx].pin = e.target.value
-                          setEditingProfiles(newProfiles)
-                        }}
-                        placeholder="PIN"
-                      />
-                      <button
-                        onClick={() => handleDeleteProfile(idx, profile.id)}
-                        className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-rose-500 transition-colors"
-                        title="Eliminar Perfil"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setEditingProfiles([...editingProfiles, { name: `Perfil ${editingProfiles.length + 1}`, pin: '' }])}
-                  className="w-full mt-2 py-2 border border-dashed border-white/20 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center justify-center gap-2"
-                >
-                  <Plus size={14} /> Agregar Perfil
-                </button>
-              </div>
-
-              <button onClick={handleUpdateAccount} className="w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 rounded-xl transition mt-2">
-                Guardar Cambios
+                  } catch (e) {
+                    console.error(e)
+                    toast.error("Error de servidor")
+                  }
+                }}
+                disabled={!targetProfileId}
+                className="flex-1 p-3 rounded-xl bg-violet-600 text-white font-bold disabled:opacity-50"
+              >
+                Confirmar
               </button>
-              <button onClick={() => setShowEditAccountModal(false)} className="w-full bg-transparent hover:bg-white/5 text-slate-400 py-3 rounded-xl transition">
-                Cancelar
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUCCESS MODAL */}
+      {showSuccessModal && successData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in zoom-in-95">
+          <div className="glass-panel p-6 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl bg-slate-900 flex flex-col max-h-[90vh]">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                <Check size={32} />
+              </div>
+              <h3 className="text-2xl font-bold text-white">¡Venta Exitosa!</h3>
+              <p className="text-slate-400 text-sm mt-1">El servicio ha sido activado correctamente.</p>
+            </div>
+
+            <div className="bg-slate-950 rounded-xl p-4 border border-white/10 mb-4 overflow-y-auto custom-scrollbar flex-1">
+              <pre className="whitespace-pre-wrap font-mono text-xs text-slate-300 leading-relaxed">
+                {successData.message}
+              </pre>
+            </div>
+
+            <div className="flex gap-3">
+              <button onClick={() => copyToClipboard(successData.message)} className="flex-1 p-3 rounded-xl bg-slate-800 text-white hover:bg-slate-700 font-bold flex items-center justify-center gap-2 transition">
+                <Copy size={18} /> Copiar
               </button>
+              <a
+                href={`https://wa.me/${saleData.phone}?text=${encodeURIComponent(successData.message)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition"
+              >
+                <Send size={18} /> Enviar
+              </a>
+              <button
+                onClick={async () => {
+                  const btn = document.getElementById('btn-send-bot') as HTMLButtonElement
+                  if (btn) {
+                    btn.disabled = true;
+                    btn.innerText = 'Enviando...'
+                  }
+                  if (invoiceRef.current) {
+                    try {
+                      const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617' })
+                      const base64Image = canvas.toDataURL('image/png')
+                      await sendReceiptAction(saleData.phone, base64Image, successData.message) // Send Message AND Image
+                      toast.success("✅ Enviado por Bot (Texto + Imagen)")
+                    } catch (err) {
+                      console.error("Manual Bot Send Error", err)
+                      toast.error("Error al enviar")
+                    }
+                  }
+                  if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = 'Enviar por Bot'
+                  }
+                }}
+                id="btn-send-bot"
+                className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition"
+              >
+                <Send size={18} /> Enviar por Bot
+              </button>
+            </div>
+            <button onClick={() => setShowSuccessModal(false)} className="mt-3 text-slate-500 hover:text-white text-sm">Cerrar</button>
+          </div>
+        </div>
+      )}
 
-              <div className="pt-4 border-t border-white/5 mt-2">
-                <button onClick={handleDeleteAccount} className="w-full flex items-center justify-center gap-2 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 py-3 rounded-xl transition font-medium text-sm">
-                  <Trash2 size={16} /> Eliminar Cuenta Permanentemente
-                </button>
+      {/* INVOICE TEMPLATE (HIDDEN OFFSCREEN) */}
+      {invoiceData && (
+        <div className="fixed top-0 left-0 z-[-1] invisible">
+          <div ref={invoiceRef} className="bg-slate-950 p-8 w-[400px] border border-white/10 text-white relative overflow-hidden" style={{ fontFamily: 'sans-serif' }}>
+
+            {/* Header */}
+            <div className="flex justify-between items-start mb-8">
+              <div>
+                <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">ESTRATÓSFERA</h1>
+                <p className="text-slate-500 text-xs mt-1">Servicios de Entretenimiento Digital</p>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-bold text-slate-300">RECIBO DE CAJA</div>
+                <div className="text-xs text-slate-500">{new Date().toLocaleDateString()}</div>
               </div>
             </div>
-          </div >
 
-        )
-      }
+            {/* Client */}
+            <div className="mb-6">
+              <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Cliente</div>
+              <div className="text-lg font-bold text-white">{invoiceData.client}</div>
+            </div>
 
-      {/* SUCCESS MODAL / RECEIPT */}
-      {
-        showSuccessModal && successData && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className="bg-slate-900 w-full max-w-sm rounded-[32px] p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
-              {/* Decoration */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-600"></div>
+            {/* Details Box */}
+            <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5 mb-6">
+              <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
+                <span className="text-slate-400 text-sm">Concepto</span>
+                <span className="font-bold text-white text-right">{invoiceData.category}</span>
+              </div>
 
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-slate-950 rounded-full mx-auto flex items-center justify-center border border-white/10 mb-3 shadow-lg shadow-violet-500/10">
-                  <Check size={32} className="text-emerald-500" />
+              {/* COMBO ITEMS LIST */}
+              {invoiceData.isCombo && invoiceData.items && invoiceData.items.length > 0 && (
+                <div className="border-b border-white/5 pb-2 mb-2">
+                  <span className="text-slate-500 block mb-1 text-[10px] uppercase tracking-wider">Detalle Combo:</span>
+                  <ul className="space-y-1">
+                    {invoiceData.items.map((item: any, idx: number) => (
+                      <li key={idx} className="text-xs text-slate-300 flex justify-between">
+                        <span>{item.profile}</span>
+                        <span className="text-slate-500">{item.service}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">ESTRATOSFERA</h2>
-                <p className="text-xs font-bold text-violet-400 uppercase tracking-widest mt-1">COMPROBANTE DE PAGO</p>
+              )}
+
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-slate-400 text-sm">Valor Pagado</span>
+                <span className="font-bold text-emerald-400 text-lg">${parseInt(invoiceData.amount).toLocaleString()}</span>
               </div>
 
-              <div className="bg-slate-950/50 rounded-2xl p-6 border border-white/5 mb-6">
-                <p className="text-center text-xs text-slate-500 font-medium mb-1">TOTAL PAGADO</p>
-                <p className="text-center text-3xl font-black text-emerald-400 mb-6">${successData.price?.toLocaleString()}</p>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between items-start text-sm">
-                    <span className="text-slate-500 shrink-0">Cliente</span>
-                    <span className="text-white font-bold text-right">{successData.clientName}</span>
-                  </div>
-                  <div className="flex justify-between items-start text-sm">
-                    <span className="text-slate-500 shrink-0">Servicio</span>
-                    <span className="text-white font-medium text-right">{successData.service}</span>
-                  </div>
-                  {successData.months && successData.months > 1 && (
-                    <div className="flex justify-between items-start text-sm">
-                      <span className="text-slate-500 shrink-0">Duración</span>
-                      <span className="text-white font-medium text-right">{successData.months} Meses</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500">Fecha</span>
-                    <span className="text-white font-medium">{successData.date}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500">Método de Pago</span>
-                    <span className="text-white font-bold bg-white/5 px-2 py-0.5 rounded text-xs">{successData.paymentMethod}</span>
-                  </div>
-                </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Método de Pago</span>
+                <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
               </div>
+            </div>
 
-              <div className="space-y-3">
-                <button
-                  onClick={() => {
-                    const url = `https://wa.me/?text=${encodeURIComponent(successData.message)}`
-                    window.open(url, '_blank')
-                  }}
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                  Enviar al Cliente
-                </button>
-                <button
-                  onClick={() => generateInvoice(successData)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2"
-                >
-                  <Download size={18} /> Descargar Recibo
-                </button>
-                <button onClick={() => setShowSuccessModal(false)} className="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-xl transition">
-                  Cerrar
-                </button>
-              </div>
-
-              <p className="text-center text-[10px] text-slate-600 mt-6">
-                ¡Gracias por tu compra!<br />
-                Generado automáticamente por el sistema
-              </p>
+            {/* FOOTER */}
+            <div className="mt-8 pt-6 border-t border-white/5">
+              <p className="text-slate-500 text-xs">¡Gracias por tu compra!</p>
+              <p className="text-slate-600 text-[10px] mt-1">Generado automáticamente por el sistema</p>
             </div>
           </div>
-        )
-      }
-
-      {/* INVOICE TEMPLATE (Hidden) - Replicated from Sales Page */}
-      {
-        invoiceData && (
-          <div className="fixed top-0 left-0 w-full h-full -z-50 flex items-center justify-center">
-            <div ref={invoiceRef} className="w-[400px] bg-slate-950 p-8 rounded-none border border-white/10 text-center relative overflow-hidden">
-              {/* DECORATION */}
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-600 to-blue-600"></div>
-              <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-violet-600"></div>
-
-              {/* HEADER */}
-              <div className="flex flex-col items-center mb-6">
-                <img src="/logo-navidad.jpg" className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-4 shadow-lg shadow-violet-500/20" alt="Logo" />
-                <h1 className="text-2xl font-bold text-white tracking-tight">ESTRATOSFERA</h1>
-                <p className="text-violet-400 text-sm font-medium tracking-widest uppercase">Comprobante de Pago</p>
-              </div>
-
-              {/* DETAILS */}
-              <div className="space-y-6">
-                <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5">
-                  <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Total Pagado</p>
-                  <p className="text-3xl font-bold text-emerald-400 font-mono">${invoiceData.amount.toLocaleString()}</p>
-                </div>
-
-                <div className="space-y-4 text-sm">
-                  <div className="flex justify-between items-start border-b border-white/5 pb-2">
-                    <span className="text-slate-400 shrink-0">Cliente</span>
-                    <span className="font-bold text-white text-right">{invoiceData.client}</span>
-                  </div>
-
-                  <div className="flex justify-between items-start border-b border-white/5 pb-2">
-                    <span className="text-slate-400 shrink-0">Servicio</span>
-                    <span className="font-bold text-white text-right">{invoiceData.category}</span>
-                  </div>
-
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-slate-400">Fecha</span>
-                    <span className="font-bold text-white">{new Date().toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-slate-400">Método de Pago</span>
-                    <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* FOOTER */}
-              <div className="mt-8 pt-6 border-t border-white/5">
-                <p className="text-slate-500 text-xs">¡Gracias por tu compra!</p>
-                <p className="text-slate-600 text-[10px] mt-1">Generado automáticamente por el sistema</p>
-              </div>
-            </div>
-          </div>
-        )
-      }
+        </div>
+      )}
     </>
   )
 }

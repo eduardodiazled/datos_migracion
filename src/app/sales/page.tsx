@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical, EyeOff } from 'lucide-react'
 import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders } from '../actions'
 import html2canvas from 'html2canvas'
@@ -46,22 +46,23 @@ export default function SalesPage() {
     const invoiceRef = useRef<HTMLDivElement>(null)
 
     // Swipe State
-    const [touchStart, setTouchStart] = useState<number | null>(null)
-    const [touchEnd, setTouchEnd] = useState<number | null>(null)
+    // Swipe State - Optimized with useRef to prevent re-renders on move
+    const touchStart = useRef<number | null>(null)
+    const touchEnd = useRef<number | null>(null)
     const minSwipeDistance = 50
 
     const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(null)
-        setTouchStart(e.targetTouches[0].clientX)
+        touchEnd.current = null
+        touchStart.current = e.targetTouches[0].clientX
     }
 
     const onTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd(e.targetTouches[0].clientX)
+        touchEnd.current = e.targetTouches[0].clientX
     }
 
     const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return
-        const distance = touchStart - touchEnd
+        if (!touchStart.current || !touchEnd.current) return
+        const distance = touchStart.current - touchEnd.current
         const isLeftSwipe = distance > minSwipeDistance
         const isRightSwipe = distance < -minSwipeDistance
 
@@ -100,8 +101,6 @@ export default function SalesPage() {
         setDueAccounts(due)
         setProviders(provs)
 
-
-
         setLoading(false)
     }
 
@@ -130,7 +129,8 @@ export default function SalesPage() {
         return ''
     }
 
-    const getFilteredData = () => {
+    // Optimized filtering with useMemo
+    const filteredHistory = useMemo(() => {
         return history.filter(item => {
             const itemDate = new Date(item.date)
             // Adjust itemDate context based on mode
@@ -159,32 +159,31 @@ export default function SalesPage() {
             }
             return false
         })
-    }
+    }, [history, viewMode, currentDate])
 
-    const filteredHistory = getFilteredData()
+    // Calculate Totals based on ALL data for the period (Financial Integrity) - Memoized
+    const { totalIncome, totalExpense, balance } = useMemo(() => {
+        const inc = filteredHistory.filter(i => i.type === 'INGRESO').reduce((sum, i) => sum + i.amount, 0)
+        const exp = filteredHistory.filter(i => i.type === 'EGRESO').reduce((sum, i) => sum + i.amount, 0)
+        return { totalIncome: inc, totalExpense: exp, balance: inc - exp }
+    }, [filteredHistory])
 
-    // Calculate Totals based on ALL data for the period (Financial Integrity)
-    const totalIncome = filteredHistory.filter(i => i.type === 'INGRESO').reduce((sum, i) => sum + i.amount, 0)
-    const totalExpense = filteredHistory.filter(i => i.type === 'EGRESO').reduce((sum, i) => sum + i.amount, 0)
-    const balance = totalIncome - totalExpense
+    // Filter List View (User Preference) - Memoized
+    const filteredByTab = useMemo(() => {
+        return filteredHistory.filter(item => {
+            const isTabMatch = activeTab === 'INGRESOS' ? item.type === 'INGRESO' : item.type === 'EGRESO'
 
-    // Filter List View (User Preference: Hide Migration Data (Dec 7th Batch) but SHOW new backdated entries)
-    // - Hide items created specifically on Dec 7th (The Migration Dump)
-    // - SHOW items created on Dec 8th/9th even if their date is Dec 1st (User Backdating)
-    // List View Filter - Hide migration batch if needed
-    const filteredByTab = filteredHistory.filter(item => {
-        const isTabMatch = activeTab === 'INGRESOS' ? item.type === 'INGRESO' : item.type === 'EGRESO'
-
-        let shouldShow = true
-        if (item.createdAt) {
-            const created = new Date(item.createdAt)
-            // Hide bulk migration data (Before Dec 8th)
-            if (created < new Date('2025-12-08T00:00:00')) {
-                shouldShow = false
+            let shouldShow = true
+            if (item.createdAt) {
+                const created = new Date(item.createdAt)
+                // Hide bulk migration data (Before Dec 8th)
+                if (created < new Date('2025-12-08T00:00:00')) {
+                    shouldShow = false
+                }
             }
-        }
-        return isTabMatch && shouldShow
-    })
+            return isTabMatch && shouldShow
+        })
+    }, [filteredHistory, activeTab])
 
 
 
@@ -517,7 +516,7 @@ export default function SalesPage() {
                 </div>
 
                 {/* FIXED BOTTOM ACTIONS - Mobile Only */}
-                < div className="md:hidden fixed bottom-20 left-0 right-0 p-3 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 z-40" >
+                <div className="md:hidden fixed bottom-[72px] left-0 right-0 p-3 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 z-40 pb-safe mb-safe">
                     <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
                         <button onClick={() => setShowSaleModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition active:scale-95 text-sm">
                             <Plus size={20} /> Nueva Venta
@@ -532,7 +531,7 @@ export default function SalesPage() {
                 {
                     showSaleModal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
-                            <div className="bg-slate-900 w-full max-w-lg rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+                            <div className="bg-slate-900 w-full max-w-lg rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85dvh] overflow-y-auto custom-scrollbar">
                                 <div className="flex justify-between items-center">
                                     <h2 className="text-xl font-bold text-white">Nueva Venta</h2>
                                     <button onClick={() => setShowSaleModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 transition"><X size={20} className="text-slate-400" /></button>
@@ -608,7 +607,7 @@ export default function SalesPage() {
                 {
                     showExpenseModal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
-                            <div className="bg-slate-900 w-full max-w-md rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85vh] overflow-y-auto custom-scrollbar">
+                            <div className="bg-slate-900 w-full max-w-md rounded-3xl p-5 md:p-6 space-y-5 md:space-y-6 border border-white/10 shadow-2xl max-h-[85dvh] overflow-y-auto custom-scrollbar">
                                 <div className="flex justify-between items-center">
                                     <h2 className="text-xl font-bold text-white">Nuevo Gasto</h2>
                                     <button onClick={() => setShowExpenseModal(false)} className="bg-white/5 p-2 rounded-full hover:bg-white/10 transition"><X size={20} className="text-slate-400" /></button>
