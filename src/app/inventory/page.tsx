@@ -1650,8 +1650,11 @@ export default function InventoryPage() {
       {/* SELL MODAL (ADAPTIVE: SINGLE OR COMBO) */}
       {
         showSellModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-            <div className={`glass-panel p-6 rounded-3xl w-full ${selectedItems.length > 1 ? 'max-w-2xl' : 'max-w-sm'} border border-white/10 shadow-2xl bg-slate-900 transition-all`}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in" onClick={() => setShowSellModal(false)}>
+            <div
+              className={`glass-panel p-6 rounded-3xl w-full ${selectedItems.length > 1 ? 'max-w-2xl' : 'max-w-sm'} border border-white/10 shadow-2xl bg-slate-900 transition-all`}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -1762,7 +1765,7 @@ export default function InventoryPage() {
               </div>
 
               <div className="flex gap-3 mt-8 pt-4 border-t border-white/5">
-                <button onClick={() => setShowSellModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">Cancelar</button>
+                <button type="button" onClick={() => setShowSellModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">Cancelar</button>
                 <button
                   onClick={handleSell}
                   disabled={isSubmitting}
@@ -1778,8 +1781,11 @@ export default function InventoryPage() {
 
       {/* ASSIGN MODAL */}
       {showAssignModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 text-left">
-          <div className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 text-left" onClick={() => setShowAssignModal(false)}>
+          <div
+            className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-bold text-white mb-2">Asignar Manualmente</h3>
             <p className="text-xs text-slate-400 mb-4">Vincula este perfil a un cliente existente con su fecha de vencimiento actual.</p>
 
@@ -1834,7 +1840,7 @@ export default function InventoryPage() {
             </div>
 
             <div className="flex gap-3 mt-6 pt-4 border-t border-white/5">
-              <button onClick={() => setShowAssignModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
+              <button type="button" onClick={() => setShowAssignModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
               <button onClick={handleAssign} className="flex-1 p-3 rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-bold shadow-lg shadow-blue-600/20">Asignar Cliente</button>
             </div>
           </div>
@@ -1843,8 +1849,11 @@ export default function InventoryPage() {
 
       {/* REPLACE MODAL */}
       {showReplaceModal && replacingAccount && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in" onClick={() => setShowReplaceModal(false)}>
+          <div
+            className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-xl font-bold text-white mb-4">Reponer Cuenta</h3>
             <p className="text-xs text-slate-400 mb-4">Ingresa los datos de la cuenta de reemplazo. Los perfiles se mantendrán libres.</p>
 
@@ -1867,8 +1876,11 @@ export default function InventoryPage() {
 
       {/* MIGRATE MODAL */}
       {showMigrateModal && profileToMigrate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in" onClick={() => setShowReplaceModal(false)}>
+          <div
+            className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-bold text-white mb-2">Migrar Cliente</h3>
             <div className="bg-slate-950 p-3 rounded-xl border border-white/5 mb-4">
               <p className="text-xs text-slate-400">Desde: <span className="text-white font-bold">{profileToMigrate.profileName}</span> ({profileToMigrate.serviceName})</p>
@@ -1971,8 +1983,11 @@ export default function InventoryPage() {
 
       {/* SUCCESS MODAL */}
       {showSuccessModal && successData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in zoom-in-95">
-          <div className="glass-panel p-6 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl bg-slate-900 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 animate-in zoom-in-95">
+          <div
+            className="glass-panel p-6 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl bg-slate-900 flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                 <Check size={32} />
