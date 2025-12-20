@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp, Download } from 'lucide-react'
+import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp, Download, Copy, ExternalLink } from 'lucide-react'
+import { toast } from 'sonner'
 import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
 import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction } from '../actions'
 import { sendToBot } from '@/services/whatsapp'
@@ -423,14 +424,20 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
         window.location.reload()
     }
 
+    // Success Modal State
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [successData, setSuccessData] = useState<any>(null)
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text)
+        toast.success('Copiado!')
+    }
+
     const confirmRenewal = async () => {
         setIsProcessing(true)
         // 1. Prepare Invoice Data
         const receiptData = {
-            amount: 0, // Need to know price? Maybe assume standard or fetch? For now 0 or hidden.
-            // Wait, renewService doesn't return price. Let's assume standard price or prompt?
-            // For now, let's use a placeholder or try to find price.
-            // Actually, renewal usually implies same price.
+            amount: 0,
             client: client.name,
             category: client.service,
             date: new Date().toISOString(),
@@ -442,19 +449,25 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
         // 2. Process Renewal
         await renewService(client.id, client.lastTxId, renewalDate, paymentMethod, renewalMonths)
 
-        // 3. Generate & Send Receipt (After small delay for render)
-        setTimeout(async () => {
-            if (invoiceRef.current) {
-                try {
-                    const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617' })
-                    const base64Image = canvas.toDataURL('image/png')
-                    await sendReceiptAction(client.phone, base64Image, `🧾 Renovación exitosa. Aquí tienes tu recibo.`)
-                } catch (e) {
-                    console.error("Receipt Error", e)
-                }
-            }
-            window.location.reload()
-        }, 1000)
+        // 3. Prepare Success Data (Using message generator logic mostly)
+        // We know renewService sent the text, but for the modal we want to show it too?
+        // Actually Sales page shows the message to Copy. Let's regenerate it locally or just show generic success.
+        // For consistency with Sales, let's generate the message locally to show 'Copy' button.
+        const message = MessageGenerator.generate('RENEWAL', {
+            clientName: client.name,
+            service: client.service,
+            daysLeft: renewalMonths * 30,
+            email: client.email,
+            password: client.password,
+            pin: client.pin,
+            profileName: client.profileName,
+            date: new Date(new Date().setDate(new Date().getDate() + (renewalMonths * 30))).toLocaleDateString('es-CO')
+        })
+
+        setSuccessData({ message, phone: client.phone })
+        setShowSuccessModal(true)
+        setShowRenewModal(false)
+        setIsProcessing(false)
     }
 
     const confirmEdit = async () => {
@@ -673,6 +686,106 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                 <button onClick={() => setShowAssignModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>
                             </div>
                         )}
+                    </div>
+                </div>
+            )}
+            {/* SUCCESS MODAL (RENEWAL) */}
+            {showSuccessModal && successData && (
+                <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[100] p-4 backdrop-blur-md animate-in fade-in">
+                    <div className="bg-slate-900 border border-emerald-500/30 p-8 rounded-3xl w-full max-w-sm text-center shadow-2xl shadow-emerald-900/20 relative overflow-hidden">
+                        {/* Confetti or Decor */}
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-green-500" />
+
+                        <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-emerald-500/20">
+                            <CheckCircle size={40} className="text-emerald-500" />
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-white mb-2">¡Renovación Exitosa!</h2>
+                        <p className="text-slate-400 mb-8">El servicio se ha extendido correctamente.</p>
+
+                        <div className="flex gap-3 flex-col">
+                            <div className="flex gap-3">
+                                <button onClick={() => copyToClipboard(successData.message)} className="flex-1 p-3 rounded-xl bg-slate-800 text-white hover:bg-slate-700 font-bold flex items-center justify-center gap-2 transition">
+                                    <Copy size={18} /> Copiar
+                                </button>
+                                <a
+                                    href={`https://wa.me/${successData.phone}?text=${encodeURIComponent(successData.message)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition"
+                                >
+                                    <Send size={18} /> Enviar
+                                </a>
+                            </div>
+
+                            <button
+                                onClick={async () => {
+                                    const btn = document.getElementById('btn-share-renew') as HTMLButtonElement
+                                    if (btn) {
+                                        btn.disabled = true;
+                                        btn.innerText = 'Generando...';
+                                    }
+
+                                    if (invoiceRef.current) {
+                                        try {
+                                            const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 3 })
+
+                                            canvas.toBlob(async (blob) => {
+                                                if (!blob) throw new Error('Canvas Empty')
+                                                const file = new File([blob], `recibo_renovacion_${Date.now()}.png`, { type: 'image/png' })
+
+                                                // 1. Try Native Share
+                                                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                                                    try {
+                                                        await navigator.share({
+                                                            files: [file],
+                                                            title: 'Recibo Renovación',
+                                                            text: 'Adjunto recibo de renovación.'
+                                                        })
+                                                        toast.success('Compartiendo...')
+                                                    } catch (e) { console.log('Share canceled') }
+                                                } else {
+                                                    // 2. Fallback Download
+                                                    try {
+                                                        const link = document.createElement('a')
+                                                        link.download = `Recibo_Renovacion_${successData.phone}.png`
+                                                        link.href = canvas.toDataURL('image/png')
+                                                        document.body.appendChild(link)
+                                                        link.click()
+                                                        document.body.removeChild(link)
+                                                        toast.success('📸 Recibo descargado')
+                                                    } catch (e) {
+                                                        console.error(e)
+                                                        toast.error('Error descarga')
+                                                    }
+                                                }
+
+                                                if (btn) {
+                                                    btn.disabled = false;
+                                                    btn.innerText = 'Compartir / Descargar';
+                                                }
+                                            }, 'image/png')
+                                        } catch (err) {
+                                            console.error(err)
+                                            toast.error('Error generar imagen')
+                                            if (btn) {
+                                                btn.disabled = false;
+                                                btn.innerText = 'Compartir / Descargar';
+                                            }
+                                        }
+                                    } else {
+                                        toast.error('Error Ref')
+                                        if (btn) btn.disabled = false;
+                                    }
+                                }}
+                                id="btn-share-renew"
+                                className="w-full p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition"
+                            >
+                                <Download size={18} /> Compartir / Descargar
+                            </button>
+                        </div>
+
+                        <button onClick={() => window.location.reload()} className="mt-6 text-slate-500 hover:text-white text-sm">Cerrar y Actualizar</button>
                     </div>
                 </div>
             )}
