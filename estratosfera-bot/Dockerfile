@@ -1,13 +1,19 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-# Copiar dependencias
+# Instalar dependencias del sistema (Debian/Ubuntu style)
+# build-essential incluye make, gcc, g++, etc.
+RUN apt-get update && apt-get install -y \
+    python3 \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copiar dependencias
 COPY package.json ./
-# Instalar dependencias de compilación (para bibliotecas nativas como sharp/bufferutil)
-# y borrar package-lock para evitar conflictos de plataforma
-RUN apk add --no-cache python3 make g++ git
+
+# Instalar dependencias de Node
 RUN npm install --no-package-lock
 
 # Copiar código fuente
