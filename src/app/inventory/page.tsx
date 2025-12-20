@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send } from 'lucide-react'
+import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send, ImageIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
 import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
 import { calculateSafeEndDate } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
+import { sendToBot } from '@/services/whatsapp'
 
 // Types
 type Profile = {
@@ -132,6 +133,7 @@ export default function InventoryPage() {
   const [sortBy, setSortBy] = useState<'DEFAULT' | 'AVAILABILITY'>('DEFAULT')
   const [groupBy, setGroupBy] = useState<'PROVIDER' | 'SERVICE'>('PROVIDER')
   const [showMenu, setShowMenu] = useState(false)
+  const [autoSendStatus, setAutoSendStatus] = useState<'IDLE' | 'SUCCESS' | 'ERROR'>('IDLE')
 
   const fetchInventory = () => {
     setLoading(true)
@@ -475,6 +477,11 @@ export default function InventoryPage() {
           })
           setShowSuccessModal(true)
 
+          // AUTO-SEND TEXT TO BOT
+          sendToBot(saleData.phone, msg)
+            .then(() => setAutoSendStatus('SUCCESS'))
+            .catch(() => setAutoSendStatus('ERROR'))
+
           // AUTOMATION: Generate & Send Receipt
           setInvoiceData({
             amount: parseInt(saleData.price),
@@ -538,6 +545,11 @@ export default function InventoryPage() {
           months: saleData.months
         })
         setShowSuccessModal(true)
+
+        // AUTO-SEND TEXT TO BOT
+        sendToBot(saleData.phone, msg)
+          .then(() => setAutoSendStatus('SUCCESS'))
+          .catch(() => setAutoSendStatus('ERROR'))
 
         // AUTOMATION: Generate & Send Receipt
         setInvoiceData({
@@ -1993,7 +2005,11 @@ export default function InventoryPage() {
                 <Check size={32} />
               </div>
               <h3 className="text-2xl font-bold text-white">¡Venta Exitosa!</h3>
-              <p className="text-slate-400 text-sm mt-1">El servicio ha sido activado correctamente.</p>
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <p className="text-slate-400 text-sm">El servicio ha sido activado correctament.</p>
+                {autoSendStatus === 'SUCCESS' && <span className="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">Enviado por Bot ✅</span>}
+                {autoSendStatus === 'ERROR' && <span className="text-rose-400 text-xs font-bold bg-rose-400/10 px-2 py-0.5 rounded-full border border-rose-400/20">Fallo envío Bot ⚠️</span>}
+              </div>
             </div>
 
             <div className="bg-slate-950 rounded-xl p-4 border border-white/10 mb-4 overflow-y-auto custom-scrollbar flex-1">
@@ -2016,10 +2032,10 @@ export default function InventoryPage() {
               </a>
               <button
                 onClick={async () => {
-                  const btn = document.getElementById('btn-send-bot') as HTMLButtonElement
+                  const btn = document.getElementById('btn-send-receipt') as HTMLButtonElement
                   if (btn) {
                     btn.disabled = true;
-                    btn.innerText = 'Enviando...';
+                    btn.innerText = 'Enviando Recibo...';
                   }
 
                   if (invoiceRef.current) {
@@ -2028,31 +2044,28 @@ export default function InventoryPage() {
                       const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 2 })
                       const base64Image = canvas.toDataURL('image/png')
 
-                      // 2. Send via Server Action
-                      await sendReceiptAction(saleData.phone, base64Image, successData.message)
+                      // 2. Send via Server Action (Caption is optional, maybe just "Recibo de Pago")
+                      await sendReceiptAction(saleData.phone, base64Image, "🧾 *Aquí tienes tu Recibo de Pago*")
 
-                      toast.success("✅ Enviado por Bot (Texto + Imagen)")
+                      toast.success("✅ Recibo enviado por Bot")
                     } catch (err) {
-                      console.error("Manual Bot Send Error", err)
-                      toast.error("Error al enviar: " + String(err))
+                      console.error("Receipt Send Error", err)
+                      toast.error("Error al enviar recibo: " + String(err))
                     } finally {
-                      // Reset invoice data to clear memory/state if needed, or keep it open?
-                      // User might want to resend? Getting stuck "sending" was the issue.
-                      // Let's just reset the button state.
                       if (btn) {
                         btn.disabled = false;
-                        btn.innerText = 'Enviar por Bot (Reenviar)';
+                        btn.innerText = 'Enviar Recibo (Imagen)';
                       }
                     }
                   } else {
-                    toast.error("Error: No se pudo generar la imagen (Ref missing)")
+                    toast.error("Error: No se pudo generar la imagen")
                     if (btn) btn.disabled = false;
                   }
                 }}
-                id="btn-send-bot"
-                className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                id="btn-send-receipt"
+                className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
               >
-                <Send size={18} /> Enviar por Bot
+                <ImageIcon size={18} /> Enviar Recibo
               </button>
             </div>
             <button onClick={() => setShowSuccessModal(false)} className="mt-3 text-slate-500 hover:text-white text-sm">Cerrar</button>
