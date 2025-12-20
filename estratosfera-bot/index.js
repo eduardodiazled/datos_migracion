@@ -25,6 +25,20 @@ try {
 let sock;
 let currentQR = null;
 
+// CLEANUP ON STARTUP (Fix EBUSY)
+if (fs.existsSync(AUTH_DIR)) {
+    const corruptFlagPath = `${AUTH_DIR}/session_corrupt`;
+    if (fs.existsSync(corruptFlagPath)) {
+        console.log("🚩 Encontrada bandera de corrupción. Eliminando sesión anterior para reinicio limpio...");
+        try {
+            fs.rmSync(AUTH_DIR, { recursive: true, force: true });
+            console.log("✅ Sesión corrupta eliminada.");
+        } catch (e) {
+            console.error("❌ Error fatal limpiando sesión:", e);
+        }
+    }
+}
+
 async function startBot() {
     const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
 
@@ -56,17 +70,20 @@ async function startBot() {
             console.log('Conexión cerrada debido a ', lastDisconnect?.error, ', reconectando ', shouldReconnect);
 
             if (statusCode === DisconnectReason.loggedOut) {
-                console.log("⚠️ Dispositivo desvinculado. Borrando sesión limpiamente y reiniciando...");
-                // Force delete auth directory
+                console.log("⚠️ Dispositivo desvinculado. Marcando para borrado y reiniciando...");
+
+                // Flag for deletion on next restart (avoids EBUSY locks)
                 try {
-                    fs.rmSync(AUTH_DIR, { recursive: true, force: true });
-                    console.log("✅ Sesión eliminada. Creando nueva sesión...");
+                    if (!fs.existsSync(AUTH_DIR)) fs.mkdirSync(AUTH_DIR);
+                    fs.writeFileSync(`${AUTH_DIR}/session_corrupt`, 'true');
+                    console.log("🚩 Bandera de corrupción creada.");
                 } catch (e) {
-                    console.error("Error borrando sesión:", e);
+                    console.error("Error creando bandera:", e);
                 }
 
-                sock = null; // Clear sock
-                startBot(); // Will generate new QR
+                // Exit mechanism to release locks -> Docker/Railway will restart us
+                console.log("👋 Saliendo del proceso para liberar recursos...");
+                process.exit(0);
             } else if (shouldReconnect) {
                 setTimeout(() => startBot(), statusCode === DisconnectReason.restartRequired ? 0 : 3000);
             }
