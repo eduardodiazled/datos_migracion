@@ -1650,7 +1650,7 @@ export default function InventoryPage() {
       {/* SELL MODAL (ADAPTIVE: SINGLE OR COMBO) */}
       {
         showSellModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in" onClick={() => setShowSellModal(false)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
             <div
               className={`glass-panel p-6 rounded-3xl w-full ${selectedItems.length > 1 ? 'max-w-2xl' : 'max-w-sm'} border border-white/10 shadow-2xl bg-slate-900 transition-all`}
               onClick={(e) => e.stopPropagation()}
@@ -1781,7 +1781,7 @@ export default function InventoryPage() {
 
       {/* ASSIGN MODAL */}
       {showAssignModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 text-left" onClick={() => setShowAssignModal(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 text-left">
           <div
             className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
             onClick={(e) => e.stopPropagation()}
@@ -1849,7 +1849,7 @@ export default function InventoryPage() {
 
       {/* REPLACE MODAL */}
       {showReplaceModal && replacingAccount && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in" onClick={() => setShowReplaceModal(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
           <div
             className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
             onClick={(e) => e.stopPropagation()}
@@ -1876,7 +1876,7 @@ export default function InventoryPage() {
 
       {/* MIGRATE MODAL */}
       {showMigrateModal && profileToMigrate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in" onClick={() => setShowReplaceModal(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
           <div
             className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
             onClick={(e) => e.stopPropagation()}
