@@ -2040,138 +2040,136 @@ export default function InventoryPage() {
 
                   if (invoiceRef.current) {
                     try {
-                      // 1. Generate Image High Quality
+                      // Generate Image
                       const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 3 })
 
                       canvas.toBlob(async (blob) => {
-                        if (!blob) {
-                          throw new Error('Canvas Empty')
-                        }
+                        if (!blob) throw new Error('Canvas Empty')
                         const file = new File([blob], `recibo_${Date.now()}.png`, { type: 'image/png' })
 
-                        // 2. Try Native Share (Mobile)
+                        // 1. Try Native Share (Mobile)
                         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                           try {
                             await navigator.share({
                               files: [file],
-                              title: 'Recibo de Pago',
-                              text: 'Adjunto recibo de pago.'
+                              title: 'Recibo',
+                              text: 'Adjunto recibo.'
                             })
                             toast.success('Compartiendo...')
-                          } catch (shareError) {
-                            // User cancelled share, ignore
-                            console.log('Share cancelled', shareError)
-                          }
+                          } catch (e) { console.log('Share canceled') }
                         } else {
-                          // 3. Fallback: Copy to Clipboard (Desktop)
+                          // 2. Fallback: Download (Desktop)
                           try {
-                            await navigator.clipboard.write([
-                              new ClipboardItem({
-                                [blob.type]: blob
-                              })
-                            ])
-                            toast.success('📸 Imagen copiada! Pégala en WhatsApp (Ctrl+V)')
-                          } catch (clipError) {
-                            console.error('Clipboard Error', clipError)
-                            toast.error('No se pudo compartir automáticamente. Intenta descargarla.')
-                            // Fallback 2: Download? Or just leave it.
+                            const link = document.createElement('a')
+                            link.download = `Recibo_${saleData.phone || 'Venta'}.png`
+                            link.href = canvas.toDataURL('image/png')
+                            document.body.appendChild(link)
+                            link.click()
+                            document.body.removeChild(link)
+                            toast.success('📸 Recibo descargado')
+                          } catch (e) {
+                            console.error(e)
+                            toast.error('Error descarga')
                           }
                         }
 
                         if (btn) {
                           btn.disabled = false;
-                          btn.innerText = 'Compartir Recibo';
+                          btn.innerText = 'Compartir / Descargar';
                         }
                       }, 'image/png')
 
                     } catch (err) {
-                      console.error("Receipt Share Error", err)
-                      toast.error("Error al generar imagen")
+                      console.error(err)
+                      toast.error("Error imagen")
                       if (btn) {
                         btn.disabled = false;
-                        btn.innerText = 'Compartir Recibo';
+                        btn.innerText = 'Compartir / Descargar';
                       }
                     }
                   } else {
-                    toast.error("Error: ref missing")
+                    toast.error("Ref error")
                     if (btn) btn.disabled = false;
                   }
                 }}
                 id="btn-share-receipt"
                 className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
               >
-                <ImageIcon size={18} /> Compartir Recibo
+                <Download size={18} /> Compartir / Descargar
               </button>
             </div>
             <button onClick={() => setShowSuccessModal(false)} className="mt-3 text-slate-500 hover:text-white text-sm">Cerrar</button>
           </div>
-        </div>
-      )}
+        </div >
+      )
+      }
 
       {/* INVOICE TEMPLATE (HIDDEN OFFSCREEN) */}
-      {invoiceData && (
-        <div className="fixed top-0 left-0 z-[-1] invisible">
-          <div ref={invoiceRef} className="bg-slate-950 p-8 w-[400px] border border-white/10 text-white relative overflow-hidden" style={{ fontFamily: 'sans-serif' }}>
+      {
+        invoiceData && (
+          <div className="fixed top-0 left-0 z-[-1] invisible">
+            <div ref={invoiceRef} className="bg-slate-950 p-8 w-[400px] border border-white/10 text-white relative overflow-hidden" style={{ fontFamily: 'sans-serif' }}>
 
-            {/* Header */}
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">ESTRATÓSFERA</h1>
-                <p className="text-slate-500 text-xs mt-1">Servicios de Entretenimiento Digital</p>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-bold text-slate-300">RECIBO DE CAJA</div>
-                <div className="text-xs text-slate-500">{new Date().toLocaleDateString()}</div>
-              </div>
-            </div>
-
-            {/* Client */}
-            <div className="mb-6">
-              <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Cliente</div>
-              <div className="text-lg font-bold text-white">{invoiceData.client}</div>
-            </div>
-
-            {/* Details Box */}
-            <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5 mb-6">
-              <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
-                <span className="text-slate-400 text-sm">Concepto</span>
-                <span className="font-bold text-white text-right">{invoiceData.category}</span>
-              </div>
-
-              {/* COMBO ITEMS LIST */}
-              {invoiceData.isCombo && invoiceData.items && invoiceData.items.length > 0 && (
-                <div className="border-b border-white/5 pb-2 mb-2">
-                  <span className="text-slate-500 block mb-1 text-[10px] uppercase tracking-wider">Detalle Combo:</span>
-                  <ul className="space-y-1">
-                    {invoiceData.items.map((item: any, idx: number) => (
-                      <li key={idx} className="text-xs text-slate-300 flex justify-between">
-                        <span>{item.profile}</span>
-                        <span className="text-slate-500">{item.service}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* Header */}
+              <div className="flex justify-between items-start mb-8">
+                <div>
+                  <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">ESTRATÓSFERA</h1>
+                  <p className="text-slate-500 text-xs mt-1">Servicios de Entretenimiento Digital</p>
                 </div>
-              )}
-
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-slate-400 text-sm">Valor Pagado</span>
-                <span className="font-bold text-emerald-400 text-lg">${parseInt(invoiceData.amount).toLocaleString()}</span>
+                <div className="text-right">
+                  <div className="text-sm font-bold text-slate-300">RECIBO DE CAJA</div>
+                  <div className="text-xs text-slate-500">{new Date().toLocaleDateString()}</div>
+                </div>
               </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Método de Pago</span>
-                <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
+              {/* Client */}
+              <div className="mb-6">
+                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Cliente</div>
+                <div className="text-lg font-bold text-white">{invoiceData.client}</div>
               </div>
-            </div>
 
-            {/* FOOTER */}
-            <div className="mt-8 pt-6 border-t border-white/5">
-              <p className="text-slate-500 text-xs">¡Gracias por tu compra!</p>
-              <p className="text-slate-600 text-[10px] mt-1">Generado automáticamente por el sistema</p>
+              {/* Details Box */}
+              <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5 mb-6">
+                <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
+                  <span className="text-slate-400 text-sm">Concepto</span>
+                  <span className="font-bold text-white text-right">{invoiceData.category}</span>
+                </div>
+
+                {/* COMBO ITEMS LIST */}
+                {invoiceData.isCombo && invoiceData.items && invoiceData.items.length > 0 && (
+                  <div className="border-b border-white/5 pb-2 mb-2">
+                    <span className="text-slate-500 block mb-1 text-[10px] uppercase tracking-wider">Detalle Combo:</span>
+                    <ul className="space-y-1">
+                      {invoiceData.items.map((item: any, idx: number) => (
+                        <li key={idx} className="text-xs text-slate-300 flex justify-between">
+                          <span>{item.profile}</span>
+                          <span className="text-slate-500">{item.service}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-slate-400 text-sm">Valor Pagado</span>
+                  <span className="font-bold text-emerald-400 text-lg">${parseInt(invoiceData.amount).toLocaleString()}</span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Método de Pago</span>
+                  <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
+                </div>
+              </div>
+
+              {/* FOOTER */}
+              <div className="mt-8 pt-6 border-t border-white/5">
+                <p className="text-slate-500 text-xs">¡Gracias por tu compra!</p>
+                <p className="text-slate-600 text-[10px] mt-1">Generado automáticamente por el sistema</p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   )
 }
