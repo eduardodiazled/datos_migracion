@@ -312,6 +312,35 @@ export default function InventoryPage() {
     }
   }
 
+  // Edit Account Implementation
+  const handleUpdateAccount = async () => {
+    if (!editingAccount) return
+    try {
+      const res = await updateInventoryAccount(
+        editingAccount.id,
+        editingAccount.email,
+        editingAccount.password,
+        editingAccount.providerId,
+        editingAccount.dia_corte,
+        editingAccount.is_disposable,
+        editingAccount.fecha_activacion,
+        editingAccount.duracion_meses,
+        editingProfiles
+      )
+
+      if (res.success) {
+        toast.success("Cuenta Actualizada")
+        setShowEditAccountModal(false)
+        fetchInventory()
+      } else {
+        toast.error("Error: " + res.error)
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error("Error de servidor")
+    }
+  }
+
   const handleOpenSell = (profileId: number, serviceName: string) => {
     setSelectedProfileId(profileId)
     const price = getServicePrice(serviceName)
@@ -1544,7 +1573,6 @@ export default function InventoryPage() {
               </div>
 
 
-
               <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
                 <input
                   type="checkbox"
@@ -1653,6 +1681,153 @@ export default function InventoryPage() {
             <div className="flex gap-3 flex-shrink-0 pt-2 border-t border-white/5">
               <button onClick={() => setShowAddModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
               <button onClick={handleCreateAccount} className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold shadow-lg shadow-violet-600/20">Crear Cuenta</button>
+            </div>
+          </div >
+        </div >
+      )
+      }
+
+      {/* EDIT ACCOUNT MODAL */}
+      {showEditAccountModal && editingAccount && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 text-left animate-in fade-in">
+          <div className="glass-panel p-5 md:p-6 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl bg-slate-900 max-h-[85vh] flex flex-col">
+            <h3 className="text-xl font-bold text-white mb-4 flex-shrink-0">Editar Cuenta</h3>
+
+            <div className="space-y-4 mb-6 overflow-y-auto flex-1 pr-2 custom-scrollbar">
+
+              {/* Service Display (Read Only) */}
+              <div className="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl mb-2">
+                <label className="text-xs text-violet-400 block mb-1 font-bold">Servicio</label>
+                <div className="text-white font-bold">{editingAccount.servicio}</div>
+              </div>
+
+              {/* Provider Selection */}
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Proveedor (Opcional)</label>
+                <select
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none appearance-none"
+                  value={editingAccount.providerId || ''}
+                  onChange={e => setEditingAccount({ ...editingAccount, providerId: e.target.value ? Number(e.target.value) : undefined })}
+                >
+                  <option value="">Ninguno (Propio)</option>
+                  {providers.map(p => (
+                    <option key={p.id} value={p.id}>{p.nombre}</option>
+                  ))}
+                </select>
+
+                {/* Payment Day Input - Only if provider is selected AND NOT DISPOSABLE */}
+                {editingAccount.providerId && !editingAccount.is_disposable && (
+                  <div className="mt-2">
+                    <label className="text-xs text-slate-400 block mb-1">Día de Corte (Pago al Proveedor)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="31"
+                      placeholder="Día del mes (Ej: 15)"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
+                      value={editingAccount.dia_corte || ''}
+                      onChange={e => setEditingAccount({ ...editingAccount, dia_corte: parseInt(e.target.value) })}
+                    />
+                  </div>
+                )}
+              </div >
+
+              {/* Basic Creds */}
+              < div >
+                <label className="text-xs text-slate-400 block mb-1">Email / Usuario</label>
+                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-violet-500"
+                  value={editingAccount.email} onChange={e => setEditingAccount({ ...editingAccount, email: e.target.value })} placeholder="correo@ejemplo.com" />
+              </div >
+              <div>
+                <label className="text-xs text-slate-400 block mb-1">Contraseña</label>
+                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-violet-500"
+                  value={editingAccount.password} onChange={e => setEditingAccount({ ...editingAccount, password: e.target.value })} placeholder="******" />
+              </div>
+
+
+              <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
+                <input
+                  type="checkbox"
+                  id="edit_is_disposable"
+                  className="w-5 h-5 rounded border border-white/20 bg-slate-900 text-violet-600 focus:ring-violet-500"
+                  checked={!!editingAccount.is_disposable}
+                  onChange={(e) => setEditingAccount({ ...editingAccount, is_disposable: e.target.checked })}
+                />
+                <div className="flex-1">
+                  <label htmlFor="edit_is_disposable" className="text-sm font-medium text-slate-300 block mb-1">
+                    ¿Es Cuenta Desechable?
+                  </label>
+
+                  {editingAccount.is_disposable && (
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={14} className="text-slate-400" />
+                        <input
+                          type="date"
+                          className="bg-slate-900 border border-white/10 rounded-lg p-1.5 text-xs text-white outline-none"
+                          value={editingAccount.fecha_activacion}
+                          onChange={(e) => setEditingAccount({ ...editingAccount, fecha_activacion: e.target.value })}
+                        />
+                        <span className="text-[10px] text-slate-500">Fecha de Activación/Compra</span>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] text-slate-500 block mb-1">Duración (Meses)</label>
+                        <select
+                          className="bg-slate-900 border border-white/10 rounded-lg p-1.5 text-xs text-white outline-none w-full"
+                          value={editingAccount.duracion_meses || 1}
+                          onChange={e => setEditingAccount({ ...editingAccount, duracion_meses: Number(e.target.value) })}
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
+                            <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Profile Editor */}
+              <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                <label className="text-sm font-bold text-white mb-4 block">Perfiles</label>
+                <div className="space-y-3">
+                  {editingProfiles.map((p, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        className="flex-1 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white placeholder-slate-600"
+                        placeholder={`Nombre Perfil`}
+                        value={p.name}
+                        onChange={(e) => {
+                          const newProfiles = [...editingProfiles]
+                          newProfiles[i] = { ...newProfiles[i], name: e.target.value }
+                          setEditingProfiles(newProfiles)
+                        }}
+                      />
+
+                      <input
+                        className="w-20 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white placeholder-slate-600 text-center"
+                        placeholder="PIN"
+                        maxLength={4}
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={p.pin}
+                        onChange={(e) => {
+                          const newProfiles = [...editingProfiles]
+                          newProfiles[i] = { ...newProfiles[i], pin: e.target.value }
+                          setEditingProfiles(newProfiles)
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div >
+
+            <div className="flex gap-3 flex-shrink-0 pt-2 border-t border-white/5">
+              <button onClick={() => setShowEditAccountModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
+              <button onClick={handleUpdateAccount} className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold shadow-lg shadow-violet-600/20">Guardar Cambios</button>
             </div>
           </div >
         </div >
