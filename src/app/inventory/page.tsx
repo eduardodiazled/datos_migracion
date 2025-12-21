@@ -312,34 +312,7 @@ export default function InventoryPage() {
     }
   }
 
-  // Edit Account Implementation
-  const handleUpdateAccount = async () => {
-    if (!editingAccount) return
-    try {
-      const res = await updateInventoryAccount(
-        editingAccount.id,
-        editingAccount.email,
-        editingAccount.password,
-        editingAccount.providerId,
-        editingAccount.dia_corte,
-        editingAccount.is_disposable,
-        editingAccount.fecha_activacion,
-        editingAccount.duracion_meses,
-        editingProfiles
-      )
 
-      if (res.success) {
-        toast.success("Cuenta Actualizada")
-        setShowEditAccountModal(false)
-        fetchInventory()
-      } else {
-        toast.error("Error: " + res.error)
-      }
-    } catch (e) {
-      console.error(e)
-      toast.error("Error de servidor")
-    }
-  }
 
   const handleOpenSell = (profileId: number, serviceName: string) => {
     setSelectedProfileId(profileId)
