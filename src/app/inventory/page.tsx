@@ -2179,71 +2179,56 @@ export default function InventoryPage() {
                 <Send size={18} /> Enviar
               </a>
               <button
-                onClick={async () => {
+                onClick={() => {
                   const btn = document.getElementById('btn-share-receipt') as HTMLButtonElement
                   if (btn) {
                     btn.disabled = true;
                     btn.innerText = 'Generando...';
                   }
 
-                  if (invoiceRef.current) {
-                    try {
-                      // Generate Image
-                      const canvas = await html2canvas(invoiceRef.current, { backgroundColor: '#020617', scale: 3 })
-
-                      canvas.toBlob(async (blob) => {
-                        if (!blob) throw new Error('Canvas Empty')
-                        const file = new File([blob], `recibo_${Date.now()}.png`, { type: 'image/png' })
-
-                        // 1. Try Native Share (Mobile)
-                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                          try {
-                            await navigator.share({
-                              files: [file],
-                              title: 'Recibo',
-                              text: 'Adjunto recibo.'
-                            })
-                            toast.success('Compartiendo...')
-                          } catch (e) { console.log('Share canceled') }
-                        } else {
-                          // 2. Fallback: Download (Desktop)
-                          try {
-                            const link = document.createElement('a')
-                            link.download = `Recibo_${saleData.phone || 'Venta'}.png`
-                            link.href = canvas.toDataURL('image/png')
-                            document.body.appendChild(link)
-                            link.click()
-                            document.body.removeChild(link)
-                            toast.success('📸 Recibo descargado')
-                          } catch (e) {
-                            console.error(e)
-                            toast.error('Error descarga')
+                  // Match SalesPage logic: 500ms timeout to ensure rendering
+                  setTimeout(() => {
+                    if (invoiceRef.current) {
+                      html2canvas(invoiceRef.current, { backgroundColor: '#111' }).then(canvas => {
+                        try {
+                          // Direct Download (matches SalesPage "Download" button)
+                          const link = document.createElement('a')
+                          link.download = `Recibo_${saleData.phone || 'Venta'}.png`
+                          link.href = canvas.toDataURL('image/png')
+                          document.body.appendChild(link)
+                          link.click()
+                          document.body.removeChild(link)
+                          toast.success('📸 Recibo descargado')
+                        } catch (e) {
+                          console.error(e)
+                          toast.error('Error descarga')
+                        } finally {
+                          if (btn) {
+                            btn.disabled = false;
+                            btn.innerText = 'Descargar Recibo';
                           }
                         }
-
+                      }).catch(err => {
+                        console.error(err)
+                        toast.error("Error generando imagen")
                         if (btn) {
                           btn.disabled = false;
-                          btn.innerText = 'Compartir / Descargar';
+                          btn.innerText = 'Descargar Recibo';
                         }
-                      }, 'image/png')
-
-                    } catch (err) {
-                      console.error(err)
-                      toast.error("Error imagen")
+                      })
+                    } else {
+                      toast.error("Error: Referencia no encontrada")
                       if (btn) {
                         btn.disabled = false;
-                        btn.innerText = 'Compartir / Descargar';
+                        btn.innerText = 'Descargar Recibo';
                       }
                     }
-                  } else {
-                    toast.error("Ref error")
-                    if (btn) btn.disabled = false;
-                  }
+                  }, 500)
                 }}
                 id="btn-share-receipt"
                 className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
               >
-                <Download size={18} /> Compartir / Descargar
+                <Download size={18} /> Descargar Recibo
               </button>
             </div>
             <button onClick={() => setShowSuccessModal(false)} className="mt-3 text-slate-500 hover:text-white text-sm">Cerrar</button>
