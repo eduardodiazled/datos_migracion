@@ -51,10 +51,15 @@ export default function ClientsPage() {
             setFilteredClients(clients.filter(c => {
                 const nameMatch = c.name.toLowerCase().includes(lowSearch)
                 if (nameMatch) return true
+
                 const clientDigits = (c.phone || '').replace(/\D/g, '')
-                if (clientDigits.includes(searchDigits)) return true
+                // Fix: Only check digits if user actually typed numbers
+                if (searchDigits.length > 0 && clientDigits.includes(searchDigits)) return true
                 if (searchDigitsNoPrefix.length >= 3 && clientDigits.includes(searchDigitsNoPrefix)) return true
+
+                // Fallback for raw string match (rare but safe)
                 if (c.phone && c.phone.includes(lowSearch)) return true
+
                 return false
             }))
         }
