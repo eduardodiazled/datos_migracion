@@ -7,6 +7,7 @@ import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
 import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction } from '../actions'
 import { sendToBot } from '@/services/whatsapp'
 import { signOut } from 'next-auth/react'
+import { getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 
 export default function ClientsPage() {
@@ -465,7 +466,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
             amount: 0,
             client: client.name,
             category: client.service,
-            date: new Date().toISOString(),
+            date: getLocalDateTimeISO(),
             paymentMethod: paymentMethod,
             isCombo: false
         }

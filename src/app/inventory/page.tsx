@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
 import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
-import { calculateSafeEndDate } from '@/lib/dateUtils'
+import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
 
@@ -79,7 +79,7 @@ export default function InventoryPage() {
   const [selectedProviderId, setSelectedProviderId] = useState<number | 'ALL'>('ALL')
 
   // Forms Data
-  const [newAccount, setNewAccount] = useState<{ service: string, email: string, password: string, profilesCount: number, providerId?: number, dia_corte?: number, is_disposable?: boolean, activationDate?: string, months_duration?: number }>({ service: '', email: '', password: '', profilesCount: 1, is_disposable: false, activationDate: new Date().toISOString().split('T')[0], months_duration: 1 })
+  const [newAccount, setNewAccount] = useState<{ service: string, email: string, password: string, profilesCount: number, providerId?: number, dia_corte?: number, is_disposable?: boolean, activationDate?: string, months_duration?: number }>({ service: '', email: '', password: '', profilesCount: 1, is_disposable: false, activationDate: getLocalDateISO(), months_duration: 1 })
   // Filters & Views
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('CARDS')
@@ -91,10 +91,10 @@ export default function InventoryPage() {
 
   const [profileDetails, setProfileDetails] = useState<{ name: string, pin?: string }[]>([])
   const [usePin, setUsePin] = useState(false)
-  const [saleData, setSaleData] = useState({ phone: '', name: '', price: '', paymentMethod: 'NEQUI' as 'NEQUI' | 'BANCOLOMBIA' | 'EFECTIVO' | 'DAVIPLATA' | 'USDT', date: new Date().toISOString().split('T')[0], months: 1 })
+  const [saleData, setSaleData] = useState({ phone: '', name: '', price: '', paymentMethod: 'NEQUI' as 'NEQUI' | 'BANCOLOMBIA' | 'EFECTIVO' | 'DAVIPLATA' | 'USDT', date: getLocalDateISO(), months: 1 })
   // Assign Modal
   const [showAssignModal, setShowAssignModal] = useState(false)
-  const [assignData, setAssignData] = useState({ phone: '', name: '', startDate: new Date().toISOString().split('T')[0], months: 1 })
+  const [assignData, setAssignData] = useState({ phone: '', name: '', startDate: getLocalDateISO(), months: 1 })
   const [clientSearchResults, setClientSearchResults] = useState<{ celular: string, nombre: string }[]>([])
   const [isSearchingClient, setIsSearchingClient] = useState(false)
 
@@ -119,7 +119,7 @@ export default function InventoryPage() {
   const [replaceData, setReplaceData] = useState({
     email: '',
     password: '',
-    date: new Date().toISOString().split('T')[0]
+    date: getLocalDateISO()
   })
 
 
@@ -456,7 +456,7 @@ export default function InventoryPage() {
           }).filter(Boolean) as any[]
 
           // Calculate Expiration Date correctly (Date + Months)
-          const startDate = new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00')
+          const startDate = new Date((saleData.date || getLocalDateISO()) + 'T12:00:00')
           const monthsToAdd = saleData.months || 1
           const expirationDate = new Date(startDate)
           expirationDate.setMonth(expirationDate.getMonth() + monthsToAdd)
@@ -489,7 +489,7 @@ export default function InventoryPage() {
             amount: parseInt(saleData.price),
             client: saleData.name,
             category: 'Combo / Selección',
-            date: new Date().toISOString(),
+            date: getLocalDateTimeISO(),
             paymentMethod: saleData.paymentMethod,
             isCombo: true,
             items: validationItems // Pass items to invoice
