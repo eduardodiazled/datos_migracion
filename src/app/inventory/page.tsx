@@ -2202,26 +2202,29 @@ export default function InventoryPage() {
                     btn.innerText = 'Generando...';
                   }
 
-                  // Match SalesPage logic: 500ms timeout to ensure rendering
+                  // Timeout to ensure rendering (increased for stability)
                   setTimeout(() => {
                     if (invoiceRef.current) {
-                      html2canvas(invoiceRef.current, { backgroundColor: '#111' }).then(canvas => {
+                      html2canvas(invoiceRef.current, {
+                        backgroundColor: '#111',
+                        scale: 2, // Improve quality
+                        useCORS: true // Ensure images load
+                      }).then(canvas => {
                         try {
-                          // Direct Download (matches SalesPage "Download" button)
                           const link = document.createElement('a')
                           link.download = `Recibo_${saleData.phone || 'Venta'}.png`
                           link.href = canvas.toDataURL('image/png')
                           document.body.appendChild(link)
                           link.click()
                           document.body.removeChild(link)
-                          toast.success('📸 Recibo descargado')
+                          toast.success('📸 Recibo generado')
                         } catch (e) {
                           console.error(e)
                           toast.error('Error descarga')
                         } finally {
                           if (btn) {
                             btn.disabled = false;
-                            btn.innerText = 'Descargar Recibo';
+                            btn.innerText = 'Compartir Recibo';
                           }
                         }
                       }).catch(err => {
@@ -2229,22 +2232,22 @@ export default function InventoryPage() {
                         toast.error("Error generando imagen")
                         if (btn) {
                           btn.disabled = false;
-                          btn.innerText = 'Descargar Recibo';
+                          btn.innerText = 'Compartir Recibo';
                         }
                       })
                     } else {
-                      toast.error("Error: Referencia no encontrada")
+                      toast.error("Error: Plantilla no encontrada")
                       if (btn) {
                         btn.disabled = false;
-                        btn.innerText = 'Descargar Recibo';
+                        btn.innerText = 'Compartir Recibo';
                       }
                     }
-                  }, 500)
+                  }, 800)
                 }}
                 id="btn-share-receipt"
                 className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-violet-600/20 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs md:text-sm"
               >
-                <Download size={18} /> Descargar Recibo
+                <Download size={18} /> Compartir Recibo
               </button>
             </div>
             <button onClick={() => setShowSuccessModal(false)} className="mt-3 text-slate-500 hover:text-white text-sm">Cerrar</button>
