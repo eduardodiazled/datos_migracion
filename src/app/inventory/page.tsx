@@ -2195,7 +2195,9 @@ export default function InventoryPage() {
                 <Send size={18} /> Enviar
               </a>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
                   const btn = document.getElementById('btn-share-receipt') as HTMLButtonElement
                   if (btn) {
                     btn.disabled = true;

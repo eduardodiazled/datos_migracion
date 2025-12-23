@@ -810,7 +810,7 @@ export default function SalesPage() {
                                             <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.amount} onChange={e => setEditingTx({ ...editingTx, amount: e.target.value })} />
                                         </div>
                                         <div className="space-y-1">
-                                            <label className="text-xs text-slate-500">MÃ©todo</label>
+                                            <label className="text-xs text-slate-500">Método</label>
                                             <select className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.paymentMethod} onChange={e => setEditingTx({ ...editingTx, paymentMethod: e.target.value })}>
                                                 <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
                                             </select>
@@ -889,7 +889,7 @@ export default function SalesPage() {
                                                 if (diffMonths > 1) {
                                                     return (
                                                         <div className="flex justify-between border-b border-white/5 pb-2">
-                                                            <span className="text-slate-400">DuraciÃ³n</span>
+                                                            <span className="text-slate-400">Duración</span>
                                                             <span className="font-bold text-white">{diffMonths} Meses</span>
                                                         </div>
                                                     )
@@ -911,7 +911,7 @@ export default function SalesPage() {
                                             })()}</span>
                                         </div>
                                         <div className="flex justify-between border-b border-white/5 pb-2">
-                                            <span className="text-slate-400">MÃ©todo de Pago</span>
+                                            <span className="text-slate-400">Método de Pago</span>
                                             <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
                                         </div>
                                     </div>
@@ -919,8 +919,8 @@ export default function SalesPage() {
 
                                 {/* FOOTER */}
                                 <div className="mt-8 pt-6 border-t border-white/5">
-                                    <p className="text-slate-500 text-xs">Â¡Gracias por tu compra!</p>
-                                    <p className="text-slate-600 text-[10px] mt-1">Generado automÃ¡ticamente por el sistema</p>
+                                    <p className="text-slate-500 text-xs">¡Gracias por tu compra!</p>
+                                    <p className="text-slate-600 text-[10px] mt-1">Generado automáticamente por el sistema</p>
                                 </div>
                             </div>
                         </div>
