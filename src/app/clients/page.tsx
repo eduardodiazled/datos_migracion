@@ -846,7 +846,7 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
             {
                 invoiceData && (
                     <div className="fixed top-0 left-0 w-full h-full -z-50 flex items-center justify-center opacity-0 pointer-events-none">
-                        <div ref={invoiceRef} className="w-[400px] bg-slate-950 p-8 rounded-none border border-white/10 text-center relative overflow-hidden">
+                        <div ref={invoiceRef} className="w-[400px] bg-slate-950 p-8 rounded-none border border-white/10 text-center relative overflow-hidden" style={{ fontFamily: 'Arial, sans-serif' }}>
                             {/* DECORATION */}
                             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-600 to-blue-600"></div>
                             <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-violet-600"></div>

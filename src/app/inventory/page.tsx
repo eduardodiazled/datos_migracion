@@ -2257,7 +2257,7 @@ export default function InventoryPage() {
       {
         invoiceData && (
           <div className="fixed top-0 left-0 z-[-50] opacity-0 pointer-events-none w-full h-full flex items-center justify-center">
-            <div ref={invoiceRef} className="bg-slate-950 p-8 w-[400px] border border-white/10 text-white relative overflow-hidden" style={{ fontFamily: 'sans-serif' }}>
+            <div ref={invoiceRef} className="bg-slate-950 p-8 w-[400px] border border-white/10 text-white relative overflow-hidden" style={{ fontFamily: 'Arial, sans-serif' }}>
 
               {/* Header */}
               <div className="flex justify-between items-start mb-8">
