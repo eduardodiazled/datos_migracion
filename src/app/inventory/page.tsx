@@ -54,7 +54,9 @@ const DEFAULT_PRICES: Record<string, number> = {
   'iptv': 15000,
   'apple': 25000,
   'jellyfin': 12000,
-  'Chat GPT': 25000
+  'Chat GPT': 25000,
+  'capcut': 10000,
+  'canva': 10000
 }
 
 const getServicePrice = (serviceName: string): number => {
@@ -80,6 +82,7 @@ export default function InventoryPage() {
 
   // Forms Data
   const [newAccount, setNewAccount] = useState<{ service: string, email: string, password: string, profilesCount: number, providerId?: number, dia_corte?: number, is_disposable?: boolean, activationDate?: string, months_duration?: number }>({ service: '', email: '', password: '', profilesCount: 1, is_disposable: false, activationDate: getLocalDateISO(), months_duration: 1 })
+  const [isCustomService, setIsCustomService] = useState(false)
   // Filters & Views
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'CARDS' | 'TABLE'>('CARDS')
@@ -1204,6 +1207,8 @@ export default function InventoryPage() {
                                     else if (serviceLower.includes('paramount')) iconPath = '/logos/paramount.png'
                                     else if (serviceLower.includes('jellyfin')) iconPath = '/logos/jellyfin.png'
                                     else if (serviceLower.includes('chat')) iconPath = '/logos/chatgpt.png'
+                                    else if (serviceLower.includes('capcut')) iconPath = '/logos/CapCut.png'
+                                    else if (serviceLower.includes('canva')) iconPath = '/logos/Canva.png'
 
                                     if (iconPath) {
                                       let scaleClass = ''
@@ -1492,11 +1497,18 @@ export default function InventoryPage() {
               < div >
                 <label className="text-xs text-slate-400 block mb-1">Servicio</label>
                 <select
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none appearance-none"
-                  value={newAccount.service}
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-violet-500 appearance-none"
+                  value={isCustomService ? 'Otro' : newAccount.service}
                   onChange={e => {
                     const svc = e.target.value
-                    setNewAccount({ ...newAccount, service: svc })
+                    if (svc === 'Otro') {
+                      setIsCustomService(true)
+                      setNewAccount(prev => ({ ...prev, service: '' }))
+                    } else {
+                      setIsCustomService(false)
+                      setNewAccount({ ...newAccount, service: svc })
+                    }
+
                     // Auto-config defaults
                     if (svc === 'Netflix') setNewAccount(prev => ({ ...prev, service: svc, profilesCount: 5 }))
                     if (svc === 'Disney+') setNewAccount(prev => ({ ...prev, service: svc, profilesCount: 7 }))
@@ -1520,18 +1532,22 @@ export default function InventoryPage() {
                   <option value="IPTV">IPTV</option>
                   <option value="Jellyfin">Jellyfin</option>
                   <option value="Chat GPT">Chat GPT</option>
+                  <option value="CapCut">CapCut</option>
+                  <option value="Canva">Canva</option>
                   <option value="Otro">Otro...</option>
                 </select>
                 {
-                  newAccount.service === 'Otro' && (
+                  isCustomService && (
                     <input
                       className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none mt-2"
                       placeholder="Escribe el nombre del servicio"
+                      value={newAccount.service}
                       onChange={(e) => setNewAccount({ ...newAccount, service: e.target.value })}
+                      autoFocus
                     />
                   )
                 }
-              </div >
+              </div>
 
               {/* Basic Creds */}
               < div >
