@@ -1779,10 +1779,18 @@ export default function InventoryPage() {
 
               {/* Profile Editor */}
               <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <label className="text-sm font-bold text-white mb-4 block">Perfiles</label>
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-sm font-bold text-white">Perfiles</label>
+                  <button
+                    onClick={() => setEditingProfiles([...editingProfiles, { name: '', pin: '' }])}
+                    className="text-[10px] bg-violet-600/20 text-violet-400 border border-violet-500/30 px-2 py-1 rounded-lg hover:bg-violet-600 hover:text-white transition"
+                  >
+                    + Agregar Perfil
+                  </button>
+                </div>
                 <div className="space-y-3">
                   {editingProfiles.map((p, i) => (
-                    <div key={i} className="flex gap-2">
+                    <div key={i} className="flex gap-2 items-center">
                       <input
                         className="flex-1 bg-slate-950 border border-white/10 rounded-lg p-2 text-sm text-white placeholder-slate-600"
                         placeholder={`Nombre Perfil`}
@@ -1807,6 +1815,17 @@ export default function InventoryPage() {
                           setEditingProfiles(newProfiles)
                         }}
                       />
+                      <button
+                        onClick={() => {
+                          if (confirm('¿Eliminar este perfil?')) {
+                            const newProfiles = editingProfiles.filter((_, idx) => idx !== i)
+                            setEditingProfiles(newProfiles)
+                          }
+                        }}
+                        className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1814,9 +1833,17 @@ export default function InventoryPage() {
 
             </div >
 
-            <div className="flex gap-3 flex-shrink-0 pt-2 border-t border-white/5">
-              <button onClick={() => setShowEditAccountModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
-              <button onClick={handleUpdateAccount} className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold shadow-lg shadow-violet-600/20">Guardar Cambios</button>
+            <div className="flex flex-col gap-3 flex-shrink-0 pt-2 border-t border-white/5">
+              <div className="flex gap-3">
+                <button onClick={() => setShowEditAccountModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
+                <button onClick={handleUpdateAccount} className="flex-1 p-3 rounded-xl bg-violet-600 text-white hover:bg-violet-500 font-bold shadow-lg shadow-violet-600/20">Guardar Cambios</button>
+              </div>
+              <button
+                onClick={handleDeleteAccount}
+                className="w-full p-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-lg transition border border-rose-500/20 flex items-center justify-center gap-2"
+              >
+                <Trash2 size={14} /> Eliminar Cuenta Permanentemente
+              </button>
             </div>
           </div >
         </div >

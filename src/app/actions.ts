@@ -1630,7 +1630,28 @@ export async function updateInventoryAccount(id: number, data: { service?: strin
             data: updateData
         })
 
-        if (data.profiles && data.profiles.length > 0) {
+        if (data.profiles) {
+            // 1. Get current profiles in DB
+            const existingProfiles = await prisma.salesProfile.findMany({
+                where: { accountId: id },
+                select: { id: true }
+            })
+            const existingIds = existingProfiles.map(p => p.id)
+            const incomingIds = data.profiles.map(p => p.id).filter(Boolean) as number[]
+
+            // 2. Identify profiles to delete (those in DB but not in incoming data)
+            const toDelete = existingIds.filter(profileId => !incomingIds.includes(profileId))
+
+            for (const profileId of toDelete) {
+                // Unlink transactions before deleting
+                await prisma.transaction.updateMany({
+                    where: { perfilId: profileId },
+                    data: { perfilId: null }
+                })
+                await prisma.salesProfile.delete({ where: { id: profileId } })
+            }
+
+            // 3. Update or Create incoming profiles
             for (const p of data.profiles) {
                 if (p.id) {
                     // Update Existing
@@ -1655,10 +1676,11 @@ export async function updateInventoryAccount(id: number, data: { service?: strin
             }
         }
 
+        revalidatePath('/inventory')
         return { success: true }
     } catch (error) {
         console.error("Error updating account:", error)
-        return { success: false, error: "Error updating account" }
+        return { success: false, error: "Error updating account: " + String(error) }
     }
 }
 
