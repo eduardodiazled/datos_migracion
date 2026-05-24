@@ -449,10 +449,13 @@ export default function InventoryPage() {
           fetchInventory()
 
           // Detailed Success Message for Combo
-          const validationItems = selectedItems.map(item => {
+          const validationItems = selectedItems.map((item, idx) => {
             // Find the source profile/account in the state to get credentials
             const sourceAccount = accounts.find(a => a.id === item.accountId)
             if (!sourceAccount) return null
+
+            const payloadItem = payloadItems[idx]
+            const finalPrice = payloadItem ? payloadItem.price : item.price
 
             if (item.type === 'FULL_ACCOUNT') {
               return {
@@ -460,7 +463,8 @@ export default function InventoryPage() {
                 email: sourceAccount.email,
                 password: sourceAccount.password,
                 profile: 'Cuenta Completa',
-                pin: null
+                pin: null,
+                price: finalPrice
               }
             } else {
               const sourceProfile = sourceAccount.perfiles.find(p => p.id === item.profileId)
@@ -471,7 +475,8 @@ export default function InventoryPage() {
                 email: sourceAccount.email,
                 password: sourceAccount.password,
                 profile: sourceProfile.nombre_perfil,
-                pin: sourceProfile.pin
+                pin: sourceProfile.pin,
+                price: finalPrice
               }
             }
           }).filter(Boolean) as any[]
@@ -513,7 +518,8 @@ export default function InventoryPage() {
             date: getLocalDateTimeISO(),
             paymentMethod: saleData.paymentMethod,
             isCombo: true,
-            items: validationItems // Pass items to invoice
+            items: validationItems, // Pass items to invoice
+            months: saleData.months
           })
 
 
@@ -581,7 +587,8 @@ export default function InventoryPage() {
           category: profileInfo.account.servicio,
           date: new Date().toISOString(),
           paymentMethod: saleData.paymentMethod,
-          isCombo: false
+          isCombo: false,
+          months: saleData.months
         })
 
 
@@ -2306,57 +2313,77 @@ export default function InventoryPage() {
       {/* INVOICE TEMPLATE (HIDDEN OFFSCREEN) */}
       {
         invoiceData && (
-          <div className="fixed top-0 left-0 z-[-50] opacity-0 pointer-events-none w-full h-full flex items-center justify-center">
-            <div ref={invoiceRef} className="bg-slate-950 p-8 w-[400px] border border-white/10 text-white relative overflow-hidden" style={{ fontFamily: 'Arial, sans-serif' }}>
+          <div className="fixed top-0 left-0 w-full h-full -z-50 flex items-center justify-center opacity-0 pointer-events-none">
+            <div ref={invoiceRef} className="w-[400px] bg-slate-950 p-8 rounded-none border border-white/10 text-center relative overflow-hidden" style={{ fontFamily: 'Arial, sans-serif' }}>
+              {/* DECORATION */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-600 to-blue-600"></div>
+              <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-violet-600"></div>
 
-              {/* Header */}
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">ESTRATÓSFERA</h1>
-                  <p className="text-slate-500 text-xs mt-1">Servicios de Entretenimiento Digital</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-bold text-slate-300">RECIBO DE CAJA</div>
-                  <div className="text-xs text-slate-500">{new Date().toLocaleDateString()}</div>
-                </div>
+              {/* HEADER */}
+              <div className="flex flex-col items-center mb-6">
+                <img src="/logo-navidad.jpg" className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-4 shadow-lg shadow-violet-500/20" alt="Logo" />
+                <h1 className="text-2xl font-bold text-white tracking-tight">ESTRATOSFERA</h1>
+                <p className="text-violet-400 text-sm font-medium tracking-widest uppercase">Comprobante de Pago</p>
               </div>
 
-              {/* Client */}
-              <div className="mb-6">
-                <div className="text-xs text-slate-500 uppercase tracking-wider mb-1">Cliente</div>
-                <div className="text-lg font-bold text-white">{invoiceData.client}</div>
-              </div>
-
-              {/* Details Box */}
-              <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5 mb-6">
-                <div className="flex justify-between items-center mb-2 border-b border-white/5 pb-2">
-                  <span className="text-slate-400 text-sm">Concepto</span>
-                  <span className="font-bold text-white text-right">{invoiceData.category}</span>
+              {/* DETAILS */}
+              <div className="space-y-6">
+                <div className="bg-slate-900/50 p-4 rounded-xl border border-white/5">
+                  <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Total Pagado</p>
+                  <p className="text-3xl font-bold text-emerald-400 font-mono">${parseInt(invoiceData.amount).toLocaleString()}</p>
                 </div>
 
-                {/* COMBO ITEMS LIST */}
-                {invoiceData.isCombo && invoiceData.items && invoiceData.items.length > 0 && (
-                  <div className="border-b border-white/5 pb-2 mb-2">
-                    <span className="text-slate-500 block mb-1 text-[10px] uppercase tracking-wider">Detalle Combo:</span>
-                    <ul className="space-y-1">
-                      {invoiceData.items.map((item: any, idx: number) => (
-                        <li key={idx} className="text-xs text-slate-300 flex justify-between">
-                          <span>{item.profile}</span>
-                          <span className="text-slate-500">{item.service}</span>
-                        </li>
-                      ))}
-                    </ul>
+                <div className="space-y-4 text-sm text-left">
+                  <div className="flex justify-between items-start border-b border-white/5 pb-2">
+                    <span className="text-slate-400 shrink-0">Cliente</span>
+                    <span className="font-bold text-white text-right">{invoiceData.client}</span>
                   </div>
-                )}
 
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-slate-400 text-sm">Valor Pagado</span>
-                  <span className="font-bold text-emerald-400 text-lg">${parseInt(invoiceData.amount).toLocaleString()}</span>
-                </div>
+                  {invoiceData.isCombo && invoiceData.items && invoiceData.items.length > 0 ? (
+                    <div className="border-b border-white/5 pb-2">
+                      <span className="text-slate-400 block mb-2 text-xs uppercase">Detalles del Combo</span>
+                      <div className="space-y-2">
+                        {invoiceData.items.map((item: any, idx: number) => (
+                          <div key={idx} className="flex justify-between text-xs">
+                            <span className="text-slate-300">
+                              {item.profile ? `${item.service} - ${item.profile}` : item.service}
+                            </span>
+                            <span className="text-emerald-400 font-mono">
+                              {item.price !== undefined ? `$${item.price.toLocaleString()}` : 'Activado'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-start border-b border-white/5 pb-2">
+                      <span className="text-slate-400 shrink-0">Servicio</span>
+                      <span className="font-bold text-white text-right">{invoiceData.category}</span>
+                    </div>
+                  )}
 
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Método de Pago</span>
-                  <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
+                  {invoiceData.months && invoiceData.months > 1 && (
+                    <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span className="text-slate-400">Duración</span>
+                      <span className="font-bold text-white">{invoiceData.months} Meses</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                    <span className="text-slate-400">Fecha</span>
+                    <span className="font-bold text-white">{(() => {
+                      if (!invoiceData.date) return ''
+                      if (typeof invoiceData.date === 'string' && invoiceData.date.endsWith('T00:00:00.000Z')) {
+                        return new Date(invoiceData.date).toISOString().split('T')[0]
+                      }
+                      return new Date(invoiceData.date).toLocaleDateString()
+                    })()}</span>
+                  </div>
+
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                    <span className="text-slate-400">Método de Pago</span>
+                    <span className="font-bold text-white">{invoiceData.paymentMethod}</span>
+                  </div>
                 </div>
               </div>
 
