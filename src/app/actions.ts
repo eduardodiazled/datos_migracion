@@ -2559,6 +2559,7 @@ export async function getPayrollStatus() {
 
         if (deltaDays < 0) deltaDays = 0
 
+        // Helper's daily payroll rate (Updated from 20000 to 24000)
         const daily = 24000
         const total = deltaDays * daily
 
