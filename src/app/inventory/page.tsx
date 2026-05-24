@@ -409,12 +409,30 @@ export default function InventoryPage() {
 
       setIsSubmitting(true)
       try {
-        const payloadItems = selectedItems.map(i => ({
-          profileId: i.profileId,
-          type: i.type,
-          accountId: i.accountId,
-          price: i.price
-        }))
+        // Distribute custom combo price proportionally
+        const totalOriginalPrice = selectedItems.reduce((sum, item) => sum + item.price, 0)
+        const customPrice = parseInt(saleData.price) || 0
+
+        let runningSum = 0
+        const payloadItems = selectedItems.map((i, idx) => {
+          let adjustedPrice = 0
+          if (idx === selectedItems.length - 1) {
+            adjustedPrice = customPrice - runningSum
+          } else {
+            if (totalOriginalPrice > 0) {
+              adjustedPrice = Math.round((i.price / totalOriginalPrice) * customPrice)
+            } else {
+              adjustedPrice = Math.round(customPrice / selectedItems.length)
+            }
+            runningSum += adjustedPrice
+          }
+          return {
+            profileId: i.profileId,
+            type: i.type,
+            accountId: i.accountId,
+            price: adjustedPrice
+          }
+        })
 
         const res = await createComboSale(
           saleData.phone,
