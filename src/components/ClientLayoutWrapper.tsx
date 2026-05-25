@@ -27,7 +27,7 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
                 {/* Mobile Header (Hidden on Desktop) */}
                 <div className="md:hidden sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img src="/logo.jpg" alt="Logo" loading="lazy" className="w-9 h-9 rounded-full object-cover border border-white/10 shadow-lg shadow-violet-500/20" />
+                        <img src="/logo.jpg" alt="Logo" loading="lazy" className="w-11 h-11 rounded-full object-cover border border-white/10 shadow-lg shadow-violet-500/20" />
                         <div>
                             <h1 className="font-bold text-white leading-tight">Estratosfera <span className="text-[9px] text-slate-500 font-mono">v1.5</span></h1>
                             <p className="text-[10px] text-violet-400 font-bold tracking-widest uppercase">App</p>

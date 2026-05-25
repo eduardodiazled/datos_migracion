@@ -20,7 +20,7 @@ export function Sidebar() {
         <aside className="hidden md:flex flex-col w-72 h-screen fixed left-0 top-0 border-r border-white/5 bg-slate-950/50 backdrop-blur-xl">
             <div className="p-8">
                 <div className="flex items-center gap-3 mb-1">
-                    <img src="/logo.jpg" alt="Logo" loading="lazy" className="w-12 h-12 rounded-full object-cover border-2 border-white/10 shadow-lg shadow-violet-500/20" />
+                    <img src="/logo.jpg" alt="Logo" loading="lazy" className="w-16 h-16 rounded-full object-cover border-2 border-white/10 shadow-lg shadow-violet-500/20" />
                     <div>
                         <h1 className="text-xl font-bold tracking-tight text-white leading-none">Estratosfera</h1>
                         <span className="text-xs font-medium text-violet-400 tracking-widest uppercase">App</span>

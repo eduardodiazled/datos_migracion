@@ -62,7 +62,7 @@ export default function LoginPage() {
 
                     {/* Mobile Logo (Visible only on mobile) */}
                     <div className="lg:hidden text-center mb-8 flex flex-col items-center">
-                        <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full object-cover border-4 border-white/10 shadow-xl shadow-violet-500/20 mb-4" />
+                        <img src="/logo.jpg" alt="Logo" className="w-28 h-28 rounded-full object-cover border-4 border-white/10 shadow-xl shadow-violet-500/20 mb-4" />
                         <h1 className="text-3xl font-bold tracking-tighter">
                             ESTRATOSFERA<span className="text-violet-500">+</span>
                         </h1>
