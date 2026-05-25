@@ -18,10 +18,6 @@ export const viewport = {
 export const metadata: Metadata = {
   title: 'Estratosfera App',
   description: 'Gestión inteligente de servicios de streaming',
-  icons: {
-    icon: '/logo.jpg',
-    apple: '/logo.jpg'
-  },
 }
 
 export default function RootLayout({
