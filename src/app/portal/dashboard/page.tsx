@@ -81,7 +81,7 @@ function DashboardContent() {
             <nav className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-white/5 px-4 py-4 mb-8">
                 <div className="max-w-4xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <img src="/logo-navidad.jpg" alt="Logo" className="w-10 h-10 rounded-full border border-white/10" />
+                        <img src="/logo.jpg" alt="Logo" className="w-10 h-10 rounded-full border border-white/10" />
                         <div>
                             <p className="text-xs text-slate-400">Bienvenido,</p>
                             <h1 className="text-sm font-bold text-white leading-none">{data.clientName}</h1>

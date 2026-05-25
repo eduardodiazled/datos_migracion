@@ -44,7 +44,7 @@ export default function LoginPage() {
 
                 <div className="relative z-10 text-center space-y-6 p-12">
                     <div className="w-32 h-32 rounded-full mx-auto flex items-center justify-center border-4 border-white/10 shadow-2xl shadow-violet-500/30 overflow-hidden mb-8">
-                        <img src="/logo-navidad.jpg" alt="Logo" className="w-full h-full object-cover" />
+                        <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover" />
                     </div>
                     <h1 className="text-5xl font-bold tracking-tighter">
                         ESTRATOSFERA<span className="text-violet-500">+</span>
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
                     {/* Mobile Logo (Visible only on mobile) */}
                     <div className="lg:hidden text-center mb-8 flex flex-col items-center">
-                        <img src="/logo-navidad.jpg" alt="Logo" className="w-20 h-20 rounded-full object-cover border-4 border-white/10 shadow-xl shadow-violet-500/20 mb-4" />
+                        <img src="/logo.jpg" alt="Logo" className="w-20 h-20 rounded-full object-cover border-4 border-white/10 shadow-xl shadow-violet-500/20 mb-4" />
                         <h1 className="text-3xl font-bold tracking-tighter">
                             ESTRATOSFERA<span className="text-violet-500">+</span>
                         </h1>

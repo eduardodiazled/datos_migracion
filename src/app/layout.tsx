@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   title: 'Estratosfera App',
   description: 'Gestión inteligente de servicios de streaming',
   icons: {
-    icon: '/logo-navidad.jpg',
-    apple: '/logo-navidad.jpg'
+    icon: '/logo.jpg',
+    apple: '/logo.jpg'
   },
 }
 

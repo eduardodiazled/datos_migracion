@@ -90,7 +90,7 @@ function PortalContent() {
             <header className="w-full py-8 flex justify-center z-20">
                 <div className="flex items-center gap-4 scale-110">
                     <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl shadow-violet-500/20">
-                        <Image src="/logo-navidad.jpg" alt="Logo" width={56} height={56} className="object-cover w-full h-full" />
+                        <Image src="/logo.jpg" alt="Logo" width={56} height={56} className="object-cover w-full h-full" />
                     </div>
                     <div className="flex flex-col">
                         <span className="font-extrabold text-2xl leading-none tracking-tight">Estratosfera</span>

@@ -2321,7 +2321,7 @@ export default function InventoryPage() {
 
               {/* HEADER */}
               <div className="flex flex-col items-center mb-6">
-                <img src="/logo-navidad.jpg" className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-4 shadow-lg shadow-violet-500/20" alt="Logo" />
+                <img src="/logo.jpg" className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-4 shadow-lg shadow-violet-500/20" alt="Logo" />
                 <h1 className="text-2xl font-bold text-white tracking-tight">ESTRATOSFERA</h1>
                 <p className="text-violet-400 text-sm font-medium tracking-widest uppercase">Comprobante de Pago</p>
               </div>
