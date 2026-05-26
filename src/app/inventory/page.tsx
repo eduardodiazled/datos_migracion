@@ -1506,13 +1506,13 @@ export default function InventoryPage() {
                   <div className="mt-2">
                     <label className="text-xs text-slate-400 block mb-1">Día de Corte (Pago al Proveedor)</label>
                     <input
-                      type="number"
-                      min="1"
-                      max="31"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="Día del mes (Ej: 15)"
                       className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
                       value={newAccount.dia_corte || ''}
-                      onChange={e => setNewAccount({ ...newAccount, dia_corte: parseInt(e.target.value) })}
+                      onChange={e => setNewAccount({ ...newAccount, dia_corte: e.target.value ? parseInt(e.target.value.replace(/\D/g, '')) || undefined : undefined })}
                     />
                   </div>
                 )}
@@ -1734,13 +1734,13 @@ export default function InventoryPage() {
                   <div className="mt-2">
                     <label className="text-xs text-slate-400 block mb-1">Día de Corte (Pago al Proveedor)</label>
                     <input
-                      type="number"
-                      min="1"
-                      max="31"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="Día del mes (Ej: 15)"
                       className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
                       value={editingAccount.dia_corte || ''}
-                      onChange={e => setEditingAccount({ ...editingAccount, dia_corte: parseInt(e.target.value) })}
+                      onChange={e => setEditingAccount({ ...editingAccount, dia_corte: e.target.value ? parseInt(e.target.value.replace(/\D/g, '')) || undefined : undefined })}
                     />
                   </div>
                 )}
@@ -1970,9 +1970,11 @@ export default function InventoryPage() {
                           <span className="absolute left-3 top-3 text-slate-500">$</span>
                           <input
                             className="w-full bg-slate-900 border border-violet-500/30 rounded-xl p-3 pl-6 text-white font-bold text-lg focus:border-violet-500 outline-none"
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={saleData.price}
-                            onChange={e => setSaleData({ ...saleData, price: e.target.value })}
+                            onChange={e => setSaleData({ ...saleData, price: e.target.value.replace(/\D/g, '') })}
                           />
                         </div>
                         <p className="text-[10px] text-slate-500 mt-1">El valor se dividirá proporcionalmente en los reportes.</p>
@@ -1985,7 +1987,11 @@ export default function InventoryPage() {
                       <div className="relative">
                         <span className="absolute left-3 top-3 text-slate-500">$</span>
                         <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-6 text-white focus:border-violet-500 outline-none font-bold text-lg"
-                          type="number" value={saleData.price} onChange={e => setSaleData({ ...saleData, price: e.target.value })} />
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={saleData.price}
+                          onChange={e => setSaleData({ ...saleData, price: e.target.value.replace(/\D/g, '') })} />
                       </div>
                     </div>
                   )}

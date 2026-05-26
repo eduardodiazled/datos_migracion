@@ -714,7 +714,15 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     <>
                                         <div>
                                             <label className="block text-xs uppercase text-slate-500 font-bold mb-1">2. Precio Venta</label>
-                                            <input type="number" value={assignPrice} onChange={e => setAssignPrice(e.target.value)} placeholder="Ej: 15000" className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white" />
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                value={assignPrice}
+                                                onChange={e => setAssignPrice(e.target.value.replace(/\D/g, ''))}
+                                                placeholder="Ej: 15000"
+                                                className="w-full bg-slate-950 border border-white/10 rounded-lg p-3 text-white"
+                                            />
                                         </div>
                                         <div>
                                             <label className="block text-xs uppercase text-slate-500 font-bold mb-1">3. Fecha Inicio</label>

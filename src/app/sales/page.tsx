@@ -591,7 +591,14 @@ export default function SalesPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="relative">
                                         <span className="absolute left-3 top-3 text-slate-500">$</span>
-                                        <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition" value={saleForm.price} onChange={e => setSaleForm({ ...saleForm, price: e.target.value })} />
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition"
+                                            value={saleForm.price}
+                                            onChange={e => setSaleForm({ ...saleForm, price: e.target.value.replace(/\D/g, '') })}
+                                        />
                                     </div>
                                     <select className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={saleForm.paymentMethod} onChange={e => setSaleForm({ ...saleForm, paymentMethod: e.target.value })}>
                                         <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
@@ -666,7 +673,15 @@ export default function SalesPage() {
                                     <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Descripción" value={expenseForm.description} onChange={e => setExpenseForm({ ...expenseForm, description: e.target.value })} />
                                 )}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Monto" value={expenseForm.amount} onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value })} />
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                        placeholder="Monto"
+                                        value={expenseForm.amount}
+                                        onChange={e => setExpenseForm({ ...expenseForm, amount: e.target.value.replace(/\D/g, '') })}
+                                    />
                                     <select className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={expenseForm.paymentMethod} onChange={e => setExpenseForm({ ...expenseForm, paymentMethod: e.target.value })}>
                                         <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option>
                                     </select>
@@ -807,7 +822,14 @@ export default function SalesPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
                                             <label className="text-xs text-slate-500">Monto</label>
-                                            <input type="number" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.amount} onChange={e => setEditingTx({ ...editingTx, amount: e.target.value })} />
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                                value={editingTx.amount}
+                                                onChange={e => setEditingTx({ ...editingTx, amount: e.target.value.replace(/\D/g, '') })}
+                                            />
                                         </div>
                                         <div className="space-y-1">
                                             <label className="text-xs text-slate-500">Método</label>
