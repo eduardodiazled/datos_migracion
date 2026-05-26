@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send, ImageIcon } from 'lucide-react'
+import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send, ImageIcon, ChevronDown, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
@@ -119,6 +119,7 @@ export default function InventoryPage() {
 
   // Lifecycle State
   const [expiredAccounts, setExpiredAccounts] = useState<Account[]>([])
+  const [showExpiredList, setShowExpiredList] = useState(false)
   const [replaceData, setReplaceData] = useState({
     email: '',
     password: '',
@@ -873,7 +874,10 @@ export default function InventoryPage() {
 
         {/* --- EXPIRED ACCOUNTS WARNING --- */}
         {expiredAccounts.length > 0 && (
-          <div className="bg-rose-500/10 border border-rose-500/50 p-4 rounded-xl flex items-center justify-between mb-6 animate-in slide-in-from-top-4">
+          <div 
+            onClick={() => setShowExpiredList(!showExpiredList)}
+            className="bg-rose-500/10 border border-rose-500/50 p-4 rounded-xl flex items-center justify-between mb-6 animate-in slide-in-from-top-4 cursor-pointer hover:bg-rose-500/20 transition-colors"
+          >
             <div className="flex items-center gap-3">
               <div className="bg-rose-500/20 p-2 rounded-full">
                 <ShieldAlert className="text-rose-500" size={24} />
@@ -883,32 +887,16 @@ export default function InventoryPage() {
                 <p className="text-rose-300 text-sm">Estas cuentas terminaron hace más de 5 días. Revísalas y archívalas.</p>
               </div>
             </div>
-            <button
-              onClick={() => {
-                // Filter view to show these accounts? Or just open first one?
-                // Simpler: Just filter search to "DESECHABLE" and maybe highlight them? 
-                // Better: Show a mini list inside a modal or toggle a special filter?
-                // Let's just set the searchTerm to a unique ID or similar? 
-                // Or simply filter the current view to only show these IDs.
-                // For now, let's keep it simple: Show them in a Modal LIST or just let user find them?
-                // User said: "alert me... verify... archive".
-                // Let's make this button Open a "Expiring Review Modal"
-                // Actually, I can just render them right here in the banner if it's small list, or toggle filter.
-
-                // Let's toggle a special Mode or just filter the main list?
-                // Actually, let's just make the banner expandable?
-                // No, let's use the Search to find them? No that's hacky.
-                // Let's add a "Quick Action" block right here.
-              }}
-              className="hidden" // Hiding for now, will implement direct list below
-            ></button>
+            <div className="text-slate-400 hover:text-white p-2 transition">
+              {showExpiredList ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+            </div>
           </div>
         )}
 
-        {expiredAccounts.length > 0 && (
-          <div className="space-y-2 mb-8">
+        {expiredAccounts.length > 0 && showExpiredList && (
+          <div className="space-y-2 mb-8 animate-in fade-in duration-200">
             {expiredAccounts.map(acc => (
-              <div key={acc.id} className="bg-slate-900 border border-rose-500/30 p-3 rounded-xl flex justify-between items-center">
+              <div key={acc.id} className="bg-slate-900 border border-rose-500/30 p-3 rounded-xl flex justify-between items-center animate-in slide-in-from-top-2 duration-200">
                 <div className="flex items-center gap-3">
                   <div className="text-rose-400 font-bold">{acc.servicio}</div>
                   <div className="text-slate-500 text-xs">{acc.email}</div>
