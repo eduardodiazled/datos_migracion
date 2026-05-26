@@ -1868,7 +1868,7 @@ export default function InventoryPage() {
         showSellModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
             <div
-              className={`glass-panel p-6 rounded-3xl w-full ${selectedItems.length > 1 ? 'max-w-2xl' : 'max-w-sm'} border border-white/10 shadow-2xl bg-slate-900 transition-all`}
+              className={`glass-panel p-6 rounded-3xl w-full ${selectedItems.length > 1 ? 'max-w-2xl' : 'max-w-sm'} border border-white/10 shadow-2xl bg-slate-900 transition-all max-h-[85dvh] overflow-y-auto custom-scrollbar`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-start mb-6">
@@ -1888,7 +1888,7 @@ export default function InventoryPage() {
                   <div>
                     <label className="text-xs text-slate-400 block mb-1">Celular Cliente (ID)</label>
                     <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                      value={saleData.phone} onChange={e => handlePhoneChange(e.target.value)} placeholder="3001234567" autoFocus />
+                      value={saleData.phone} onChange={e => handlePhoneChange(e.target.value)} placeholder="3001234567" />
                   </div>
                   <div>
                     <label className="text-xs text-slate-400 block mb-1">Nombre Cliente</label>
@@ -2005,7 +2005,7 @@ export default function InventoryPage() {
       {showAssignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 text-left">
           <div
-            className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
+            className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900 max-h-[85dvh] overflow-y-auto custom-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-bold text-white mb-2">Asignar Manualmente</h3>
@@ -2019,7 +2019,6 @@ export default function InventoryPage() {
                     value={assignData.name}
                     onChange={e => handleClientSearch(e.target.value)}
                     placeholder="Buscar cliente..."
-                    autoFocus
                   />
                   {clientSearchResults.length > 0 && (
                     <div className="absolute top-full left-0 right-0 bg-slate-900 border border-white/10 rounded-xl mt-1 max-h-40 overflow-y-auto z-50 shadow-xl">
@@ -2073,7 +2072,7 @@ export default function InventoryPage() {
       {showReplaceModal && replacingAccount && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
           <div
-            className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
+            className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900 max-h-[85dvh] overflow-y-auto custom-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-bold text-white mb-4">Reponer Cuenta</h3>
@@ -2100,7 +2099,7 @@ export default function InventoryPage() {
       {showMigrateModal && profileToMigrate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-in fade-in">
           <div
-            className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900"
+            className="glass-panel p-6 rounded-3xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900 max-h-[85dvh] overflow-y-auto custom-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-bold text-white mb-2">Migrar Cliente</h3>
