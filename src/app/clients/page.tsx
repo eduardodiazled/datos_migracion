@@ -89,7 +89,7 @@ export default function ClientsPage() {
 
     const handleWhatsApp = (phone: string, name: string, days: number, service: string) => {
         const message = MessageGenerator.generate('REMINDER', { clientName: name, service, daysLeft: days })
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message).replace(/%2B/g, '%252B').replace(/%26/g, '%2526')}`, '_blank')
     }
 
     const handleReceipt = (client: any) => console.log(client)
@@ -297,7 +297,7 @@ export default function ClientsPage() {
                                                         const msg = alert.type === 'SHORTFALL'
                                                             ? `Hola ${alert.clientName}, ${serviceText} requiere(n) un cambio técnico urgente. ¿Tienes un momento?`
                                                             : `Hola ${alert.clientName}, ${serviceText} vence(n) pronto. Recuerda renovar para seguir disfrutando.`
-                                                        window.open(`https://wa.me/${alert.phone}?text=${encodeURIComponent(msg)}`, '_blank')
+                                                        window.open(`https://wa.me/${alert.phone}?text=${encodeURIComponent(msg).replace(/%2B/g, '%252B').replace(/%26/g, '%2526')}`, '_blank')
                                                     }}
                                                     className="w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold py-4 rounded-xl transition flex items-center justify-center gap-2 relative overflow-hidden group"
                                                 >
@@ -770,10 +770,10 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                     <Copy size={18} /> Copiar
                                 </button>
                                 <a
-                                    href={`https://wa.me/${successData.phone}?text=${encodeURIComponent(successData.message)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition"
+                                                    href={`https://wa.me/${successData.phone}?text=${encodeURIComponent(successData.message).replace(/%2B/g, '%252B').replace(/%26/g, '%2526')}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition"
                                 >
                                     <Send size={18} /> Enviar
                                 </a>

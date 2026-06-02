@@ -165,7 +165,7 @@ export default function Dashboard() {
     // Helper to generate WhatsApp Link
     const getWhatsAppLink = (client: any) => {
         const message = `Hola ${client.name}, tu servicio de ${client.service} vence pronto. Por favor realiza el pago para renovar.`
-        return `https://wa.me/57${client.phone}?text=${encodeURIComponent(message)}`
+        return `https://wa.me/57${client.phone}?text=${encodeURIComponent(message).replace(/%2B/g, '%252B').replace(/%26/g, '%2526')}`
     }
 
     return (
