@@ -78,10 +78,13 @@ export async function POST(request: Request) {
                 where: { id: newProfile.id },
                 data: { estado: 'OCUPADO' }
             }),
-            // Update Transaction
+            // Update Transaction to new profile and new account
             prisma.transaction.update({
                 where: { id: transaction.id },
-                data: { perfilId: newProfile.id }
+                data: { 
+                    perfilId: newProfile.id,
+                    accountId: newProfile.accountId
+                }
             })
         ])
 

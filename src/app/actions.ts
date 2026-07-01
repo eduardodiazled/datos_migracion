@@ -1259,7 +1259,10 @@ export async function applyWarrantySwap(currentProfileId: number, targetProfileI
             ...(transaction ? [
                 prisma.transaction.update({
                     where: { id: transaction.id },
-                    data: { perfilId: newProfile.id }
+                    data: { 
+                        perfilId: newProfile.id,
+                        accountId: newProfile.accountId
+                    }
                 })
             ] : [])
         ])
@@ -2647,10 +2650,13 @@ export async function migrateProfile(oldProfileId: number, newProfileId: number,
 
         // 2. Perform Migration (Atomic Transaction)
         await prisma.$transaction(async (tx) => {
-            // Update Transaction to new profile
+            // Update Transaction to new profile and new account
             await tx.transaction.update({
                 where: { id: activeTransaction.id },
-                data: { perfilId: newProfileId }
+                data: { 
+                    perfilId: newProfileId,
+                    accountId: newProfile.accountId
+                }
             })
 
             // Update Old Profile -> LIBRE (Wait for Revive logic to handle PIN if needed, but here we just free it)

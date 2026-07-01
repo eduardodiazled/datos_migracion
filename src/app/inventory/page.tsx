@@ -9,6 +9,7 @@ import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount,
 import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
+import { getWhatsAppUrl } from '@/lib/whatsappUtils'
 
 // Types
 type Profile = {
@@ -2232,7 +2233,7 @@ export default function InventoryPage() {
                 <Copy size={18} /> Copiar
               </button>
               <a
-                href={`https://wa.me/${saleData.phone}?text=${encodeURIComponent(successData.message).replace(/%2B/g, '%252B').replace(/%26/g, '%2526')}`}
+                href={getWhatsAppUrl(saleData.phone, successData.message)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition"

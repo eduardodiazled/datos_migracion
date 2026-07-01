@@ -9,7 +9,7 @@ export async function GET() {
           orderBy: { id: 'asc' },
           include: {
             transactions: {
-              orderBy: { createdAt: 'desc' },
+              orderBy: { fecha_vencimiento: 'desc' },
               take: 1,
               include: { client: true }
             }
