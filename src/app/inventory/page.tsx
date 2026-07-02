@@ -2258,23 +2258,43 @@ export default function InventoryPage() {
                         scale: 2, // Improve quality
                         useCORS: true // Ensure images load
                       }).then(canvas => {
-                        try {
-                          const link = document.createElement('a')
-                          link.download = `Recibo_${saleData.phone || 'Venta'}.png`
-                          link.href = canvas.toDataURL('image/png')
-                          document.body.appendChild(link)
-                          link.click()
-                          document.body.removeChild(link)
-                          toast.success('📸 Recibo generado')
-                        } catch (e) {
-                          console.error(e)
-                          toast.error('Error descarga')
-                        } finally {
+                        canvas.toBlob(async (blob) => {
+                          if (!blob) throw new Error('Canvas Empty')
+                          const file = new File([blob], `Recibo_${saleData.phone || 'Venta'}.png`, { type: 'image/png' })
+
+                          // 1. Try Native Share (for mobile PWAs)
+                          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                            try {
+                              await navigator.share({
+                                files: [file],
+                                title: 'Recibo de Venta',
+                                text: 'Aquí tienes tu recibo de venta.'
+                              })
+                              toast.success('Compartido con éxito')
+                            } catch (err) {
+                              console.log('Share canceled or failed', err)
+                            }
+                          } else {
+                            // 2. Fallback Download (for desktop browsers)
+                            try {
+                              const link = document.createElement('a')
+                              link.download = `Recibo_${saleData.phone || 'Venta'}.png`
+                              link.href = canvas.toDataURL('image/png')
+                              document.body.appendChild(link)
+                              link.click()
+                              document.body.removeChild(link)
+                              toast.success('📸 Recibo descargado')
+                            } catch (e) {
+                              console.error(e)
+                              toast.error('Error descarga')
+                            }
+                          }
+
                           if (btn) {
                             btn.disabled = false;
                             btn.innerText = 'Compartir Recibo';
                           }
-                        }
+                        }, 'image/png')
                       }).catch(err => {
                         console.error(err)
                         toast.error("Error generando imagen")

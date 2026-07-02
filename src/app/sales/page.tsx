@@ -306,10 +306,36 @@ export default function SalesPage() {
         setTimeout(() => {
             if (invoiceRef.current) {
                 html2canvas(invoiceRef.current, { backgroundColor: '#111' }).then(canvas => {
-                    const link = document.createElement('a')
-                    link.download = `Factura_${tx.client}_${tx.id}.png`
-                    link.href = canvas.toDataURL()
-                    link.click()
+                    canvas.toBlob(async (blob) => {
+                        if (!blob) throw new Error('Canvas Empty')
+                        const file = new File([blob], `Factura_${tx.client}_${tx.id}.png`, { type: 'image/png' })
+
+                        // 1. Try Native Share (for mobile PWAs)
+                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                            try {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'Factura',
+                                    text: `Factura del cliente ${tx.client}`
+                                })
+                            } catch (e) {
+                                console.log('Share canceled or failed', e)
+                            }
+                        } else {
+                            // 2. Fallback Download (for desktop browsers)
+                            try {
+                                const link = document.createElement('a')
+                                link.download = `Factura_${tx.client}_${tx.id}.png`
+                                link.href = canvas.toDataURL()
+                                link.click()
+                            } catch (e) {
+                                console.error(e)
+                            }
+                        }
+                        setInvoiceData(null)
+                    }, 'image/png')
+                }).catch(err => {
+                    console.error(err)
                     setInvoiceData(null)
                 })
             }
