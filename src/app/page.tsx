@@ -56,11 +56,10 @@ function PortalContent() {
       })
     }
   }, [searchParams])
-
-  const handleRequestCode = async (e: React.FormEvent) => {
+    const handleRequestCode = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (!phone || phone.length < 7) return setError('Número celular inválido')
+    if (!phone || phone.trim().length < 3) return setError('Número celular o usuario inválido')
 
     setLoading(true)
     const res = await requestLoginCode(phone)
@@ -183,14 +182,14 @@ function PortalContent() {
                     <Lock size={28} />
                   </div>
                   <h2 className="text-3xl font-bold text-white mb-2">Bienvenido</h2>
-                  <p className="text-slate-400 text-base">Ingresa tu celular para acceder.</p>
+                  <p className="text-slate-400 text-base">Ingresa tu celular o usuario para acceder.</p>
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-bold text-slate-500 uppercase ml-1 tracking-wider">Número Celular</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase ml-1 tracking-wider">Celular / Usuario WhatsApp</label>
                   <input
-                    type="tel"
-                    placeholder="300 123 4567"
+                    type="text"
+                    placeholder="300 123 4567 o @usuario"
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     className="w-full bg-[#050511] border border-white/10 rounded-xl px-5 py-5 text-white text-xl placeholder:text-slate-700 focus:outline-none focus:border-emerald-500/50 transition-all font-mono"

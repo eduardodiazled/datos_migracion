@@ -175,17 +175,15 @@ export default function InventoryPage() {
   }, [])
 
   const handlePhoneChange = async (val: string) => {
-    // Allow only numbers
-    const cleanVal = val.replace(/\D/g, '')
+    // Allow numbers and usernames
+    const cleanVal = val.trim()
     setSaleData(prev => ({ ...prev, phone: cleanVal }))
 
-    // Search if length > 6
-    if (cleanVal.length > 6) {
+    // Search if length > 2
+    if (cleanVal.length > 2) {
       const clients = await searchClients(cleanVal)
       if (clients && clients.length > 0) {
-        // Exact match or best match?
-        // searchClients returns regex match. Let's find exact or first.
-        const found = clients.find(c => c.celular.includes(cleanVal)) || clients[0]
+        const found = clients.find(c => c.celular.toLowerCase() === cleanVal.toLowerCase() || c.celular.includes(cleanVal)) || clients[0]
         if (found) {
           setSaleData(prev => ({ ...prev, name: found.nombre }))
         }
@@ -1887,9 +1885,9 @@ export default function InventoryPage() {
                 {/* LEFT: CLIENT INFO */}
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-slate-400 block mb-1">Celular Cliente (ID)</label>
+                    <label className="text-xs text-slate-400 block mb-1">Celular / Usuario WhatsApp (ID)</label>
                     <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                      value={saleData.phone} onChange={e => handlePhoneChange(e.target.value)} placeholder="3001234567" />
+                      value={saleData.phone} onChange={e => handlePhoneChange(e.target.value)} placeholder="3001234567 o @usuario" />
                   </div>
                   <div>
                     <label className="text-xs text-slate-400 block mb-1">Nombre Cliente</label>
@@ -2036,9 +2034,9 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-slate-400 block mb-1">Celular Cliente</label>
+                <label className="text-xs text-slate-400 block mb-1">Celular / Usuario WhatsApp</label>
                 <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                  value={assignData.phone} onChange={e => setAssignData({ ...assignData, phone: e.target.value })} placeholder="3001234567" />
+                  value={assignData.phone} onChange={e => setAssignData({ ...assignData, phone: e.target.value })} placeholder="3001234567 o @usuario" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

@@ -24,8 +24,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
         }
 
-        // Sanitize phone (simple version, full logic in migration/frontend)
-        const sanitizedPhone = celular.replace(/\D/g, '')
+        // Sanitize phone/username (preserve string for handles or numbers)
+        const sanitizedPhone = celular.trim()
 
         const client = await prisma.client.create({
             data: {

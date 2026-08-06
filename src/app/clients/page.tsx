@@ -59,8 +59,8 @@ export default function ClientsPage() {
                 if (searchDigits.length > 0 && clientDigits.includes(searchDigits)) return true
                 if (searchDigitsNoPrefix.length >= 3 && clientDigits.includes(searchDigitsNoPrefix)) return true
 
-                // Fallback for raw string match (rare but safe)
-                if (c.phone && c.phone.includes(lowSearch)) return true
+                // Fallback for raw string / username match
+                if (c.phone && c.phone.toLowerCase().includes(lowSearch)) return true
 
                 return false
             }))
@@ -171,7 +171,7 @@ export default function ClientsPage() {
                     <Search className="absolute left-3 top-3 text-slate-500" size={18} />
                     <input
                         type="text"
-                        placeholder="Buscar cliente (Nombre, Celular...)"
+                        placeholder="Buscar cliente (Nombre, Celular, @usuario...)"
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         className="bg-slate-900 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white outline-none focus:border-violet-500 w-full md:w-96"

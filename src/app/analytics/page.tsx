@@ -357,7 +357,7 @@ export default function AnalyticsPage() {
                             <label className="text-xs text-slate-500 ml-1">Buscar Cliente</label>
                             <div className="relative">
                                 <Search size={16} className="absolute left-3 top-3 text-slate-500" />
-                                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-9 text-white outline-none focus:border-violet-500 transition" placeholder="Nombre o Celular..." value={searchTerm}
+                                <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-9 text-white outline-none focus:border-violet-500 transition" placeholder="Nombre, Celular o @usuario..." value={searchTerm}
                                     onChange={e => { setSearchTerm(e.target.value); setSaleForm({ ...saleForm, clientName: e.target.value }) }} />
                                 {showResults && searchResults.length > 0 && (
                                     <div className="absolute top-full left-0 right-0 mt-1 bg-slate-900 border border-white/10 rounded-xl shadow-xl overflow-hidden z-[100]">
@@ -373,7 +373,7 @@ export default function AnalyticsPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Celular" value={saleForm.clientId} onChange={e => setSaleForm({ ...saleForm, clientId: e.target.value })} />
+                            <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Celular o @usuario" value={saleForm.clientId} onChange={e => setSaleForm({ ...saleForm, clientId: e.target.value })} />
                             <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Nombre" value={saleForm.clientName} onChange={e => setSaleForm({ ...saleForm, clientName: e.target.value })} />
                         </div>
 

@@ -572,11 +572,11 @@ export default function SalesPage() {
                                 {/* Client Search */}
                                 <div className="space-y-1 relative z-20">
                                     <label className="text-xs text-slate-500 ml-1">Cliente</label>
-                                    <div className="relative">
+                                     <div className="relative">
                                         <Search size={16} className="absolute left-3 top-3 text-slate-500" />
                                         <input
                                             className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-9 text-white outline-none focus:border-violet-500 transition"
-                                            placeholder="Buscar por nombre o celular..."
+                                            placeholder="Buscar por nombre, celular o @usuario..."
                                             value={searchTerm}
                                             onChange={e => { setSearchTerm(e.target.value); setSaleForm({ ...saleForm, clientName: e.target.value }) }}
                                         />
@@ -594,7 +594,7 @@ export default function SalesPage() {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Celular" value={saleForm.clientId} onChange={e => setSaleForm({ ...saleForm, clientId: e.target.value })} />
+                                    <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Celular o @usuario" value={saleForm.clientId} onChange={e => setSaleForm({ ...saleForm, clientId: e.target.value })} />
                                     <input className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" placeholder="Nombre" value={saleForm.clientName} onChange={e => setSaleForm({ ...saleForm, clientName: e.target.value })} />
                                 </div>
 
@@ -830,7 +830,7 @@ export default function SalesPage() {
                                             {/* Client Edit logic continues... */}
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-1">
-                                                    <label className="text-xs text-slate-500">Celular Cliente</label>
+                                                    <label className="text-xs text-slate-500">Celular / Usuario WhatsApp</label>
                                                     <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.clientId || ''} onChange={e => setEditingTx({ ...editingTx, clientId: e.target.value })} />
                                                 </div>
                                                 <div className="space-y-1">

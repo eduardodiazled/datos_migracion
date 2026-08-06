@@ -994,24 +994,41 @@ export async function getAvailableInventory() {
 // --- CLIENT AUTOCOMPLETE ---
 export async function getClientByPhone(phone: string) {
     try {
-        if (!phone || phone.length < 6) return null
+        if (!phone || phone.trim().length < 3) return null
 
-        const cleanPhone = phone.replace(/\D/g, '')
-        const searchSuffix = cleanPhone.slice(-6)
+        const trimInput = phone.trim()
+        const hasLetters = /[a-zA-Z]/.test(trimInput) || trimInput.startsWith('@')
+        let match: { nombre: string, celular: string } | null = null
 
-        // Find matches
-        const clients = await prisma.client.findMany({
-            where: { celular: { contains: searchSuffix } },
-            select: { nombre: true, celular: true },
-            orderBy: { createdAt: 'desc' }, // Prefer most recent
-            take: 5
-        })
+        if (hasLetters) {
+            const cleanQuery = trimInput.replace(/^@/, '')
+            match = await prisma.client.findFirst({
+                where: {
+                    OR: [
+                        { celular: { equals: trimInput, mode: 'insensitive' } },
+                        { celular: { equals: cleanQuery, mode: 'insensitive' } },
+                        { celular: { equals: `@${cleanQuery}`, mode: 'insensitive' } }
+                    ]
+                },
+                select: { nombre: true, celular: true }
+            })
+        } else {
+            const cleanPhone = trimInput.replace(/\D/g, '')
+            if (!cleanPhone) return null
+            const searchSuffix = cleanPhone.slice(-6)
 
-        // Strict filter
-        const match = clients.find(c => {
-            const dbClean = c.celular.replace(/\D/g, '')
-            return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
-        })
+            const clients = await prisma.client.findMany({
+                where: { celular: { contains: searchSuffix } },
+                select: { nombre: true, celular: true },
+                orderBy: { createdAt: 'desc' }, // Prefer most recent
+                take: 5
+            })
+
+            match = clients.find(c => {
+                const dbClean = c.celular.replace(/\D/g, '')
+                return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
+            }) || null
+        }
 
         if (match) return match.nombre
         return null
@@ -2057,52 +2074,68 @@ export async function getPublicStats() {
 
 export async function getClientPortalData(phone: string) {
     try {
-
-        // Clean phone number (remove non-digits)
-        const cleanPhone = phone.replace(/\D/g, '')
-
-        if (cleanPhone.length < 7) {
-            return { success: false, message: 'Número inválido. Ingresa al menos 7 dígitos.' }
+        if (!phone || phone.trim().length < 3) {
+            return { success: false, message: 'Identificador inválido. Ingresa tu celular o usuario.' }
         }
 
-        // Robust Search Strategy:
-        // 1. Search by last 6 digits (High probability of hit, low false positives)
-        // 2. Filter results in memory by strictly comparing sanitized numbers
-        const searchSuffix = cleanPhone.slice(-6)
+        const inputStr = phone.trim()
+        const hasLetters = /[a-zA-Z]/.test(inputStr) || inputStr.startsWith('@')
+        let client: any = null
 
-        const potentialClients = await prisma.client.findMany({
-            where: {
-                celular: {
-                    contains: searchSuffix
-                }
-            },
-            include: {
-                transactions: {
-                    include: {
-                        profile: {
-                            include: {
-                                account: {
-                                    include: { perfiles: true }
+        if (hasLetters) {
+            const cleanHandle = inputStr.replace(/^@/, '')
+            client = await prisma.client.findFirst({
+                where: {
+                    OR: [
+                        { celular: { equals: inputStr, mode: 'insensitive' } },
+                        { celular: { equals: cleanHandle, mode: 'insensitive' } },
+                        { celular: { equals: `@${cleanHandle}`, mode: 'insensitive' } }
+                    ]
+                },
+                include: {
+                    transactions: {
+                        include: {
+                            profile: {
+                                include: {
+                                    account: {
+                                        include: { perfiles: true }
+                                    }
                                 }
                             }
-                        }
-                    },
-                    orderBy: {
-                        createdAt: 'desc'
+                        },
+                        orderBy: { createdAt: 'desc' }
                     }
                 }
+            })
+        } else {
+            const cleanPhone = inputStr.replace(/\D/g, '')
+            if (cleanPhone.length >= 6) {
+                const searchSuffix = cleanPhone.slice(-6)
+                const potentialClients = await prisma.client.findMany({
+                    where: { celular: { contains: searchSuffix } },
+                    include: {
+                        transactions: {
+                            include: {
+                                profile: {
+                                    include: {
+                                        account: {
+                                            include: { perfiles: true }
+                                        }
+                                    }
+                                }
+                            },
+                            orderBy: { createdAt: 'desc' }
+                        }
+                    }
+                })
+                client = potentialClients.find(c => {
+                    const dbClean = c.celular.replace(/\D/g, '')
+                    return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
+                })
             }
-        })
+        }
 
-        // Find the specific client where the full sanitized number matches
-        const client = potentialClients.find(c => {
-            const dbClean = c.celular.replace(/\D/g, '')
-            // Check if one contains the other (handling country codes +57 vs local)
-            return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
-        })
-
-        if (!client) return { success: false, message: 'Cliente no encontrado. Verifica si el número es correcto.' }
-
+        if (!client) return { success: false, message: 'Cliente no encontrado. Verifica si el celular o usuario es correcto.' }
 
         // Explicitly casting to any to bypass inference complexities in this huge file
         const clientData = client as any
@@ -2130,18 +2163,16 @@ export async function getClientPortalData(phone: string) {
             return {
                 id: mainFn.id, // Use ID of first tx
                 serviceName: account?.servicio || 'Servicio',
-                // Title Logic: "Cuenta Completa" if full, otherwise "Perfil X" or "Multipantalla"
                 profileName: isComplete ? 'Cuenta Completa 👑' : (isGrouped ? `${group.length} Perfiles` : (mainFn.profile?.nombre_perfil || 'Perfil')),
                 email: account?.email || 'N/A',
                 password: account?.password || '***',
-                // If grouped, we need a list of profiles. If single, just one pin.
                 isGrouped,
-                isComplete, // Exposed for UI logic
+                isComplete,
                 profiles: group.map((g: any) => ({
                     name: g.profile?.nombre_perfil || 'Perfil',
                     pin: g.profile?.pin || ''
                 })),
-                pin: isGrouped ? null : (mainFn.profile?.pin || ''), // Backward compat
+                pin: isGrouped ? null : (mainFn.profile?.pin || ''),
                 expirationDate: mainFn.fecha_vencimiento.toISOString(),
                 daysLeft: Math.ceil((new Date(mainFn.fecha_vencimiento).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
                 renewed: false
@@ -2174,21 +2205,38 @@ export async function getClientPortalData(phone: string) {
 
 export async function requestLoginCode(phone: string) {
     try {
-        const cleanPhone = phone.replace(/\D/g, '')
-        if (cleanPhone.length < 7) return { success: false, message: 'Número inválido' }
+        if (!phone || phone.trim().length < 3) return { success: false, message: 'Número o usuario inválido' }
 
-        // Find Client
-        const searchSuffix = cleanPhone.slice(-6)
-        const possibleClients = await prisma.client.findMany({
-            where: { celular: { contains: searchSuffix } }
-        })
-        const client = possibleClients.find(c => {
-            const dbClean = c.celular.replace(/\D/g, '')
-            return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
-        })
+        const inputStr = phone.trim()
+        const hasLetters = /[a-zA-Z]/.test(inputStr) || inputStr.startsWith('@')
+        let client: any = null
+
+        if (hasLetters) {
+            const cleanHandle = inputStr.replace(/^@/, '')
+            client = await prisma.client.findFirst({
+                where: {
+                    OR: [
+                        { celular: { equals: inputStr, mode: 'insensitive' } },
+                        { celular: { equals: cleanHandle, mode: 'insensitive' } },
+                        { celular: { equals: `@${cleanHandle}`, mode: 'insensitive' } }
+                    ]
+                }
+            })
+        } else {
+            const cleanPhone = inputStr.replace(/\D/g, '')
+            if (cleanPhone.length >= 6) {
+                const searchSuffix = cleanPhone.slice(-6)
+                const possibleClients = await prisma.client.findMany({
+                    where: { celular: { contains: searchSuffix } }
+                })
+                client = possibleClients.find(c => {
+                    const dbClean = c.celular.replace(/\D/g, '')
+                    return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
+                })
+            }
+        }
 
         if (!client) {
-            // New Feature: Upsell Flow for non-clients
             return {
                 success: false,
                 isUnknown: true,
@@ -2196,29 +2244,27 @@ export async function requestLoginCode(phone: string) {
             }
         }
 
-        // Generate Code (000000 - 999999)
         const code = Math.floor(100000 + Math.random() * 900000).toString()
-        const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 Minutes (Increased for reliability)
+        const expires = new Date(Date.now() + 10 * 60 * 1000)
 
-        // EMERGENCY LOG FOR DEBUGGING
         console.log(`🔐 OTP Generated for ${client.nombre} (${client.celular}): [ ${code} ]`)
 
-        // Save to DB
         await prisma.client.update({
             where: { celular: client.celular },
             data: { otpCode: code, otpExpires: expires }
         })
 
-        // PREPARE PHONE FOR BOT (Force 57 Colombia Code if missing and looks like mobile)
-        let botPhone = client.celular.replace(/\D/g, '')
-        if (botPhone.length === 10 && botPhone.startsWith('3')) {
-            botPhone = '57' + botPhone
+        let botPhone = client.celular.trim()
+        const isBotNumeric = !/[a-zA-Z]/.test(botPhone) && !botPhone.startsWith('@')
+        if (isBotNumeric) {
+            botPhone = botPhone.replace(/\D/g, '')
+            if (botPhone.length === 10 && botPhone.startsWith('3')) {
+                botPhone = '57' + botPhone
+            }
         }
 
-        // Send via WhatsApp Bot
         const botUrl = process.env.NEXT_PUBLIC_BOT_URL || 'http://localhost:4000'
 
-        // Non-blocking fetch to Bot
         try {
             const botRes = await fetch(`${botUrl}/send-notification`, {
                 method: 'POST',
@@ -2239,10 +2285,8 @@ export async function requestLoginCode(phone: string) {
             }
         } catch (botError: any) {
             console.error('Failed to send WhatsApp code:', botError)
-            // Return specific error to user for debugging
-            // IMPORTANT: In production, this helps identify if URL is unreachable
             const errorMessage = botError.message || 'Error desconocido'
-            const targetUrl = botUrl // Expose the URL being tried
+            const targetUrl = botUrl
             return { success: false, message: `Error contactando al Bot (${targetUrl}): ${errorMessage}` }
         }
 
@@ -2256,30 +2300,45 @@ export async function requestLoginCode(phone: string) {
 
 export async function verifyLoginCode(phone: string, code: string) {
     try {
-        const cleanPhone = phone.replace(/\D/g, '')
+        if (!phone || !code) return { success: false, message: 'Datos incompletos' }
 
-        // Find ALL clients with this phone number (handling duplicates)
-        const searchSuffix = cleanPhone.slice(-6)
-        const possibleClients = await prisma.client.findMany({
-            where: { celular: { contains: searchSuffix } }
-        })
+        const inputStr = phone.trim()
+        const hasLetters = /[a-zA-Z]/.test(inputStr) || inputStr.startsWith('@')
+        let exactMatches: any[] = []
 
-        // Filter strictly by phone digits (to avoid false suffix matches)
-        const exactMatches = possibleClients.filter(c => {
-            const dbClean = c.celular.replace(/\D/g, '')
-            return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
-        })
+        if (hasLetters) {
+            const cleanHandle = inputStr.replace(/^@/, '')
+            exactMatches = await prisma.client.findMany({
+                where: {
+                    OR: [
+                        { celular: { equals: inputStr, mode: 'insensitive' } },
+                        { celular: { equals: cleanHandle, mode: 'insensitive' } },
+                        { celular: { equals: `@${cleanHandle}`, mode: 'insensitive' } }
+                    ]
+                }
+            })
+        } else {
+            const cleanPhone = inputStr.replace(/\D/g, '')
+            if (cleanPhone.length >= 6) {
+                const searchSuffix = cleanPhone.slice(-6)
+                const possibleClients = await prisma.client.findMany({
+                    where: { celular: { contains: searchSuffix } }
+                })
+                exactMatches = possibleClients.filter(c => {
+                    const dbClean = c.celular.replace(/\D/g, '')
+                    return dbClean.includes(cleanPhone) || cleanPhone.includes(dbClean)
+                })
+            }
+        }
 
         if (exactMatches.length === 0) return { success: false, message: 'Cliente no encontrado' }
 
         const inputCode = code.trim()
 
-        // Scan ALL matches to see if ANY has the correct code
-        // This fixes the issue where Client A has the code but we checked Client B
         const validClient = exactMatches.find(c => {
             if (!c.otpCode) return false
             if (c.otpCode.trim() !== inputCode) return false
-            if (c.otpExpires && new Date() > c.otpExpires) return false // Ignore expired
+            if (c.otpExpires && new Date() > c.otpExpires) return false
             return true
         })
 
@@ -2288,14 +2347,12 @@ export async function verifyLoginCode(phone: string, code: string) {
             return { success: false, message: 'Código incorrecto o expirado' }
         }
 
-        // Success! Log in this specific client
-        // Clear Code
         await prisma.client.update({
-            where: { celular: validClient.celular }, // Uses PK
+            where: { celular: validClient.celular },
             data: { otpCode: null, otpExpires: null }
         })
 
-        return { success: true, valid: true } // Removed ID as it confuses frontend if not expecting phone
+        return { success: true, valid: true }
 
     } catch (e: any) {
         console.error('Verify OTP Error', e)
