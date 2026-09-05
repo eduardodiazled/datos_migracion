@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { getPublicStats, requestLoginCode, verifyLoginCode, verifyMagicLink } from './actions'
 import { useSession } from 'next-auth/react'
 import { ArrowRight, Lock, ShieldCheck, Star } from 'lucide-react'
@@ -281,6 +282,12 @@ function PortalContent() {
         </div>
 
       </main >
+
+      <footer className="w-full py-4 text-center z-20">
+        <Link href="/login" className="text-xs text-slate-600 hover:text-slate-400 font-mono transition-colors">
+          🔒 Acceso Administración
+        </Link>
+      </footer>
 
       {/* INLINE STYLES FOR ANIMATION */}
       < style jsx global > {`
