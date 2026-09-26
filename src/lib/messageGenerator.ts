@@ -1,4 +1,3 @@
-
 export type MessageType = 'SALE' | 'WARRANTY' | 'ROTATION' | 'REMINDER' | 'FULL_ACCOUNT_SALE' | 'WELCOME_BOT' | 'COMBO' | 'RENEWAL' | 'MIGRATION'
 
 type MessageData = {
@@ -23,6 +22,7 @@ export const MessageGenerator = {
         const isNetflix = data.service?.toLowerCase().includes('netflix')
         const hasPin = data.pin && data.pin.length > 0
         const hasProfile = data.profileName && data.profileName.length > 0
+        const netflixHelpNote = `📌 *NOTA IMPORTANTE:* Si te pide código al iniciar sesión, por favor dale a la opción *Obtener ayuda* y luego a la opción *Usar contraseña*.`
 
         // Helper to build credential block conditionally
         const buildCredentials = () => {
@@ -46,7 +46,7 @@ Aquí tienes los datos de tu cuenta completa de ${data.service}:
 
 🗓️ Corte: ${data.date}
 
-⚠️ REGLAS DE USO:
+${isNetflix ? `${netflixHelpNote}\n\n` : ''}⚠️ REGLAS DE USO:
 - Puedes administrar los perfiles como desees.
 - NO cambiar el correo de la cuenta.
 - NO cambiar la contraseña de la cuenta (para garantía).
@@ -60,7 +60,7 @@ Tu servicio de ${data.service} ha sido activado/renovado con éxito. ✅ 🗓️
 
 ${buildCredentials()}
 
-⚠️ ADVERTENCIA DE USO:
+${isNetflix ? `${netflixHelpNote}\n\n` : ''}⚠️ ADVERTENCIA DE USO:
 
 NO eliminar perfiles. ❌
 ${hasPin ? 'NO quitar el pin del perfil. ❌\n' : ''}NO compartir información. ❌
@@ -81,7 +81,7 @@ ${buildCredentials()}
 
 Tu fecha de vencimiento se mantiene igual.
 
-${isNetflix ? '📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw' : ''}`
+${isNetflix ? `${netflixHelpNote}\n\n📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw` : ''}`
 
             case 'ROTATION':
                 return `Entiendo ${data.clientName}, a veces los correos de confirmación se demoran. ⏳
@@ -92,7 +92,7 @@ ${buildCredentials()}
 
 Avísame si ya lograste entrar. 👍
 
-${isNetflix ? '📺 Recuerda cerrar la sesión anterior así: https://youtu.be/l5FGGCbZLbw' : ''}`
+${isNetflix ? `${netflixHelpNote}\n\n📺 Recuerda cerrar la sesión anterior así: https://youtu.be/l5FGGCbZLbw` : ''}`
 
             case 'RENEWAL':
                 return `¡Hola ${data.clientName}! 🚀 Gracias por renovar tu servicio.
@@ -101,7 +101,7 @@ Tu cuenta de ${data.service} ha sido extendida con éxito. ✅ 🗓️ Nuevo cor
 
 ${buildCredentials()}
 
-⚠️ RECUERDA:
+${isNetflix ? `${netflixHelpNote}\n\n` : ''}⚠️ RECUERDA:
 - Si tuviste problemas de acceso, intenta cerrar sesión y volver a entrar con estos datos.
 - Mantén el PIN si tu perfil lo tiene.
 
@@ -159,9 +159,14 @@ ${data.magicLink || `${appUrl}/portal?phone=${data.phone}`}
 ¡Gracias por confiar en nosotros!`
 
             case 'COMBO':
-                const itemsList = data.items?.map(i =>
-                    `📺 *${i.service}*: ${i.email}\n🔑: ${i.password}\n📌 Perfil: ${i.profile} ${i.pin ? `(PIN: ${i.pin})` : ''}`
-                ).join('\n\n------------------\n\n')
+                const itemsList = data.items?.map(i => {
+                    const itemIsNetflix = i.service.toLowerCase().includes('netflix')
+                    let itemText = `📺 *${i.service}*: ${i.email}\n🔑: ${i.password}\n📌 Perfil: ${i.profile} ${i.pin ? `(PIN: ${i.pin})` : ''}`
+                    if (itemIsNetflix) {
+                        itemText += `\n${netflixHelpNote}`
+                    }
+                    return itemText
+                }).join('\n\n------------------\n\n')
 
                 return `¡Hola ${data.clientName}! 🚀 Gracias por tu compra del Combo.
                 
@@ -205,10 +210,9 @@ ${buildCredentials()}
 
 Tu fecha de vencimiento y días restantes se mantienen intactos. 🗓️
 
-${isNetflix ? '📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw' : ''}
+${isNetflix ? `${netflixHelpNote}\n\n📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw` : ''}
 
 ¡Gracias por tu paciencia! 🙏`
-
 
             default:
                 return ''
