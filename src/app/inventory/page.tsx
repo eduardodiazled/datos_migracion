@@ -48,7 +48,7 @@ const DEFAULT_PRICES: Record<string, number> = {
   'hbo': 11000,
   'prime': 11000,
   'amazon': 11000,
-  'paramount': 20000,
+  'paramount': 15000,
   'youtube': 13000,
   'spotify': 13000,
   'crunchyroll': 11000,
