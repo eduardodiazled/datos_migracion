@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical, EyeOff } from 'lucide-react'
+import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical, EyeOff, Copy } from 'lucide-react'
 import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders } from '../actions'
 import html2canvas from 'html2canvas'
+import { MessageGenerator } from '@/lib/messageGenerator'
 
 import { signOut } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -348,6 +349,86 @@ export default function SalesPage() {
         setSearchResults([])
     }
 
+    const handleCopySaleMessage = async (item: any) => {
+        try {
+            let message = ''
+
+            if (item.isCombo) {
+                // Combo: needs items with full credentials
+                const validItems = item.items?.filter((i: any) => i.email && i.password)
+                if (!validItems || validItems.length === 0) {
+                    toast.error('No hay credenciales guardadas para generar el mensaje de este combo.')
+                    return
+                }
+                const comboItems = validItems.map((i: any) => ({
+                    service: i.service,
+                    email: i.email,
+                    password: i.password,
+                    profile: i.name,
+                    pin: i.pin || null
+                }))
+                const expirationDate = item.endDate
+                    ? new Date(item.endDate).toLocaleDateString('es-CO')
+                    : '—'
+
+                message = MessageGenerator.generate('COMBO', {
+                    clientName: item.client,
+                    items: comboItems,
+                    expirationDate
+                })
+            } else {
+                // Simple sale: needs email + password at minimum
+                if (!item.email || !item.password) {
+                    toast.error('Esta venta no tiene credenciales guardadas (puede ser una venta libre o antigua).')
+                    return
+                }
+                // Detect if it's a full account sale (no specific profileId, or description says Cuenta Completa)
+                const isFullAccount = !item.profileId || item.description?.toLowerCase().includes('cuenta completa')
+                const saleDate = item.endDate
+                    ? new Date(item.endDate).toLocaleDateString('es-CO')
+                    : new Date(item.date).toLocaleDateString('es-CO')
+
+                if (isFullAccount) {
+                    message = MessageGenerator.generate('FULL_ACCOUNT_SALE', {
+                        clientName: item.client,
+                        service: item.category,
+                        email: item.email,
+                        password: item.password,
+                        date: saleDate
+                    })
+                } else {
+                    // Extract profile name from profileName field (format: "Servicio - Perfil")
+                    const profileNameRaw = item.profileName || ''
+                    const profileName = profileNameRaw.includes(' - ')
+                        ? profileNameRaw.split(' - ').slice(1).join(' - ')
+                        : profileNameRaw
+                    const service = item.category || profileNameRaw
+
+                    message = MessageGenerator.generate('SALE', {
+                        clientName: item.client,
+                        service,
+                        email: item.email,
+                        password: item.password,
+                        pin: item.pin || null,
+                        profileName,
+                        date: saleDate
+                    })
+                }
+            }
+
+            if (!message || message.trim() === '') {
+                toast.error('No se pudo generar el mensaje. Verifica los datos de la venta.')
+                return
+            }
+
+            await navigator.clipboard.writeText(message)
+            toast.success('✅ Mensaje copiado al portapapeles')
+        } catch (err) {
+            console.error('Copy message error:', err)
+            toast.error('Error al copiar el mensaje. Intenta de nuevo.')
+        }
+    }
+
     return (
         <div className="min-h-screen bg-slate-950 pb-20 md:pb-0 font-sans select-none">
             <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
@@ -527,9 +608,14 @@ export default function SalesPage() {
                                     </div>
                                     <div className="flex justify-end gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         {item.type === 'INGRESO' && (
-                                            <button onClick={() => generateInvoice(item)} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition" title="Descargar Factura">
-                                                <Download size={14} />
-                                            </button>
+                                            <>
+                                                <button onClick={() => generateInvoice(item)} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition" title="Descargar Factura">
+                                                    <Download size={14} />
+                                                </button>
+                                                <button onClick={() => handleCopySaleMessage(item)} className="p-1.5 bg-violet-500/10 hover:bg-violet-500/20 rounded-lg text-violet-400 hover:text-violet-300 transition" title="Copiar mensaje al cliente">
+                                                    <Copy size={14} />
+                                                </button>
+                                            </>
                                         )}
                                         <button onClick={() => { setEditingTx({ ...item, newProfileId: item.profileId || null }); setShowEditModal(true) }} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition" title="Editar">
                                             <Edit2 size={14} />

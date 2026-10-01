@@ -658,8 +658,16 @@ export async function getFullHistory(year?: number, month?: number) {
                     items: groupItems.map(i => ({
                         service: i.profile?.account?.servicio || 'Venta Libre',
                         name: i.profile?.nombre_perfil || '-',
-                        price: i.monto
-                    }))
+                        price: i.monto,
+                        // Credential fields for message regeneration
+                        email: i.profile?.account?.email || null,
+                        password: i.profile?.account?.password || null,
+                        pin: i.profile?.pin || null
+                    })),
+                    // No single-profile credentials for combos (use items[])
+                    email: null,
+                    password: null,
+                    pin: null
                 })
             } else {
                 formattedTransactions.push({
@@ -678,7 +686,11 @@ export async function getFullHistory(year?: number, month?: number) {
                     isCombo: false,
                     groupId: null,
                     items: [],
-                    endDate: tx.fecha_vencimiento
+                    endDate: tx.fecha_vencimiento,
+                    // Credential fields for message regeneration
+                    email: tx.profile?.account?.email || null,
+                    password: tx.profile?.account?.password || null,
+                    pin: tx.profile?.pin || null
                 })
             }
         }
