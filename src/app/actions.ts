@@ -1369,12 +1369,30 @@ export async function updateTransaction(id: number, data: {
             })
         }
 
-        if (data.profileId) {
-            updateData.perfilId = data.profileId
-            await prisma.salesProfile.update({
-                where: { id: data.profileId },
-                data: { estado: 'OCUPADO' }
-            })
+        if (data.profileId !== undefined) {
+            if (data.profileId) {
+                // Free previous profile if it changed
+                if (currentTx.perfilId && currentTx.perfilId !== data.profileId) {
+                    await prisma.salesProfile.update({
+                        where: { id: currentTx.perfilId },
+                        data: { estado: 'LIBRE' }
+                    })
+                }
+                updateData.perfilId = data.profileId
+                await prisma.salesProfile.update({
+                    where: { id: data.profileId },
+                    data: { estado: 'OCUPADO' }
+                })
+            } else {
+                // Profile set to null / Venta Libre: free previous profile
+                if (currentTx.perfilId) {
+                    await prisma.salesProfile.update({
+                        where: { id: currentTx.perfilId },
+                        data: { estado: 'LIBRE' }
+                    })
+                }
+                updateData.perfilId = null
+            }
         }
 
         // --- COMBO LOGIC: If updating price of a group, set others to 0 to avoid inflation ---
@@ -1439,42 +1457,51 @@ export async function deleteTransaction(id: number, type: string = 'INGRESO') {
 
         if (!tx) return { success: false, error: 'Transaction not found' }
 
-        // CHECK IF COMBO
-        if (tx.groupId) {
-            const groupTxs = await prisma.transaction.findMany({ where: { groupId: tx.groupId } })
+        // Execute in an ATOMIC transaction with rollback if anything fails
+        await prisma.$transaction(async (prismaTx) => {
+            if (tx.groupId) {
+                const groupTxs = await prismaTx.transaction.findMany({
+                    where: { groupId: tx.groupId }
+                })
 
-            // Release all profiles in group
-            for (const gTx of groupTxs) {
-                if (gTx.perfilId) {
-                    await prisma.salesProfile.update({
-                        where: { id: gTx.perfilId },
+                // Release all profiles/accounts in group
+                for (const gTx of groupTxs) {
+                    if (gTx.perfilId) {
+                        await prismaTx.salesProfile.update({
+                            where: { id: gTx.perfilId },
+                            data: { estado: 'LIBRE' }
+                        })
+                    } else if (gTx.accountId) {
+                        await prismaTx.salesProfile.updateMany({
+                            where: { accountId: gTx.accountId },
+                            data: { estado: 'LIBRE' }
+                        })
+                    }
+                }
+
+                // Delete all transactions in group
+                await prismaTx.transaction.deleteMany({
+                    where: { groupId: tx.groupId }
+                })
+            } else {
+                // SINGLE TRANSACTION: Release profile or account
+                if (tx.perfilId) {
+                    await prismaTx.salesProfile.update({
+                        where: { id: tx.perfilId },
+                        data: { estado: 'LIBRE' }
+                    })
+                } else if (tx.accountId) {
+                    await prismaTx.salesProfile.updateMany({
+                        where: { accountId: tx.accountId },
                         data: { estado: 'LIBRE' }
                     })
                 }
-            }
 
-            // Delete all transactions in group
-            await prisma.transaction.deleteMany({
-                where: { groupId: tx.groupId }
-            })
-        } else {
-            // SINGLE TRANSACTION
-            if (tx.perfilId) {
-                await prisma.salesProfile.update({
-                    where: { id: tx.perfilId },
-                    data: { estado: 'LIBRE' }
-                })
-            } else if (tx.accountId) {
-                await prisma.salesProfile.updateMany({
-                    where: { accountId: tx.accountId },
-                    data: { estado: 'LIBRE' }
+                await prismaTx.transaction.delete({
+                    where: { id }
                 })
             }
-
-            await prisma.transaction.delete({
-                where: { id }
-            })
-        }
+        })
 
         revalidatePath('/sales')
         revalidatePath('/clients')

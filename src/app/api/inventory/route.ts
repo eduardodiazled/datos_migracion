@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     const accounts = await prisma.inventoryAccount.findMany({
@@ -20,13 +23,17 @@ export async function GET() {
     })
 
     // Transform to include 'cliente' property for frontend compatibility
+    // Rule: If profile is LIBRE (or not OCUPADO), NEVER rehydrate previous client from transaction history!
     const formattedAccounts = accounts.map(account => ({
       ...account,
-      perfiles: account.perfiles.map(profile => ({
-        ...profile,
-        cliente: profile.transactions[0]?.client || null,
-        transactions: undefined // Optional: cleanup to reduce payload
-      }))
+      perfiles: account.perfiles.map(profile => {
+        const isOccupied = profile.estado === 'OCUPADO'
+        return {
+          ...profile,
+          cliente: isOccupied ? (profile.transactions[0]?.client || null) : null,
+          transactions: undefined // Optional: cleanup to reduce payload
+        }
+      })
     }))
 
     return NextResponse.json(formattedAccounts)
