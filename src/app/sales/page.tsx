@@ -608,7 +608,7 @@ export default function SalesPage() {
                                     <div className={`font-bold text-base md:text-lg font-mono ${item.type === 'INGRESO' ? 'text-emerald-400' : 'text-rose-400'}`}>
                                         {item.type === 'INGRESO' ? '+' : '-'}${item.amount.toLocaleString()}
                                     </div>
-                                    <div className="flex justify-end gap-1.5 md:gap-2 mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                    <div className="flex justify-end gap-1.5 md:gap-2 mt-1 transition-opacity">
                                         {item.type === 'INGRESO' && (
                                             <>
                                                 <button
