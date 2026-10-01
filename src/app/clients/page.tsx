@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp, Download, Copy, ExternalLink } from 'lucide-react'
+import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp, Download, Copy, ExternalLink, Users, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
-import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction } from '../actions'
+import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction, mergeClients, getDuplicateClients, searchClients } from '../actions'
 import { sendToBot } from '@/services/whatsapp'
 import { signOut } from 'next-auth/react'
 import { getLocalDateTimeISO } from '@/lib/dateUtils'
@@ -16,9 +16,21 @@ export default function ClientsPage() {
     const [filteredClients, setFilteredClients] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
-    const [viewMode, setViewMode] = useState<'LIST' | 'AUDIT'>('LIST')
+    const [viewMode, setViewMode] = useState<'LIST' | 'AUDIT' | 'MERGE'>('LIST')
     const [auditAlerts, setAuditAlerts] = useState<any[]>([])
     const [showMobileMenu, setShowMobileMenu] = useState(false)
+
+    // Deduplication & Merge State
+    const [duplicateGroups, setDuplicateGroups] = useState<any[]>([])
+    const [loadingDuplicates, setLoadingDuplicates] = useState(false)
+    const [showMergeModal, setShowMergeModal] = useState(false)
+    const [mergeTarget, setMergeTarget] = useState<any>(null)
+    const [mergeSource, setMergeSource] = useState<any>(null)
+    const [targetQuery, setTargetQuery] = useState('')
+    const [sourceQuery, setSourceQuery] = useState('')
+    const [targetSearchResults, setTargetSearchResults] = useState<any[]>([])
+    const [sourceSearchResults, setSourceSearchResults] = useState<any[]>([])
+    const [isMerging, setIsMerging] = useState(false)
 
     useEffect(() => {
         async function loadData() {
@@ -37,9 +49,71 @@ export default function ClientsPage() {
             getSynchronizationAlerts().then(res => {
                 if (res?.success) setAuditAlerts(res.alerts || [])
             })
+
+            // Load Duplicates in background
+            loadDuplicates()
         }
         loadData()
     }, [])
+
+    const loadDuplicates = async () => {
+        setLoadingDuplicates(true)
+        try {
+            const res = await getDuplicateClients()
+            if (res.success) {
+                setDuplicateGroups(res.duplicates || [])
+            }
+        } catch (e) {
+            console.error("Error loading duplicates", e)
+        } finally {
+            setLoadingDuplicates(false)
+        }
+    }
+
+    const handleExecuteMerge = async (targetId: string, sourceId: string) => {
+        if (!confirm(`¿Estás seguro de fusionar estos clientes?\n\nTodo el historial del cliente secundario se transferirá al cliente principal y el duplicado será eliminado de forma segura.`)) return
+
+        setIsMerging(true)
+        try {
+            const res = await mergeClients(targetId, sourceId)
+            if (res.success) {
+                toast.success(res.message || 'Clientes fusionados exitosamente')
+                setShowMergeModal(false)
+                setMergeTarget(null)
+                setMergeSource(null)
+                const data = await getDashboardStats(2025, 12)
+                setClients(data.clients)
+                setFilteredClients(data.clients)
+                loadDuplicates()
+            } else {
+                toast.error(res.error || 'Error al fusionar')
+            }
+        } catch (e: any) {
+            toast.error('Error: ' + e.message)
+        } finally {
+            setIsMerging(false)
+        }
+    }
+
+    const handleSearchTarget = async (q: string) => {
+        setTargetQuery(q)
+        if (q.trim().length >= 2) {
+            const res = await searchClients(q)
+            setTargetSearchResults(res)
+        } else {
+            setTargetSearchResults([])
+        }
+    }
+
+    const handleSearchSource = async (q: string) => {
+        setSourceQuery(q)
+        if (q.trim().length >= 2) {
+            const res = await searchClients(q)
+            setSourceSearchResults(res)
+        } else {
+            setSourceSearchResults([])
+        }
+    }
 
     // Search Effect
     useEffect(() => {
@@ -117,7 +191,17 @@ export default function ClientsPage() {
                         className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'AUDIT' ? 'bg-orange-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
                     >
                         <ShieldAlert size={16} /> Auditoría
-                        {auditAlerts.length > 0 && <span className="bg-white text-orange-600 px-1.5 rounded-full text-xs">{auditAlerts.length}</span>}
+                        {auditAlerts.length > 0 && <span className="bg-white text-orange-600 px-1.5 rounded-full text-xs font-bold">{auditAlerts.length}</span>}
+                    </button>
+                    <button
+                        onClick={() => {
+                            setViewMode('MERGE')
+                            loadDuplicates()
+                        }}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'MERGE' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                    >
+                        <Users size={16} /> Unificar / Duplicados
+                        {duplicateGroups.length > 0 && <span className="bg-white text-indigo-600 px-1.5 rounded-full text-xs font-bold">{duplicateGroups.length}</span>}
                     </button>
                 </div>
 
@@ -132,7 +216,22 @@ export default function ClientsPage() {
                             <MoreVertical size={20} />
                         </button>
                         {showMobileMenu && (
-                            <div className="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+                            <div className="absolute right-0 top-full mt-2 w-52 bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden">
+                                <button
+                                    onClick={() => {
+                                        setMergeTarget(null)
+                                        setMergeSource(null)
+                                        setTargetQuery('')
+                                        setSourceQuery('')
+                                        setTargetSearchResults([])
+                                        setSourceSearchResults([])
+                                        setShowMergeModal(true)
+                                        setShowMobileMenu(false)
+                                    }}
+                                    className="w-full text-left px-4 py-3 text-indigo-400 hover:bg-white/5 flex items-center gap-2 text-sm font-medium border-b border-white/5"
+                                >
+                                    <Users size={16} /> Fusión Manual de Clientes
+                                </button>
                                 <button
                                     onClick={() => { handleBlast(); setShowMobileMenu(false) }}
                                     disabled={isBlasting}
@@ -188,6 +287,13 @@ export default function ClientsPage() {
                             status={client.daysLeft < 0 ? 'urgent' : client.daysLeft <= 3 ? 'alert' : 'normal'}
                             onAction={handleWhatsApp}
                             onReceipt={handleReceipt}
+                            onOpenMerge={(c) => {
+                                setMergeTarget(c)
+                                setTargetQuery(c.name + ' (' + c.phone + ')')
+                                setMergeSource(null)
+                                setSourceQuery('')
+                                setShowMergeModal(true)
+                            }}
                         />
                     ))}
                     {filteredClients.length === 0 && (
@@ -196,7 +302,7 @@ export default function ClientsPage() {
                         </div>
                     )}
                 </div>
-            ) : (
+            ) : viewMode === 'AUDIT' ? (
                 <div className="space-y-6 animate-in fade-in duration-500">
                     {auditAlerts.length === 0 ? (
                         <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-white/5">
@@ -313,13 +419,337 @@ export default function ClientsPage() {
                         </div>
                     )}
                 </div>
+            ) : (
+                /* MERGE / DUPLICATES VIEW */
+                <div className="space-y-6 animate-in fade-in duration-500">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-3xl border border-white/5">
+                        <div>
+                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Users size={22} className="text-indigo-400" />
+                                Unificación de Clientes & Contactos
+                            </h2>
+                            <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+                                Resuelve fichas duplicadas donde un cliente existe por número histórico y por usuario de WhatsApp (@handle).
+                                Al fusionar, <b>todas las transacciones, servicios y notas se transfieren</b> al cliente principal sin pérdida de datos.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setMergeTarget(null)
+                                setMergeSource(null)
+                                setTargetQuery('')
+                                setSourceQuery('')
+                                setTargetSearchResults([])
+                                setSourceSearchResults([])
+                                setShowMergeModal(true)
+                            }}
+                            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition whitespace-nowrap self-start md:self-auto"
+                        >
+                            <Users size={18} /> Fusión Manual
+                        </button>
+                    </div>
+
+                    {loadingDuplicates ? (
+                        <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-white/5">
+                            <RefreshCcw size={36} className="mx-auto text-indigo-400 animate-spin mb-4" />
+                            <p className="text-slate-400">Analizando base de datos en busca de clientes duplicados...</p>
+                        </div>
+                    ) : duplicateGroups.length === 0 ? (
+                        <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-white/5">
+                            <CheckCircle size={64} className="mx-auto text-emerald-500 mb-6 opacity-50" />
+                            <h3 className="text-2xl font-bold text-white mb-2">No se detectaron duplicados automáticos</h3>
+                            <p className="text-slate-400 max-w-md mx-auto mb-6">
+                                Todos los nombres coinciden en fichas únicas. Si conoces dos fichas con distinto nombre o prefijo que pertenezcan a la misma persona, usa la Fusión Manual.
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setMergeTarget(null)
+                                    setMergeSource(null)
+                                    setTargetQuery('')
+                                    setSourceQuery('')
+                                    setShowMergeModal(true)
+                                }}
+                                className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-indigo-300 font-medium rounded-xl border border-indigo-500/20 inline-flex items-center gap-2"
+                            >
+                                <Users size={16} /> Abrir Fusión Manual
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between text-sm text-slate-400 px-1">
+                                <span>{duplicateGroups.length} casos con posibles duplicados detectados:</span>
+                                <button
+                                    onClick={loadDuplicates}
+                                    className="text-xs text-indigo-400 hover:underline flex items-center gap-1"
+                                >
+                                    <RefreshCcw size={12} /> Refrescar
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4">
+                                {duplicateGroups.map((group, idx) => (
+                                    <div key={idx} className="bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-xl">
+                                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-4 mb-4">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                                    {group.normalizedName.toUpperCase()}
+                                                    <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-normal">
+                                                        {group.count} registros
+                                                    </span>
+                                                </h3>
+                                                <p className="text-xs text-slate-400 mt-0.5">
+                                                    Coincidencia de nombre detectada entre diferentes celulares / @handles
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                            {group.clients.map((c: any) => {
+                                                const isAtHandle = c.celular.startsWith('@')
+                                                return (
+                                                    <div
+                                                        key={c.celular}
+                                                        className={`p-4 rounded-xl border transition-all ${isAtHandle ? 'bg-indigo-950/30 border-indigo-500/30' : 'bg-slate-950/60 border-white/5'}`}
+                                                    >
+                                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                                            <span className="text-sm font-bold text-white truncate">{c.nombre}</span>
+                                                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${isAtHandle ? 'bg-indigo-500/30 text-indigo-200' : 'bg-slate-800 text-slate-300'}`}>
+                                                                {isAtHandle ? 'HANDLE @' : 'NÚMERO'}
+                                                            </span>
+                                                        </div>
+                                                        <p className="font-mono text-sm text-indigo-300 mb-3 break-all">{c.celular}</p>
+                                                        <div className="text-xs text-slate-400 space-y-1 mb-4">
+                                                            <div className="flex justify-between">
+                                                                <span>Transacciones:</span>
+                                                                <span className="font-bold text-white">{c.txCount}</span>
+                                                            </div>
+                                                            {c.ultimoVencimiento && (
+                                                                <div className="flex justify-between">
+                                                                    <span>Último vencimiento:</span>
+                                                                    <span className="text-slate-300">{new Date(c.ultimoVencimiento).toLocaleDateString()}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="pt-2 border-t border-white/5 flex gap-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setMergeTarget(c)
+                                                                    setTargetQuery(c.nombre + ' (' + c.celular + ')')
+                                                                    // Pre-select the other one as source if 2 in group
+                                                                    const other = group.clients.find((o: any) => o.celular !== c.celular)
+                                                                    if (other) {
+                                                                        setMergeSource(other)
+                                                                        setSourceQuery(other.nombre + ' (' + other.celular + ')')
+                                                                    } else {
+                                                                        setMergeSource(null)
+                                                                        setSourceQuery('')
+                                                                    }
+                                                                    setShowMergeModal(true)
+                                                                }}
+                                                                className="w-full py-2 bg-indigo-600/80 hover:bg-indigo-600 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5"
+                                                            >
+                                                                <Check size={14} /> Conservar como Principal
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* MANUAL / DUPLICATE MERGE MODAL */}
+            {showMergeModal && (
+                <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-in fade-in">
+                    <div className="bg-slate-900 border border-white/10 p-6 md:p-8 rounded-3xl w-full max-w-2xl shadow-2xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <Users size={20} className="text-indigo-400" /> Fusión y Unificación de Clientes
+                                </h3>
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Unifica dos fichas. Todo el historial se transfiere al cliente principal.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setShowMergeModal(false)}
+                                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-6">
+                            {/* Grid 2 Columns: Target vs Source */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* TARGET CLIENT (KEEP) */}
+                                <div className="bg-slate-950/70 p-4 rounded-2xl border border-indigo-500/30">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                                        <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-wider">
+                                            1. Cliente Principal (CONSERVAR)
+                                        </h4>
+                                    </div>
+                                    <p className="text-xs text-slate-400 mb-3">
+                                        Esta es la identidad que se mantendrá activa (ej: @usuario preferido).
+                                    </p>
+
+                                    {mergeTarget ? (
+                                        <div className="bg-emerald-950/20 border border-emerald-500/30 p-3 rounded-xl relative">
+                                            <button
+                                                onClick={() => { setMergeTarget(null); setTargetQuery('') }}
+                                                className="absolute top-2 right-2 text-slate-400 hover:text-white"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                            <p className="font-bold text-white text-sm">{mergeTarget.nombre || mergeTarget.name}</p>
+                                            <p className="font-mono text-xs text-emerald-300 mt-1">{mergeTarget.celular || mergeTarget.phone || mergeTarget.id}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                placeholder="Buscar por nombre, celular, @..."
+                                                value={targetQuery}
+                                                onChange={e => handleSearchTarget(e.target.value)}
+                                                className="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-white outline-none focus:border-indigo-500"
+                                            />
+                                            {targetSearchResults.length > 0 && (
+                                                <div className="absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-white/10 rounded-xl shadow-xl z-10 max-h-48 overflow-y-auto">
+                                                    {targetSearchResults.map(c => (
+                                                        <button
+                                                            key={c.celular}
+                                                            onClick={() => {
+                                                                setMergeTarget(c)
+                                                                setTargetSearchResults([])
+                                                            }}
+                                                            className="w-full text-left p-2.5 hover:bg-white/5 border-b border-white/5 text-xs flex justify-between items-center"
+                                                        >
+                                                            <span className="font-bold text-white">{c.nombre}</span>
+                                                            <span className="font-mono text-slate-400">{c.celular}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* SOURCE CLIENT (ABSORB & DELETE) */}
+                                <div className="bg-slate-950/70 p-4 rounded-2xl border border-rose-500/30">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                                        <h4 className="text-sm font-bold text-rose-400 uppercase tracking-wider">
+                                            2. Cliente a Absorber (ELIMINAR)
+                                        </h4>
+                                    </div>
+                                    <p className="text-xs text-slate-400 mb-3">
+                                        Ficha duplicada. Sus ventas se transferirán al principal antes de eliminarse.
+                                    </p>
+
+                                    {mergeSource ? (
+                                        <div className="bg-rose-950/20 border border-rose-500/30 p-3 rounded-xl relative">
+                                            <button
+                                                onClick={() => { setMergeSource(null); setSourceQuery('') }}
+                                                className="absolute top-2 right-2 text-slate-400 hover:text-white"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                            <p className="font-bold text-white text-sm">{mergeSource.nombre || mergeSource.name}</p>
+                                            <p className="font-mono text-xs text-rose-300 mt-1">{mergeSource.celular || mergeSource.phone || mergeSource.id}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                placeholder="Buscar por nombre, celular, @..."
+                                                value={sourceQuery}
+                                                onChange={e => handleSearchSource(e.target.value)}
+                                                className="w-full bg-slate-900 border border-white/10 rounded-xl p-2.5 text-xs text-white outline-none focus:border-rose-500"
+                                            />
+                                            {sourceSearchResults.length > 0 && (
+                                                <div className="absolute left-0 right-0 top-full mt-1 bg-slate-900 border border-white/10 rounded-xl shadow-xl z-10 max-h-48 overflow-y-auto">
+                                                    {sourceSearchResults.map(c => (
+                                                        <button
+                                                            key={c.celular}
+                                                            onClick={() => {
+                                                                setMergeSource(c)
+                                                                setSourceSearchResults([])
+                                                            }}
+                                                            className="w-full text-left p-2.5 hover:bg-white/5 border-b border-white/5 text-xs flex justify-between items-center"
+                                                        >
+                                                            <span className="font-bold text-white">{c.nombre}</span>
+                                                            <span className="font-mono text-slate-400">{c.celular}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Warning & Comparison */}
+                            {mergeTarget && mergeSource && (
+                                <div className="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-2xl flex items-center justify-between text-xs text-indigo-200">
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-mono bg-slate-900 px-2 py-1 rounded text-rose-300">
+                                            {mergeSource.celular || mergeSource.phone || mergeSource.id}
+                                        </span>
+                                        <ArrowRight size={16} className="text-indigo-400" />
+                                        <span className="font-mono bg-slate-900 px-2 py-1 rounded text-emerald-300">
+                                            {mergeTarget.celular || mergeTarget.phone || mergeTarget.id}
+                                        </span>
+                                    </div>
+                                    <span className="text-[11px] text-slate-400">100% de transacciones migradas</span>
+                                </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => setShowMergeModal(false)}
+                                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl transition text-sm"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const targetId = mergeTarget?.celular || mergeTarget?.phone || mergeTarget?.id
+                                        const sourceId = mergeSource?.celular || mergeSource?.phone || mergeSource?.id
+                                        if (targetId && sourceId) {
+                                            handleExecuteMerge(targetId, sourceId)
+                                        }
+                                    }}
+                                    disabled={!mergeTarget || !mergeSource || (mergeTarget?.celular || mergeTarget?.phone || mergeTarget?.id) === (mergeSource?.celular || mergeSource?.phone || mergeSource?.id) || isMerging}
+                                    className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition text-sm flex items-center justify-center gap-2"
+                                >
+                                    {isMerging ? (
+                                        <>
+                                            <RefreshCcw size={16} className="animate-spin" /> Fusionando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Users size={16} /> Confirmar Fusión
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     )
 }
 
 
-function ClientCard({ client, status, onAction, onReceipt }: { client: any, status: 'urgent' | 'alert' | 'normal' | 'renewed', onAction: any, onReceipt: any }) {
+function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { client: any, status: 'urgent' | 'alert' | 'normal' | 'renewed', onAction: any, onReceipt: any, onOpenMerge?: (client: any) => void }) {
     const [showRenewModal, setShowRenewModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
     const [showAssignModal, setShowAssignModal] = useState(false)
@@ -560,6 +990,11 @@ function ClientCard({ client, status, onAction, onReceipt }: { client: any, stat
                                 <button onClick={() => { handleBotAction('ROTATION'); setShowMenu(false) }} disabled={isProcessing} className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white rounded-lg flex items-center gap-2">
                                     <Key size={14} className="text-cyan-400" /> Pass / Pin
                                 </button>
+                                {onOpenMerge && (
+                                    <button onClick={() => { onOpenMerge(client); setShowMenu(false) }} className="w-full text-left px-3 py-2 text-sm text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-400 rounded-lg flex items-center gap-2">
+                                        <Users size={14} className="text-indigo-400" /> Fusionar / Unificar
+                                    </button>
+                                )}
 
                                 <div className="h-px bg-white/5 my-1" />
 

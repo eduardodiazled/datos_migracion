@@ -1,15 +1,21 @@
+export function cleanContactString(input: string): string {
+    if (!input) return ''
+    // Strip zero-width, non-breaking, and directional formatting unicode characters
+    return input.replace(/[\u200B-\u200D\uFEFF\u2060-\u206F\u202A-\u202E]/g, '').trim()
+}
+
 export function getWhatsAppUrl(phone: string, message: string): string {
     if (!phone) return '#'
 
-    const trimPhone = phone.trim()
+    const cleanInput = cleanContactString(phone)
     const encoded = encodeURIComponent(message)
 
     // Check if phone is a Username (starts with @ or contains letters)
-    const isUsername = /[a-zA-Z]/.test(trimPhone) || trimPhone.startsWith('@')
+    const isUsername = /[a-zA-Z]/.test(cleanInput) || cleanInput.startsWith('@')
 
     if (isUsername) {
         // Strip leading @ if present
-        const cleanHandle = trimPhone.replace(/^@/, '').trim()
+        const cleanHandle = cleanInput.replace(/^@/, '').trim()
         // wa.me/username?text=... is the official universal link format for WhatsApp usernames
         return `https://wa.me/${cleanHandle}?text=${encoded}`
     }

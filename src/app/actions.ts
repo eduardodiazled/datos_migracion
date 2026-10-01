@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { MessageGenerator } from '@/lib/messageGenerator'
 import { sendToBot } from '@/services/whatsapp'
+import { cleanContactString } from '@/lib/whatsappUtils'
 
 
 // Helper: Normalize Date to prevent Timezone shifts
@@ -731,10 +732,11 @@ export async function getFullHistory(year?: number, month?: number) {
 
 export async function createSale(clientId: string, clientName: string, profileId: number | undefined, price: number, paymentMethod: string = 'EFECTIVO', date?: string, months: number = 1) {
     try {
+        const cleanId = cleanContactString(clientId)
         await prisma.client.upsert({
-            where: { celular: clientId },
+            where: { celular: cleanId },
             update: { nombre: clientName },
-            create: { celular: clientId, nombre: clientName }
+            create: { celular: cleanId, nombre: clientName }
         })
 
         const now = normalizeDate(date) // Use 'now' as the variable name to match existing code logic
@@ -753,7 +755,7 @@ export async function createSale(clientId: string, clientName: string, profileId
 
         const tx = await prisma.transaction.create({
             data: {
-                clienteId: clientId,
+                clienteId: cleanId,
                 perfilId: profileId || null,
                 monto: price,
                 estado_pago: 'PAGADO',
@@ -828,11 +830,12 @@ export async function createComboSale(
     months: number = 1
 ) {
     try {
+        const cleanId = cleanContactString(clientId)
         // 1. Ensure Client Exists
         await prisma.client.upsert({
-            where: { celular: clientId },
+            where: { celular: cleanId },
             update: { nombre: clientName },
-            create: { celular: clientId, nombre: clientName }
+            create: { celular: cleanId, nombre: clientName }
         })
 
         // 2. Generate Group ID
@@ -877,7 +880,7 @@ export async function createComboSale(
 
             const tx = await prisma.transaction.create({
                 data: {
-                    clienteId: clientId,
+                    clienteId: cleanId,
                     // Only link profileId if it's a profile sale, otherwise it might be null/irrelevant?
                     // But schema might require it? If optional, good. If not, need to check. 
                     // Assuming optional or we pick the first one? Let's assume optional or null is fine for full account if logic supports.
@@ -963,10 +966,11 @@ export async function createComboSale(
 
 export async function assignProfile(clientId: string, clientName: string, profileId: number, dueDate: string, startDate?: string) {
     try {
+        const cleanId = cleanContactString(clientId)
         await prisma.client.upsert({
-            where: { celular: clientId },
+            where: { celular: cleanId },
             update: { nombre: clientName },
-            create: { celular: clientId, nombre: clientName }
+            create: { celular: cleanId, nombre: clientName }
         })
 
         const endObj = new Date(dueDate)
@@ -976,7 +980,7 @@ export async function assignProfile(clientId: string, clientName: string, profil
 
         await prisma.transaction.create({
             data: {
-                clienteId: clientId,
+                clienteId: cleanId,
                 perfilId: profileId,
                 monto: 0,
                 estado_pago: 'PAGADO',
@@ -1067,24 +1071,29 @@ export async function getClientByPhone(phone: string) {
 
 export async function searchClients(query: string) {
     try {
-        if (!query || query.length < 2) return []
+        if (!query || query.trim().length < 2) return []
+
+        const cleanQ = cleanContactString(query)
+        const noAtQ = cleanQ.replace(/^@/, '')
 
         const clients = await prisma.client.findMany({
             where: {
                 AND: [
                     {
                         OR: [
-                            { nombre: { contains: query, mode: 'insensitive' } },
-                            { celular: { contains: query } }
+                            { nombre: { contains: cleanQ, mode: 'insensitive' } },
+                            { nombre: { contains: noAtQ, mode: 'insensitive' } },
+                            { celular: { contains: cleanQ, mode: 'insensitive' } },
+                            { celular: { contains: noAtQ, mode: 'insensitive' } }
                         ]
                     },
                     { nombre: { not: '' } }, // Exclude empty names
                     { nombre: { not: 'Cliente Ocasional' } }, // Exclude generic placeholder if exists
                     { celular: { not: '0000000000' } }, // Exclude dummy phone
-                    { celular: { not: '' } } // Exclude empty phone (unlikely due to ID but safe)
+                    { celular: { not: '' } } // Exclude empty phone
                 ]
             },
-            take: 5,
+            take: 10,
             orderBy: { nombre: 'asc' }
         })
 
@@ -1093,7 +1102,120 @@ export async function searchClients(query: string) {
         console.error("Search Clients Error", e)
         return []
     }
+}
 
+// --- CLIENT MERGE (Unificación Segura sin romper base de datos) ---
+export async function mergeClients(canonicalId: string, secondaryId: string) {
+    try {
+        const cleanCanonical = cleanContactString(canonicalId)
+        const cleanSecondary = cleanContactString(secondaryId)
+
+        if (!cleanCanonical || !cleanSecondary) {
+            return { success: false, error: 'Identificadores de cliente requeridos.' }
+        }
+
+        if (cleanCanonical.toLowerCase() === cleanSecondary.toLowerCase()) {
+            return { success: false, error: 'No puedes fusionar un cliente consigo mismo.' }
+        }
+
+        // Find both clients (matching with raw ID or cleaned ID)
+        const allCandidates = await prisma.client.findMany({
+            where: {
+                OR: [
+                    { celular: { equals: cleanCanonical, mode: 'insensitive' } },
+                    { celular: { equals: canonicalId, mode: 'insensitive' } },
+                    { celular: { equals: cleanSecondary, mode: 'insensitive' } },
+                    { celular: { equals: secondaryId, mode: 'insensitive' } }
+                ]
+            }
+        })
+
+        const targetClient = allCandidates.find(c =>
+            cleanContactString(c.celular).toLowerCase() === cleanCanonical.toLowerCase() ||
+            c.celular.toLowerCase() === canonicalId.toLowerCase()
+        )
+        const sourceClient = allCandidates.find(c =>
+            c.celular !== targetClient?.celular && (
+                cleanContactString(c.celular).toLowerCase() === cleanSecondary.toLowerCase() ||
+                c.celular.toLowerCase() === secondaryId.toLowerCase()
+            )
+        )
+
+        if (!targetClient) {
+            return { success: false, error: `Cliente principal no encontrado: ${canonicalId}` }
+        }
+        if (!sourceClient) {
+            return { success: false, error: `Cliente secundario a absorber no encontrado: ${secondaryId}` }
+        }
+
+        // Execute in an ATOMIC transaction: reassign all transactions and remove duplicate client
+        await prisma.$transaction(async (prismaTx) => {
+            // 1. Move all transactions from source to target
+            await prismaTx.transaction.updateMany({
+                where: { clienteId: sourceClient.celular },
+                data: { clienteId: targetClient.celular }
+            })
+
+            // 2. Delete the absorbed client
+            await prismaTx.client.delete({
+                where: { celular: sourceClient.celular }
+            })
+        })
+
+        revalidatePath('/clients')
+        revalidatePath('/sales')
+        revalidatePath('/administracion')
+
+        return {
+            success: true,
+            message: `¡Clientes fusionados! El historial de ${sourceClient.nombre} (${sourceClient.celular}) se unificó en ${targetClient.nombre} (${targetClient.celular}).`
+        }
+    } catch (e) {
+        console.error("Merge Clients Error", e)
+        return { success: false, error: 'Error al fusionar clientes: ' + String(e) }
+    }
+}
+
+// --- DETECCIÓN DE CLIENTES DUPLICADOS ---
+export async function getDuplicateClients() {
+    try {
+        const allClients = await prisma.client.findMany({
+            select: {
+                celular: true,
+                nombre: true,
+                _count: { select: { transactions: true } }
+            },
+            orderBy: { nombre: 'asc' }
+        })
+
+        // Group by normalized name
+        const groups: Record<string, { celular: string, nombre: string, count: number }[]> = {}
+        for (const c of allClients) {
+            const rawName = c.nombre || ''
+            const norm = rawName.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            if (norm.length < 3) continue
+            if (norm.includes('cliente ocasional') || norm === 'cliente') continue
+
+            if (!groups[norm]) groups[norm] = []
+            groups[norm].push({
+                celular: c.celular,
+                nombre: c.nombre,
+                count: c._count.transactions
+            })
+        }
+
+        const potentialDuplicates = Object.entries(groups)
+            .filter(([_, list]) => list.length > 1)
+            .map(([name, list]) => ({
+                normalizedName: name,
+                clients: list
+            }))
+
+        return { success: true, duplicates: potentialDuplicates }
+    } catch (e) {
+        console.error("Get duplicates error", e)
+        return { success: false, duplicates: [] }
+    }
 }
 
 export async function getAdvancedAnalytics(year: number) {
@@ -1359,14 +1481,16 @@ export async function updateTransaction(id: number, data: {
         if (data.price !== undefined) updateData.monto = data.price
         if (data.paymentMethod) updateData.metodo_pago = data.paymentMethod
         if (data.description) updateData.descripcion = data.description
-        if (data.clientId) updateData.clienteId = data.clientId
-
-        if (data.clientId && data.clientName) {
-            await prisma.client.upsert({
-                where: { celular: data.clientId },
-                update: { nombre: data.clientName },
-                create: { celular: data.clientId, nombre: data.clientName }
-            })
+        if (data.clientId) {
+            const cleanId = cleanContactString(data.clientId)
+            updateData.clienteId = cleanId
+            if (data.clientName) {
+                await prisma.client.upsert({
+                    where: { celular: cleanId },
+                    update: { nombre: data.clientName },
+                    create: { celular: cleanId, nombre: data.clientName }
+                })
+            }
         }
 
         if (data.profileId !== undefined) {
