@@ -163,6 +163,19 @@ export async function getDashboardStats(year?: number, month?: number) {
                 else if (daysLeft === 3) urgency = 'MEDIUM'
             }
 
+            // Derived cycle status based purely on fecha_vencimiento (not estado_pago)
+            // VENCIDO: expired and no active renewal
+            // POR_VENCER: <=3 days left (includes today)
+            // VIGENTE: more than 3 days remaining
+            let cycleStatus: 'VENCIDO' | 'POR_VENCER' | 'VIGENTE'
+            if (daysLeft < 0) {
+                cycleStatus = 'VENCIDO'
+            } else if (daysLeft <= 3) {
+                cycleStatus = 'POR_VENCER'
+            } else {
+                cycleStatus = 'VIGENTE'
+            }
+
             let displayName = c.nombre
             if (displayName.toLowerCase().includes('eduardo diaz') || displayName.toLowerCase().includes('eduardo david')) {
                 displayName = c.celular
@@ -175,6 +188,7 @@ export async function getDashboardStats(year?: number, month?: number) {
                 phone: c.celular,
                 daysLeft,
                 urgency,
+                cycleStatus,
                 price: lastTx.monto,
                 lastTxId: lastTx.id,
                 renewed: isRenewed,

@@ -162,6 +162,8 @@ export default function Dashboard() {
     const urgentClients = stats.clients.filter((c: any) => c.urgency === 'CRITICAL') // Overdue
     const highPriorityClients = stats.clients.filter((c: any) => c.urgency === 'HIGH') // 0-2 Days (Bot Target)
     const mediaPriorityClients = stats.clients.filter((c: any) => c.urgency === 'MEDIUM') // 3 Days
+    // Cobros del Día: vencen exactamente hoy (daysLeft === 0), separados para gestión diaria
+    const cobrosHoy = stats.clients.filter((c: any) => c.daysLeft === 0)
 
     // Helper to generate WhatsApp Link
     const getWhatsAppLink = (client: any) => {
@@ -480,6 +482,23 @@ export default function Dashboard() {
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><ShieldAlert className="text-rose-500" /> Radar de Renovaciones (Prioridad)</h3>
 
                     <div className="space-y-6">
+                        {/* 0. COBROS DEL DÍA (Vencen Exactamente Hoy) */}
+                        {cobrosHoy.length > 0 && (
+                            <div className="bg-emerald-950/30 border border-emerald-500/30 rounded-3xl overflow-hidden shadow-[0_0_20px_-5px_rgba(16,185,129,0.2)]">
+                                <div className="bg-emerald-500/10 px-6 py-3 border-b border-emerald-500/20 flex justify-between items-center">
+                                    <h4 className="text-emerald-400 font-bold flex items-center gap-2">
+                                        <DollarSign size={18} /> Cobros del Día — Vencen Hoy
+                                    </h4>
+                                    <span className="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full">{cobrosHoy.length}</span>
+                                </div>
+                                <div className="p-4 space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                    {cobrosHoy.map((c: any) => (
+                                        <ClientRow key={c.id} client={c} color="amber" />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* 1. CRITICAL (Overdue) */}
                         {urgentClients.length > 0 && (
                             <div className="bg-rose-950/30 border border-rose-500/20 rounded-3xl overflow-hidden">
@@ -552,11 +571,39 @@ function ClientRow({ client, color }: { client: any, color: 'rose' | 'amber' | '
         yellow: 'text-yellow-400'
     }
 
+    // Cycle status pill — based purely on fecha_vencimiento (cycleStatus from server)
+    const cyclePill = (() => {
+        const status = client.cycleStatus
+        if (status === 'VENCIDO') return (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-wider">
+                ⛔ Vencido
+            </span>
+        )
+        if (status === 'POR_VENCER') {
+            if (client.daysLeft === 0) return (
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-300 border border-amber-500/40 uppercase tracking-wider">
+                    🔔 Vence Hoy
+                </span>
+            )
+            return (
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 uppercase tracking-wider">
+                    ⚠️ Por Vencer
+                </span>
+            )
+        }
+        return (
+            <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                ✅ Vigente
+            </span>
+        )
+    })()
+
     return (
         <div className={`bg-slate-900/40 border p-3 rounded-xl flex items-center justify-between transition-colors ${colorClasses[color]}`}>
             <div className="min-w-0 flex-1 pr-4">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className={`font-bold text-sm md:text-base text-white truncate`}>{client.name}</span>
+                    {cyclePill}
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${textColors[color]} border-current bg-transparent`}>
                         {client.daysLeft < 0 ? `${Math.abs(client.daysLeft)} Días Vencido` : client.daysLeft === 0 ? 'Vence Hoy' : `${client.daysLeft} Días`}
                     </span>
