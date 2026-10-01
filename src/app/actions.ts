@@ -633,7 +633,7 @@ export async function getFullHistory(year?: number, month?: number) {
 
         const transactions = await prisma.transaction.findMany({
             where: dateFilterTx,
-            include: { client: true, profile: { include: { account: true } } },
+            include: { client: true, profile: { include: { account: true } }, account: true },
             orderBy: { fecha_inicio: 'desc' }
         })
 
@@ -658,7 +658,7 @@ export async function getFullHistory(year?: number, month?: number) {
                     id: tx.id,
                     type: 'INGRESO',
                     category: `Venta Combo (${groupItems.length})`,
-                    description: `Combo: ${groupItems.map(i => i.profile?.account?.servicio || 'Item').join(', ')}`,
+                    description: `Combo: ${groupItems.map(i => i.profile?.account?.servicio || i.account?.servicio || 'Item').join(', ')}`,
                     amount: totalAmount,
                     date: tx.fecha_inicio,
                     client: tx.client.nombre,
@@ -666,17 +666,17 @@ export async function getFullHistory(year?: number, month?: number) {
                     paymentMethod: tx.metodo_pago,
                     status: 'Pagado',
                     profileId: tx.perfilId,
-                    profileName: tx.profile ? `${tx.profile.account.servicio}` : null,
+                    profileName: tx.profile ? `${tx.profile.account.servicio}` : (tx.account?.servicio || null),
                     isCombo: true,
                     groupId: tx.groupId,
                     endDate: tx.fecha_vencimiento,
                     items: groupItems.map(i => ({
-                        service: i.profile?.account?.servicio || 'Venta Libre',
-                        name: i.profile?.nombre_perfil || '-',
+                        service: i.profile?.account?.servicio || i.account?.servicio || 'Venta Libre',
+                        name: i.profile?.nombre_perfil || (i.account ? 'Cuenta Completa' : '-'),
                         price: i.monto,
                         // Credential fields for message regeneration
-                        email: i.profile?.account?.email || null,
-                        password: i.profile?.account?.password || null,
+                        email: i.profile?.account?.email || i.account?.email || null,
+                        password: i.profile?.account?.password || i.account?.password || null,
                         pin: i.profile?.pin || null
                     })),
                     // No single-profile credentials for combos (use items[])
@@ -688,8 +688,8 @@ export async function getFullHistory(year?: number, month?: number) {
                 formattedTransactions.push({
                     id: tx.id,
                     type: 'INGRESO',
-                    category: tx.descripcion || tx.profile?.account?.servicio || 'Venta Libre',
-                    description: tx.descripcion || (tx.profile ? `Venta ${tx.profile.nombre_perfil}` : 'Ingreso Venta Libre'),
+                    category: tx.descripcion || tx.profile?.account?.servicio || tx.account?.servicio || 'Venta Libre',
+                    description: tx.descripcion || (tx.profile ? `Venta ${tx.profile.nombre_perfil}` : (tx.account ? `Venta Completa ${tx.account.servicio}` : 'Ingreso Venta Libre')),
                     amount: tx.monto,
                     date: tx.fecha_inicio,
                     client: tx.client.nombre,
@@ -697,14 +697,14 @@ export async function getFullHistory(year?: number, month?: number) {
                     paymentMethod: tx.metodo_pago,
                     status: 'Pagado',
                     profileId: tx.perfilId,
-                    profileName: tx.profile ? `${tx.profile.account.servicio} - ${tx.profile.nombre_perfil}` : null,
+                    profileName: tx.profile ? `${tx.profile.account.servicio} - ${tx.profile.nombre_perfil}` : (tx.account ? `${tx.account.servicio} (Cuenta Completa)` : null),
                     isCombo: false,
                     groupId: null,
                     items: [],
                     endDate: tx.fecha_vencimiento,
                     // Credential fields for message regeneration
-                    email: tx.profile?.account?.email || null,
-                    password: tx.profile?.account?.password || null,
+                    email: tx.profile?.account?.email || tx.account?.email || null,
+                    password: tx.profile?.account?.password || tx.account?.password || null,
                     pin: tx.profile?.pin || null
                 })
             }
@@ -727,6 +727,103 @@ export async function getFullHistory(year?: number, month?: number) {
     } catch (e) {
         console.error(e)
         return { transactions: [], expenses: [] }
+    }
+}
+
+export async function getSaleMessage(transactionId: number) {
+    try {
+        const tx = await prisma.transaction.findUnique({
+            where: { id: transactionId },
+            include: {
+                client: true,
+                profile: { include: { account: true } },
+                account: true
+            }
+        })
+
+        if (!tx) {
+            return { success: false, error: 'Transacción no encontrada' }
+        }
+
+        // If combo sale:
+        if (tx.groupId) {
+            const groupTxs = await prisma.transaction.findMany({
+                where: { groupId: tx.groupId },
+                include: {
+                    profile: { include: { account: true } },
+                    account: true
+                }
+            })
+
+            const items: { service: string, email: string, password: string, profile: string, pin?: string | null }[] = []
+
+            for (const item of groupTxs) {
+                const email = item.profile?.account?.email || item.account?.email
+                const password = item.profile?.account?.password || item.account?.password
+                const service = item.profile?.account?.servicio || item.account?.servicio || 'Servicio'
+                const profile = item.profile?.nombre_perfil || (item.account ? 'Cuenta Completa' : 'Perfil')
+                const pin = item.profile?.pin || null
+
+                if (email && password) {
+                    items.push({ service, email, password, profile, pin })
+                }
+            }
+
+            if (items.length === 0) {
+                return { success: false, error: 'No se encontraron credenciales guardadas para los servicios de este combo.' }
+            }
+
+            const message = MessageGenerator.generate('COMBO', {
+                clientName: tx.client.nombre,
+                items,
+                expirationDate: tx.fecha_vencimiento ? new Date(tx.fecha_vencimiento).toLocaleDateString('es-CO') : '—'
+            })
+
+            return { success: true, message }
+        }
+
+        // Simple sale or Full Account sale:
+        const email = tx.profile?.account?.email || tx.account?.email
+        const password = tx.profile?.account?.password || tx.account?.password
+        const pin = tx.profile?.pin || null
+        const isFullAccount = !tx.perfilId || (tx.descripcion && tx.descripcion.toLowerCase().includes('cuenta completa'))
+
+        if (!email || !password) {
+            return { success: false, error: 'Esta venta no tiene credenciales de cuenta asociadas en el sistema.' }
+        }
+
+        const saleDate = tx.fecha_vencimiento
+            ? new Date(tx.fecha_vencimiento).toLocaleDateString('es-CO')
+            : new Date(tx.fecha_inicio).toLocaleDateString('es-CO')
+
+        let message = ''
+        if (isFullAccount) {
+            const service = tx.account?.servicio || tx.profile?.account?.servicio || tx.descripcion || 'Servicio'
+            message = MessageGenerator.generate('FULL_ACCOUNT_SALE', {
+                clientName: tx.client.nombre,
+                service,
+                email,
+                password,
+                date: saleDate
+            })
+        } else {
+            const service = tx.profile?.account?.servicio || tx.descripcion || 'Servicio'
+            const profileName = tx.profile?.nombre_perfil || 'Perfil'
+            message = MessageGenerator.generate('SALE', {
+                clientName: tx.client.nombre,
+                service: `${service} - ${profileName}`,
+                email,
+                password,
+                pin,
+                profileName,
+                date: saleDate
+            })
+        }
+
+        return { success: true, message }
+    } catch (e: any) {
+        console.error('getSaleMessage error:', e)
+        return { success: false, error: 'Error al generar el mensaje: ' + e.message }
     }
 }
 

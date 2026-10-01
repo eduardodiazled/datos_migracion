@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical, EyeOff, Copy } from 'lucide-react'
-import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders } from '../actions'
+import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders, getSaleMessage } from '../actions'
 import html2canvas from 'html2canvas'
 import { MessageGenerator } from '@/lib/messageGenerator'
 
@@ -351,38 +351,38 @@ export default function SalesPage() {
 
     const handleCopySaleMessage = async (item: any) => {
         try {
+            toast.loading('Generando mensaje...', { id: 'copy-msg' })
+
+            // Prefer server action to fetch fresh credentials and correct template
+            const res = await getSaleMessage(item.id)
+            if (res.success && res.message) {
+                await navigator.clipboard.writeText(res.message)
+                toast.success('✅ Mensaje copiado al portapapeles', { id: 'copy-msg' })
+                return
+            }
+
+            // Fallback to client-side data if server action didn't find credentials
             let message = ''
-
             if (item.isCombo) {
-                // Combo: needs items with full credentials
                 const validItems = item.items?.filter((i: any) => i.email && i.password)
-                if (!validItems || validItems.length === 0) {
-                    toast.error('No hay credenciales guardadas para generar el mensaje de este combo.')
-                    return
+                if (validItems && validItems.length > 0) {
+                    const comboItems = validItems.map((i: any) => ({
+                        service: i.service,
+                        email: i.email,
+                        password: i.password,
+                        profile: i.name,
+                        pin: i.pin || null
+                    }))
+                    const expirationDate = item.endDate
+                        ? new Date(item.endDate).toLocaleDateString('es-CO')
+                        : '—'
+                    message = MessageGenerator.generate('COMBO', {
+                        clientName: item.client,
+                        items: comboItems,
+                        expirationDate
+                    })
                 }
-                const comboItems = validItems.map((i: any) => ({
-                    service: i.service,
-                    email: i.email,
-                    password: i.password,
-                    profile: i.name,
-                    pin: i.pin || null
-                }))
-                const expirationDate = item.endDate
-                    ? new Date(item.endDate).toLocaleDateString('es-CO')
-                    : '—'
-
-                message = MessageGenerator.generate('COMBO', {
-                    clientName: item.client,
-                    items: comboItems,
-                    expirationDate
-                })
-            } else {
-                // Simple sale: needs email + password at minimum
-                if (!item.email || !item.password) {
-                    toast.error('Esta venta no tiene credenciales guardadas (puede ser una venta libre o antigua).')
-                    return
-                }
-                // Detect if it's a full account sale (no specific profileId, or description says Cuenta Completa)
+            } else if (item.email && item.password) {
                 const isFullAccount = !item.profileId || item.description?.toLowerCase().includes('cuenta completa')
                 const saleDate = item.endDate
                     ? new Date(item.endDate).toLocaleDateString('es-CO')
@@ -397,7 +397,6 @@ export default function SalesPage() {
                         date: saleDate
                     })
                 } else {
-                    // Extract profile name from profileName field (format: "Servicio - Perfil")
                     const profileNameRaw = item.profileName || ''
                     const profileName = profileNameRaw.includes(' - ')
                         ? profileNameRaw.split(' - ').slice(1).join(' - ')
@@ -416,16 +415,15 @@ export default function SalesPage() {
                 }
             }
 
-            if (!message || message.trim() === '') {
-                toast.error('No se pudo generar el mensaje. Verifica los datos de la venta.')
-                return
+            if (message && message.trim() !== '') {
+                await navigator.clipboard.writeText(message)
+                toast.success('✅ Mensaje copiado al portapapeles', { id: 'copy-msg' })
+            } else {
+                toast.error(res.error || 'No hay credenciales registradas para esta venta.', { id: 'copy-msg' })
             }
-
-            await navigator.clipboard.writeText(message)
-            toast.success('✅ Mensaje copiado al portapapeles')
-        } catch (err) {
+        } catch (err: any) {
             console.error('Copy message error:', err)
-            toast.error('Error al copiar el mensaje. Intenta de nuevo.')
+            toast.error('Error al copiar el mensaje: ' + err.message, { id: 'copy-msg' })
         }
     }
 
@@ -581,7 +579,11 @@ export default function SalesPage() {
                         </div>
                     ) : (
                         filteredByTab.map((item, idx) => (
-                            <div key={`${item.type}-${item.id}-${idx}`} className="group flex items-center justify-between p-3 md:p-4 rounded-xl bg-slate-900/50 border border-white/5 hover:border-white/10 transition backdrop-blur-sm gap-3">
+                            <div
+                                key={`${item.type}-${item.id}-${idx}`}
+                                onClick={() => { setEditingTx({ ...item, newProfileId: item.profileId || null }); setShowEditModal(true) }}
+                                className="group flex items-center justify-between p-3 md:p-4 rounded-xl bg-slate-900/50 border border-white/5 hover:border-white/10 hover:bg-slate-900/80 transition backdrop-blur-sm gap-3 cursor-pointer"
+                            >
                                 <div className="flex items-center gap-4 min-w-0">
                                     <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 ${item.type === 'INGRESO' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
                                         {item.type === 'INGRESO' ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />}
@@ -606,18 +608,40 @@ export default function SalesPage() {
                                     <div className={`font-bold text-base md:text-lg font-mono ${item.type === 'INGRESO' ? 'text-emerald-400' : 'text-rose-400'}`}>
                                         {item.type === 'INGRESO' ? '+' : '-'}${item.amount.toLocaleString()}
                                     </div>
-                                    <div className="flex justify-end gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex justify-end gap-1.5 md:gap-2 mt-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                         {item.type === 'INGRESO' && (
                                             <>
-                                                <button onClick={() => generateInvoice(item)} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition" title="Descargar Factura">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        generateInvoice(item)
+                                                    }}
+                                                    className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition"
+                                                    title="Descargar Factura"
+                                                >
                                                     <Download size={14} />
                                                 </button>
-                                                <button onClick={() => handleCopySaleMessage(item)} className="p-1.5 bg-violet-500/10 hover:bg-violet-500/20 rounded-lg text-violet-400 hover:text-violet-300 transition" title="Copiar mensaje al cliente">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handleCopySaleMessage(item)
+                                                    }}
+                                                    className="p-1.5 bg-violet-500/20 hover:bg-violet-500/30 rounded-lg text-violet-300 hover:text-white transition flex items-center gap-1"
+                                                    title="Copiar mensaje al cliente"
+                                                >
                                                     <Copy size={14} />
                                                 </button>
                                             </>
                                         )}
-                                        <button onClick={() => { setEditingTx({ ...item, newProfileId: item.profileId || null }); setShowEditModal(true) }} className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition" title="Editar">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                setEditingTx({ ...item, newProfileId: item.profileId || null })
+                                                setShowEditModal(true)
+                                            }}
+                                            className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition"
+                                            title="Editar / Ver Detalle"
+                                        >
                                             <Edit2 size={14} />
                                         </button>
                                     </div>
@@ -950,6 +974,15 @@ export default function SalesPage() {
                                             </select>
                                         </div>
                                     </div>
+                                    {editingTx.type === 'INGRESO' && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleCopySaleMessage(editingTx)}
+                                            className="w-full bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 hover:text-white font-bold py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 transition text-sm shadow-sm"
+                                        >
+                                            <Copy size={16} /> Copiar mensaje al cliente (WhatsApp)
+                                        </button>
+                                    )}
                                 </div>
                                 <div className="flex gap-4">
                                     <button onClick={handleDelete} className="flex-1 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-4 rounded-xl font-bold transition flex items-center justify-center gap-2">
