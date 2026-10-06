@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual de Usuario y Operaciones — Estratosfera App</title>
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text-main);
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px 50px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .print-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #0f172a;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .print-btn {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .print-btn:hover { background: #6d28d9; }
+
+    header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 25px;
+      margin-bottom: 35px;
+    }
+
+    h1 {
+      color: #0f172a;
+      font-size: 28px;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    h2 {
+      color: #0f172a;
+      font-size: 20px;
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+      margin-top: 35px;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      color: #1e293b;
+      font-size: 16px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+
+    p, li {
+      font-size: 14.5px;
+      color: #334155;
+    }
+
+    ul, ol {
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 13.5px;
+    }
+
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    tr:nth-child(even) { background-color: #f8fafc; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #ffe4e6; color: #9f1239; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+    .callout {
+      background: #f5f3ff;
+      border-left: 4px solid #7c3aed;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+    .callout-title {
+      font-weight: 700;
+      color: #5b21b6;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .callout-danger {
+      background: #fff1f2;
+      border-left: 4px solid #f43f5e;
+    }
+    .callout-danger .callout-title { color: #9f1239; }
+
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .toc {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin: 25px 0 35px 0;
+    }
+    .toc h3 { margin-top: 0; color: #0f172a; }
+    .toc ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+    .toc li { margin-bottom: 6px; font-size: 13.5px; }
+    .toc a { color: #7c3aed; text-decoration: none; font-weight: 600; }
+    .toc a:hover { text-decoration: underline; }
+
+    @media print {
+      .print-bar { display: none !important; }
+      body { background: white; }
+      .container {
+        box-shadow: none;
+        max-width: 100%;
+        padding: 0;
+      }
+      h2 { page-break-after: avoid; }
+      table, .callout { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-bar">
+    <div><strong>Estratosfera App</strong> — Documentación de Operaciones & Manual Oficial</div>
+    <button class="print-btn" onclick="window.print()">
+      🖨️ Imprimir / Guardar como PDF
+    </button>
+  </div>
+
+  <div class="container">
+    <header>
+      <p class="subtitle">Manual de Usuario & Estándar Operativo (SOP)</p>
+      <h1>Plataforma Estratosfera: Gestión Integral de Streaming, Clientes y Finanzas</h1>
+      <p style="color: var(--text-muted); font-size: 13px; margin: 5px 0 0 0;">
+        Versión para Capacitación de Agentes, Control de Calidad y Mejora Continua • Octubre 2026
+      </p>
+    </header>
+
+    <div class="toc">
+      <h3>📋 Contenido del Manual</h3>
+      <ul>
+        <li><a href="#modulo1">1. Inventario de Cuentas y Perfiles (/inventory)</a></li>
+        <li><a href="#modulo2">2. Flujo Completo de Ventas y Entrega de Credenciales (/sales)</a></li>
+        <li><a href="#modulo3">3. Gestión de Clientes, Ciclos y Fusión de Duplicados (/clients)</a></li>
+        <li><a href="#modulo4">4. Administración, Cobranzas del Día y Proveedores (/administracion)</a></li>
+        <li><a href="#modulo5">5. Control de Gastos y Balances Financieros</a></li>
+        <li><a href="#modulo6">6. Portal de Autoservicio del Cliente (/portal)</a></li>
+        <li><a href="#modulo7">7. Protocolo Operativo Estándar (SOP) y Prevención de Errores</a></li>
+      </ul>
+    </div>
+
+    <!-- SECCIÓN 1: INVENTARIO -->
+    <section id="modulo1">
+      <h2>1. Inventario de Cuentas y Perfiles (<code>/inventory</code>)</h2>
+      <p>El inventario almacena la materia prima del negocio: las cuentas de streaming adquiridas a proveedores mayoristas.</p>
+      
+      <h3>1.1. Cuentas Madres vs. Perfiles/Slots</h3>
+      <ul>
+        <li><strong>Cuenta Madre:</strong> Correo y clave principal del proveedor (ej. <code>proveedor_nfx@gmail.com</code>). Tiene una fecha de corte con el mayorista.</li>
+        <li><strong>Perfil / Slot:</strong> Cada uno de los espacios que la cuenta permite crear (ej. Perfil 1, Perfil 2, Perfil 3). Se asignan individualmente con su propio PIN de seguridad.</li>
+      </ul>
+
+      <h3>1.2. Tipos de Cuentas</h3>
+      <ul>
+        <li><strong>Renovables:</strong> Se pagan mes a mes al proveedor. El cliente puede renovar indefinidamente en el mismo perfil sin cambiar de correo.</li>
+        <li><strong>Desechables (Mes a mes):</strong> Mueren a los 30 días. Al terminar el mes, los clientes deben ser migrados a una cuenta nueva.</li>
+      </ul>
+
+      <h3>1.3. Estados de un Perfil</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Color</th>
+            <th>Significado y Acción Requerida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>LIBRE</code></td>
+            <td><span class="badge badge-green">Verde</span></td>
+            <td>Disponible en stock. Listo para ser vendido o usado en reemplazo de garantía.</td>
+          </tr>
+          <tr>
+            <td><code>OCUPADO</code></td>
+            <td><span class="badge badge-red">Rojo</span></td>
+            <td>Asignado a un cliente activo con venta vigente. Muestra nombre y teléfono del comprador.</td>
+          </tr>
+          <tr>
+            <td><code>CUARENTENA_PIN</code></td>
+            <td><span class="badge badge-yellow">Amarillo</span></td>
+            <td>Perfil en revisión técnica porque el cliente o proveedor modificó el PIN.</td>
+          </tr>
+          <tr>
+            <td><code>GARANTIA</code></td>
+            <td><span class="badge badge-purple">Morado</span></td>
+            <td>Apartado temporalmente para resolver una reclamación técnica.</td>
+          </tr>
+          <tr>
+            <td><code>CAIDO</code></td>
+            <td><span class="badge badge-red">Oscuro</span></td>
+            <td>Cuenta suspendida por el proveedor. Requiere reactivación o cambio de cuenta.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>1.4. Botones Clave en Inventario</h3>
+      <ul>
+        <li><code>+ Agregar Cuenta</code>: Registra una nueva cuenta madre definiendo servicio, proveedor, perfiles, PINs y tipo (desechable/renovable).</li>
+        <li><code>Vender</code> (en perfil): Realiza la venta directa de ese slot específico.</li>
+        <li><code>Vender Cuenta Completa</code>: Vende todas las pantallas de la cuenta a un solo cliente familiar o corporativo.</li>
+        <li><code>Modo Combo</code>: Activa casillas de selección para marcar perfiles de diferentes cuentas (ej. Netflix + Disney + Max) y venderlos en paquete unificado.</li>
+        <li><code>Garantía / Revivir</code>: Sustituye el perfil caído por otro libre del mismo servicio manteniendo el mismo PIN del cliente.</li>
+        <li><code>Archivar</code>: Oculta cuentas desechables vencidas para mantener el panel limpio sin borrar el historial.</li>
+      </ul>
+    </section>
+
+    <!-- SECCIÓN 2: VENTAS -->
+    <section id="modulo2">
+      <h2>2. Flujo Completo de Ventas y Entrega de Credenciales (<code>/sales</code>)</h2>
+      <p>Controla las transacciones comerciales, emisión de recibos y copia de mensajes para WhatsApp.</p>
+
+      <h3>2.1. Las 4 Formas de Venta</h3>
+      <ol>
+        <li><strong>Venta Simple de Perfil:</strong> Asigna 1 perfil de inventario a 1 cliente. Es la venta más frecuente.</li>
+        <li><strong>Venta de Cuenta Completa:</strong> Asigna la cuenta madre entera con todas sus pantallas.</li>
+        <li><strong>Venta Combo:</strong> Vincula 2, 3 o 4 servicios bajo un código de grupo (<code>groupId</code>) con fecha de corte compartida.</li>
+        <li><strong>Venta Libre:</strong> Para servicios externos o recargas que no descuentan perfiles locales.</li>
+      </ol>
+
+      <div class="callout">
+        <div class="callout-title">⚠️ REGLA DE ORO OPERATIVA: EL MENSAJE OFICIAL</div>
+        Ningún agente debe inventar mensajes en WhatsApp ni enviar contraseñas sueltas. Siempre se debe presionar el botón <strong>«Copiar mensaje al cliente»</strong> (ícono violeta en la fila de venta o botón ancho en el modal de detalle).
+      </div>
+
+      <h3>2.2. Contenido de la Plantilla Oficial Copiada</h3>
+      <ul>
+        <li>Saludo formal con el nombre del cliente.</li>
+        <li>Correo y contraseña de acceso.</li>
+        <li>Perfil asignado y PIN de bloqueo.</li>
+        <li>Fecha exacta de corte/vencimiento.</li>
+        <li><strong>Nota especial de Netflix:</strong> Instrucción clara de dar clic en <em>"Obtener ayuda" &rarr; "Usar contraseña"</em> si la TV pide código de confirmación.</li>
+        <li>Condiciones de garantía: Prohibición de cambiar contraseñas, borrar perfiles o abrir más pantallas de las adquiridas.</li>
+      </ul>
+
+      <h3>2.3. Comprobantes de Pago</h3>
+      <p>El botón <code>Descargar Factura</code> genera una imagen PNG estética con el logo de Estratosfera lista para compartir en WhatsApp o imprimir.</p>
+    </section>
+
+    <!-- SECCIÓN 3: CLIENTES -->
+    <section id="modulo3">
+      <h2>3. Gestión de Clientes, Ciclos y Fusión de Duplicados (<code>/clients</code>)</h2>
+
+      <h3>3.1. Identidad Flexible: Celulares y @Usuarios de WhatsApp</h3>
+      <p>La app soporta números con código de país (ej. <code>+573145071762</code>) y handles de WhatsApp (ej. <code>@maryp0404</code>). Incluye sanitizador de caracteres invisibles Unicode para que los enlaces a WhatsApp funcionen al 100%.</p>
+
+      <h3>3.2. Semáforo de Días Restantes</h3>
+      <ul>
+        <li><span class="badge badge-green">Verde (Normal)</span>: Más de 3 días restantes. Todo al día.</li>
+        <li><span class="badge badge-yellow">Amarillo (Alerta)</span>: Faltan entre 1 y 3 días. Momento de recordar el pago.</li>
+        <li><span class="badge badge-red">Rojo (Urgente)</span>: Vence hoy (0 días) o está vencido (&lt;0 días). Requiere cobro o corte.</li>
+        <li><span class="badge badge-blue">Azul (Renovado)</span>: El cliente ya pagó el ciclo siguiente por adelantado.</li>
+      </ul>
+
+      <h3>3.3. Menú de Acciones por Cliente (Botón <code>...</code>)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Acción</th>
+            <th>Para qué sirve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Enviar Recordatorio</strong></td>
+            <td>Abre WhatsApp con el mensaje oficial de cobro y métodos de pago (Nequi, Bancolombia, Bre-B, Nu, PayPal).</td>
+          </tr>
+          <tr>
+            <td><strong>Renovar Servicio</strong></td>
+            <td>Extiende el servicio por 1, 3, 6 o 12 meses y crea el ingreso contable.</td>
+          </tr>
+          <tr>
+            <td><strong>Corregir Vencimiento</strong></td>
+            <td>Ajusta la fecha de corte sin generar cobro nuevo (para errores de tipeo).</td>
+          </tr>
+          <tr>
+            <td><strong>Reenviar Datos</strong></td>
+            <td>Genera nuevamente el mensaje oficial de entrega de credenciales.</td>
+          </tr>
+          <tr>
+            <td><strong>Garantía (Auto)</strong></td>
+            <td>Intercambia automáticamente el perfil por uno libre del mismo servicio sin alterar la fecha pagada.</td>
+          </tr>
+          <tr>
+            <td><strong>Liberar Perfil</strong></td>
+            <td><strong>Obliga a cambiar el PIN</strong> del perfil antes de devolverlo a estado <code>LIBRE</code> para evitar que el cliente siga accediendo gratis.</td>
+          </tr>
+          <tr>
+            <td><strong>Fusionar / Unificar</strong></td>
+            <td>Traspasa todo el historial de un cliente duplicado al principal y elimina el sobrante.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>3.4. Pestaña "Unificar / Duplicados"</h3>
+      <p>Agrupa automáticamente clientes que tienen el mismo nombre pero diferente celular o handle (ej. Mary Pérez celular vs. Mary Pérez @handle). Permite elegir cuál se conserva como principal y traslada el 100% de las ventas sin pérdida de datos.</p>
+    </section>
+
+    <!-- SECCIÓN 4: ADMINISTRACIÓN -->
+    <section id="modulo4">
+      <h2>4. Administración, Cobranzas del Día y Proveedores (<code>/administracion</code>)</h2>
+
+      <h3>4.1. Sección "Cobros del Día"</h3>
+      <p>Calcula el estado derivado en tiempo real según la hora de Bogotá (UTC-5):</p>
+      <ul>
+        <li><code>VIGENTE</code>: Fecha de corte &ge; Hoy.</li>
+        <li><code>POR_VENCER</code>: Vence en los próximos 3 días.</li>
+        <li><code>VENCIDO / POR COBRAR</code>: Fecha de corte &lt; Hoy y no tiene renovación posterior.</li>
+      </ul>
+
+      <h3>4.2. Pagos a Proveedores</h3>
+      <p>Clasifica las cuentas de mayoristas que vencen en 4 bloques: <strong>AYER, HOY, MAÑANA y PRÓXIMOS</strong>. Permite marcar como pagada creando automáticamente el gasto correspondiente.</p>
+
+      <h3>4.3. Disparo de Recordatorios Bot</h3>
+      <p>Envía en lote recordatorios a todos los clientes que tengan entre 0 y 2 días restantes para corte con un solo clic.</p>
+
+      <h3>4.4. Control de Nómina</h3>
+      <p>Acumula los días trabajados y el valor a pagar. Al pulsar <code>Pagar Nómina</code>, crea el gasto contable y reinicia el ciclo de cobro.</p>
+    </section>
+
+    <!-- SECCIÓN 5: EGRESOS -->
+    <section id="modulo5">
+      <h2>5. Control de Gastos y Balances Financieros</h2>
+      <p>En <code>/sales</code> pestaña <strong>Egresos</strong> se deben ingresar todas las salidas de dinero:</p>
+      <ul>
+        <li><code>PROVEEDOR</code>: Compra o renovación de cuentas madres.</li>
+        <li><code>NOMINA</code>: Sueldos de agentes y colaboradores.</li>
+        <li><code>GASTO_ADMIN</code>: Hosting, licencias, bots, telefonía.</li>
+        <li><code>PUBLICIDAD</code>: Anuncios y promociones.</li>
+      </ul>
+      <p><strong>Balance Total = Ingresos Totales - Egresos Totales</strong></p>
+    </section>
+
+    <!-- SECCIÓN 6: PORTAL -->
+    <section id="modulo6">
+      <h2>6. Portal de Autoservicio del Cliente (<code>/portal</code>)</h2>
+      <p>El cliente ingresa con su número o Magic Link único y puede:</p>
+      <ul>
+        <li>Ver todos sus servicios contratados y cuentas activas.</li>
+        <li>Consultar correos, claves, nombres de perfil y PINs actualizados.</li>
+        <li>Ver los días restantes de cada servicio.</li>
+        <li>Solicitar soporte o renovación directa por WhatsApp.</li>
+      </ul>
+    </section>
+
+    <!-- SECCIÓN 7: SOP -->
+    <section id="modulo7">
+      <h2>7. Protocolo Operativo Estándar (SOP) y Prevención de Errores</h2>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">⚠️ ERRORES QUE NINGÚN AGENTE DEBE COMETER</div>
+        <ol>
+          <li><strong>Nunca liberar un perfil sin cambiar el PIN:</strong> Si se libera sin nuevo PIN, el cliente viejo seguirá usando la pantalla y bloqueará al cliente nuevo.</li>
+          <li><strong>Nunca crear clientes duplicados:</strong> Si el cliente ahora escribe desde un @usuario nuevo, usar la herramienta de <em>Fusión de Clientes</em>.</li>
+          <li><strong>Nunca redactar mensajes manuales:</strong> Usar siempre el botón <em>Copiar mensaje al cliente</em>.</li>
+          <li><strong>Nunca modificar correos de cuentas madres:</strong> El proveedor puede cancelar la garantía.</li>
+        </ol>
+      </div>
+
+      <h3>Checklist de Venta Rápida</h3>
+      <ol>
+        <li>Verificar slot <code>LIBRE</code> en Inventario.</li>
+        <li>Hacer clic en <code>Vender</code> &rarr; Ingresar cliente y método de pago.</li>
+        <li>Guardar venta y pulsar <code>Copiar mensaje al cliente</code>.</li>
+        <li>Pegar el texto en WhatsApp y enviar.</li>
+      </ol>
+    </section>
+
+    <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: var(--text-muted); font-size: 12px;">
+      Documento Confidencial de Operaciones — Estratosfera App • Prohibida su distribución no autorizada.
+    </footer>
+  </div>
+
+</body>
+</html>
