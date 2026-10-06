@@ -1,335 +1,439 @@
-# MANUAL DE USUARIO Y GUÍA OPERATIVA MAESTRA
-## Plataforma Estratosfera — Sistema de Gestión de Streaming, Clientes y Finanzas
+# MANUAL DE USUARIO Y GUÍA OPERATIVA MAESTRA (100% EXHAUSTIVO)
+## Plataforma Estratosfera — Sistema de Gestión Integral de Streaming, Clientes, Inventario y Finanzas
 
 ---
 
-## ÍNDICE GENERAL
-1. **Introducción y Filosofía del Sistema**
-2. **Estructura y Navegación de la Aplicación**
-3. **Módulo 1: Inventario de Cuentas y Perfiles (`/inventory`)**
-   - 3.1. Cuentas Madres vs. Perfiles/Slots
-   - 3.2. Cuentas Renovables vs. Cuentas Desechables
-   - 3.3. Creación de una Cuenta Madre y Proveedor (Paso a Paso)
-   - 3.4. Estados de un Perfil (`LIBRE`, `OCUPADO`, `CUARENTENA_PIN`, `GARANTIA`, `CAIDO`)
-   - 3.5. Explicación de Cada Botón y Acción en Inventario
-4. **Módulo 2: Flujo Completo de Ventas (`/sales`)**
-   - 4.1. Venta Simple de Perfil
-   - 4.2. Venta de Cuenta Completa
-   - 4.3. Venta de Combo (2, 3 o 4 Servicios)
-   - 4.4. Venta Libre (Sin Perfil Asociado)
-   - 4.5. Facturación y Generación de Comprobantes
-   - 4.6. El Botón Crítico: "Copiar Mensaje al Cliente (WhatsApp)"
-5. **Módulo 3: Gestión de Clientes, Ciclos y Duplicados (`/clients`)**
-   - 5.1. Identidad de Cliente: Celular vs. `@usuario` de WhatsApp
-   - 5.2. Semáforo de Vencimientos (Urgente, Alerta, Normal, Renovado)
-   - 5.3. Menú de Acciones por Cliente (Renovar, Garantía, Migrar, Rotar PIN, Liberar)
-   - 5.4. Pestaña de Auditoría (Acciones Prioritarias de Corte y Cobro)
-   - 5.5. Pestaña de Unificación / Fusión de Clientes Duplicados
-6. **Módulo 4: Administración, Cobranzas del Día y Proveedores (`/administracion`)**
-   - 6.1. Señal de Cobro y Ciclo Derivado (`VIGENTE`, `POR_VENCER`, `VENCIDO`)
-   - 6.2. Lista "Cobros del Día" (Zona Horaria Bogotá UTC-5)
-   - 6.3. Disparo Masivo de Recordatorios (Bot Automático)
-   - 6.4. Vencimientos de Cuentas con Proveedores (Ayer, Hoy, Mañana, Próximos)
-   - 6.5. Control y Pago de Nómina del Equipo
-7. **Módulo 5: Egresos y Control Financiero**
-   - 7.1. Registro de Gastos y Categorías
-   - 7.2. Balance General (Ingresos - Egresos = Utilidad Neta)
+## ÍNDICE GENERAL DETALLADO
+1. **Arquitectura y Filosofía del Sistema**
+2. **Mapa de Navegación y Menús Globales**
+3. **Módulo 1: Inventario de Cuentas y Perfiles (`/inventory`) — Botón por Botón**
+   - 3.1. Conceptos Fundamentales: Cuentas Madres vs. Slots/Perfiles
+   - 3.2. Cuentas Renovables vs. Cuentas Desechables (Mes a mes)
+   - 3.3. Barra Superior: Búsqueda, Filtros de Tipo y Proveedor, Vistas (Tarjetas/Tabla)
+   - 3.4. Botón `+ Agregar Cuenta` (Formulario Completo Paso a Paso)
+   - 3.5. Menú Universal de Inventario (`...`): Nuevo Proveedor, Recordatorio Bot y Cierre de Sesión
+   - 3.6. Tarjeta de Cuenta Madre: Cada Botón y Acción (Vender Cuenta Completa, Reemplazar Cuenta, Garantía, Archivar, Editar, Eliminar)
+   - 3.7. Tarjeta de Perfil / Slot: Estados (Libre, Ocupado, Cuarentena PIN, Garantía, Caído) y sus Botones
+   - 3.8. La Barra Flotante de `Modo Combo`: Armado de Paquetes Multicuenta
+   - 3.9. Panel Desplegable: `Cuentas Desechables Expiradas` y Botón `Archivar Todas`
+4. **Módulo 2: Flujo Completo de Ventas y Facturación (`/sales`) — Botón por Botón**
+   - 4.1. Barra de Navegación Temporal: Diario, Semanal, Mensual, Anual y Flechas de Desplazamiento
+   - 4.2. Tarjeta de Balance General: Balance Total, Ingresos, Egresos y Botón `Refrescar`
+   - 4.3. Pestañas Principales: `Ingresos` vs. `Egresos`
+   - 4.4. Botón `+ Nueva Venta`: Formulario Completo, Autocompletado de Clientes y Selección de Perfil
+   - 4.5. Las 4 Modalidades de Venta (Simple, Cuenta Completa, Combo, Venta Libre)
+   - 4.6. Fila de Cada Venta en la Lista: Clic en Fila, Descargar Factura, Copiar Mensaje y Editar
+   - 4.7. El Botón Crítico: `Copiar Mensaje al Cliente (WhatsApp)` (En Lista y en Detalle)
+   - 4.8. Modal de Edición de Venta: Modificación de Fechas, Clientes, Duración, Monto y Botón de Eliminación Segura (Sin Rehidratación de Dueños Viejos)
+   - 4.9. Botón `+ Nuevo Gasto`: Categorías (Proveedor, Nómina, Admin, Publicidad, Otro) y Asignación de Proveedores
+5. **Módulo 3: Cartera de Clientes, Ciclos y Fusión (`/clients`) — Botón por Botón**
+   - 5.1. Identidad de Cliente: Celulares Internacionales vs. `@usuario` de WhatsApp y Limpieza de Caracteres Invisibles
+   - 5.2. Los 3 Modos de Vista: `Clientes` (Lista), `Auditoría` (Alertas) y `Unificar / Duplicados`
+   - 5.3. Tarjeta de Cliente: Semáforo de Colores (Verde, Amarillo, Rojo, Azul), Días Restantes y Edición Rápida de Fecha
+   - 5.4. Botón Rápido de Chat de WhatsApp (Recordatorio) y Botón Rápido de Renovación
+   - 5.5. Menú Desplegable del Cliente (`...`): Cada una de las 10 Acciones
+     - Reenviar Datos
+     - Garantía Automática (Swap Inmediato)
+     - Migración Manual
+     - Rotación de Pass / PIN
+     - Asignar Nuevo Perfil
+     - Liberar Perfil (Obligatoriedad del Nuevo PIN)
+     - Cambiar Plan / Upgrade
+     - Fusionar / Unificar Cliente
+   - 5.6. Vista de Auditoría: Detección de Déficit Técnico (`CORTAR`) vs. Ciclo de Pago (`COBRAR`), Etiquetas de Tiempo y Botón `Gestionar Todo`
+   - 5.7. Vista de Unificación de Duplicados: Detección Automática por Nombre, Botón `Conservar como Principal` y Modal de `Fusión Manual`
+   - 5.8. Menú Superior de Clientes: Enviar Mensaje Masivo Bot, Reenviar Bienvenida con Corrección y Fusión Manual
+6. **Módulo 4: Administración, Cobranzas del Día y Proveedores (`/administracion`) — Botón por Botón**
+   - 6.1. Indicadores Financieros de Alto Nivel
+   - 6.2. Sección `Cobros del Día`: Señal de Ciclo Derivado (`VIGENTE`, `POR_VENCER`, `VENCIDO`) y Filtros de Corte
+   - 6.3. Botón `Disparar Recordatorios Bot`: Envíos Masivos Automáticos a Clientes con 0-2 Días
+   - 6.4. Sección de Proveedores: Agrupación en 4 Bloques (`AYER`, `HOY`, `MAÑANA`, `PRÓXIMOS`)
+   - 6.5. Botón `Marcar Pagado`: Creación Automática del Egreso Contable a Proveedor y Ocultamiento de Ficha
+   - 6.6. Módulo de Nómina: Días Acumulados, Cálculo de Pago y Botón `Pagar Nómina` con Reinicio de Contador
+   - 6.7. Widget de Stock Bajo y Necesidad de Reabastecimiento
+7. **Módulo 5: Analytics y Rendimiento Financiero (`/analytics`)**
+   - 7.1. Selector Anual y Mensual
+   - 7.2. Gráfico de Ingresos vs. Egresos
+   - 7.3. Ranking de Servicios Más Vendidos
+   - 7.4. Tasa de Retención de Clientes
 8. **Módulo 6: Portal de Autoservicio del Cliente (`/portal`)**
-   - 8.1. Acceso vía Celular y Magic Link
-   - 8.2. Lo que ve el Cliente (Credenciales, Vencimientos y Soporte)
-9. **Protocolo Operativo Estándar (SOP) para Agentes**
-   - 9.1. Procedimiento para Vender un Servicio
-   - 9.2. Procedimiento para Renovar un Servicio
-   - 9.3. Procedimiento para Dar Garantía (Cambio por Caída o Falla)
-   - 9.4. Procedimiento para Dar de Baja / No Renovar (Liberación de Slot con PIN)
-   - 9.5. Errores Críticos que Deben Evitarse
+   - 8.1. Métodos de Ingreso: Teléfono/Handle, Código OTP y Magic Link
+   - 8.2. Panel del Cliente: Credenciales, Fechas de Corte, Reglas de Uso y Enlace a Soporte
+9. **Protocolos Operativos Estándar (SOP) y Buenas Prácticas**
+   - 9.1. Flujo Paso a Paso para una Venta Nueva
+   - 9.2. Flujo Paso a Paso para una Renovación
+   - 9.3. Flujo Paso a Paso para una Garantía
+   - 9.4. Flujo Paso a Paso para dar de Baja un Cliente
+   - 9.5. Los 7 Pecados Capitales del Agente (Errores Operativos Prohibidos)
 
 ---
 
-## 1. INTRODUCCIÓN Y FILOSOFÍA DEL SISTEMA
+## 1. ARQUITECTURA Y FILOSOFÍA DEL SISTEMA
 
-La aplicación **Estratosfera** es una solución integral diseñada para automatizar y ordenar el ciclo de vida de los servicios de streaming y entretenimiento:
-- **Separación estricta entre Cuentas Madres y Perfiles:** Una cuenta de proveedor (ej. Netflix 5 pantallas) contiene slots individuales que se comercializan a clientes finales.
-- **Identidad de Contacto Flexible:** Soporta tanto números telefónicos tradicionales (+57...) como nombres de usuario de WhatsApp (`@usuario`), eliminando caracteres invisibles y duplicidades.
-- **Trazabilidad Financiera:** Cada movimiento genera una transacción que alimenta ingresos, gastos, nómina y alertas de cobranza.
-- **Garantías Ágiles:** Reemplazo de perfiles caídos manteniendo la fecha de corte original del cliente sin descuadrar la caja.
+La aplicación **Estratosfera** fue construida para resolver los problemas reales de la venta y postventa de cuentas de streaming:
+1. **Separación Cuenta Madre vs. Perfil:** Nunca se le da la cuenta entera al cliente a menos que haya comprado una "Cuenta Completa". El inventario vende perfiles individuales con PIN independiente.
+2. **Canales de Contacto Flexibles:** Un cliente puede ser contactado por celular (`+573145071762`) o por handle de WhatsApp (`@maryp0404`). El sistema sanitiza caracteres bidireccionales de WhatsApp Web para garantizar que los links directos funcionen.
+3. **Cero Dependencia de `estado_pago === PAGADO`:** Para saber quién debe hoy, el sistema evalúa la fecha de corte contra la hora legal de Bogotá (UTC-5), permitiendo ver quién está al día y quién debe renovar hoy mismo.
+4. **Protección de Inventario en Bajas:** Cuando un cliente no renueva, la app exige cambiar el PIN antes de devolver el perfil a `LIBRE`, impidiendo accesos no autorizados.
 
 ---
 
-## 2. ESTRUCTURA Y NAVEGACIÓN DE LA APLICACIÓN
+## 2. MAPA DE NAVEGACIÓN Y MENÚS GLOBALES
 
-La barra de navegación principal (y menú móvil inferior) se divide en 5 grandes áreas operativas:
-
-| Módulo | Ruta | Propósito Principal |
-| :--- | :--- | :--- |
-| **Ventas** | `/sales` | Registro de ingresos y gastos diarios, historial de facturación, descarga de recibos y copia de mensajes oficiales de entrega. |
-| **Clientes** | `/clients` | Fichas de clientes, días restantes de cada servicio, renovación, garantías, auditoría de cortes y fusión de duplicados. |
-| **Inventario** | `/inventory` | Cuentas matrices de proveedores, perfiles libres/ocupados, rotación técnica de PINs/claves y armado de combos. |
-| **Administración**| `/administracion` | Centro de cobranzas ("Cobros del Día"), pagos pendientes a proveedores, acumulado de nómina y métricas de salud financiera. |
-| **Analytics** | `/analytics` | Reportes gráficos de rendimiento anual, servicios más vendidos, tasa de retención y métricas de crecimiento. |
-| **Portal Cliente**| `/portal` | Espacio web de autoservicio donde el cliente final consulta sus credenciales y fechas de corte sin saturar al agente. |
+En todas las pantallas principales (Ventas, Clientes, Inventario, Administración, Analytics) se dispone de:
+- **Barra de Navegación Superior / Menú Móvil Inferior:**
+  - `Ventas` (`/sales`)
+  - `Clientes` (`/clients`)
+  - `Inventario` (`/inventory`)
+  - `Administración` (`/administracion`)
+  - `Analytics` (`/analytics`)
+- **Menú Universal de 3 Puntos Verticales (`⋮`):** Acceso rápido a herramientas de diagnóstico, cierre de sesión, disparos masivos y configuración de proveedores.
 
 ---
 
 ## 3. MÓDULO 1: INVENTARIO DE CUENTAS Y PERFILES (`/inventory`)
 
-El inventario es el corazón técnico del negocio. Aquí se cargan los accesos comprados a proveedores mayoristas antes de ser entregados a los clientes.
-
-### 3.1. Cuentas Madres vs. Perfiles/Slots
-- **Cuenta Madre:** Es la cuenta principal de streaming (correo electrónico + contraseña maestra) adquirida a un proveedor (ej. `proveedor1_nfx@gmail.com`).
-- **Perfil o Slot:** Es cada uno de los espacios que la cuenta permite crear (ej. Perfil 1, Perfil 2, Perfil 3, Perfil 4, Perfil 5). Cada perfil tiene su propio nombre y PIN de bloqueo de 4 dígitos.
+### 3.1. Cuentas Madres vs. Slots/Perfiles
+- **Cuenta Madre:** Correo electrónico y contraseña matriz adquiridos al mayorista (ej. `proveedor_max@gmail.com`). Tiene un número máximo de pantallas o perfiles permitidos.
+- **Slot / Perfil:** Cada espacio individual de usuario dentro de la cuenta (Perfil 1, Perfil 2, etc.), con su PIN de seguridad de 4 dígitos.
 
 ### 3.2. Cuentas Renovables vs. Cuentas Desechables
-- **Renovable:** Cuenta que se paga mes a mes al proveedor para conservarla activa indefinidamente. Los perfiles son estables y los clientes pueden renovar en el mismo perfil sin cambiar de correo.
-- **Desechable (Mes a mes):** Cuenta temporal que muere al cabo de 30 días. Al terminar el ciclo, no se renueva al proveedor; los clientes deben ser migrados a una cuenta nueva.
+- **Renovable:** Se le paga mes a mes al proveedor para que la cuenta se mantenga viva. El cliente puede renovar indefinidamente en el mismo perfil sin cambiar de correo ni clave.
+- **Desechable:** Cuenta que dura exactamente 30 días. Al terminar el mes, no se renueva con el proveedor; los clientes que renovaron deben migrarse a otra cuenta nueva.
 
-### 3.3. Creación de una Cuenta Madre (Paso a Paso)
-1. Entrar a `/inventory` y hacer clic en el botón superior derecho **`+ Agregar Cuenta`**.
-2. **Servicio:** Seleccionar del desplegable (Netflix, Disney+, Max, Prime Video, Spotify, YouTube, etc.) o activar "Servicio Personalizado".
-3. **Correo y Contraseña:** Ingresar las credenciales exactas entregadas por el proveedor.
-4. **Proveedor:** Seleccionar el proveedor existente o escribir uno nuevo para crear la ficha.
-5. **Cantidad de Perfiles:** Indicar cuántos slots activos tiene la cuenta (ej. 5 perfiles para Netflix).
-6. **Configuración de PINs:** Activar "Usar PINs" y definir el PIN de cada perfil (o generarlo automáticamente).
-7. **Tipo de Cuenta:** Marcar si es *Desechable* o *Renovable*.
-8. **Día de Corte / Fecha de Activación:** Ingresar cuándo vence la cuenta con el proveedor.
-9. Pulsar **`Guardar Cuenta`**. Los perfiles quedarán creados en estado `LIBRE`.
+### 3.3. Barra Superior de Filtros y Búsqueda
+- **Barra de Búsqueda:** Permite buscar en tiempo real por correo de la cuenta, nombre del proveedor o nombre del servicio.
+- **Pestañas de Filtro:**
+  - `TODAS`: Muestra todas las cuentas activas.
+  - `RENOVABLES`: Muestra únicamente cuentas que se pagan mes a mes.
+  - `DESECHABLES`: Muestra cuentas temporales de 30 días.
+  - `ARCHIVADAS`: Muestra cuentas antiguas dadas de baja o expiradas.
+- **Selector de Proveedor:** Filtra las cuentas según el mayorista al que se le compraron (o `Todos los Proveedores`).
+- **Selector de Vista (`Tarjetas` vs. `Tabla`):** Alterna entre la vista visual de tarjetas interactivas y la vista tabular densa para inventarios masivos.
 
-### 3.4. Estados de un Perfil
-- 🟢 **`LIBRE`:** Perfil disponible en stock listo para ser vendido o usado como garantía.
-- 🔴 **`OCUPADO`:** Perfil asignado a un cliente activo con venta vigente. Muestra el nombre y celular del cliente.
-- 🟡 **`CUARENTENA_PIN`:** Perfil cuyo PIN fue reportado como cambiado o en revisión técnica.
-- 🟠 **`GARANTIA`:** Perfil apartado temporalmente para solucionar un reclamo técnico.
-- ⚫ **`CAIDO`:** Cuenta completa o perfil suspendido por el proveedor. Requiere reemplazo o reactivación.
+### 3.4. Botón `+ Agregar Cuenta` (Formulario Completo)
+Al pulsar este botón se abre el modal para dar de alta una cuenta madre:
+1. **Servicio:** Menú desplegable con Netflix, Disney+, Max, Prime Video, Paramount+, YouTube, Spotify, Crunchyroll, ViX, Plex, IPTV, Apple TV+, ChatGPT, CapCut, Canva, etc.
+   - *Casilla "Servicio Personalizado":* Permite escribir el nombre de cualquier otra plataforma no listada.
+2. **Correo y Contraseña:** Credenciales exactas entregadas por el proveedor.
+3. **Proveedor:** Seleccionar de la lista de proveedores registrados o hacer clic en **`+ Nuevo Proveedor`** para crearlo en el acto.
+4. **Cantidad de Perfiles:** Número de slots que tiene la cuenta (ej. 5 para Netflix, 4 para Disney).
+5. **Casilla "Usar PINs":**
+   - Al marcarla, se despliegan campos para definir el PIN de 4 dígitos de cada perfil (o generarlos automáticamente).
+6. **Casilla "Es Desechable (Mes a mes)":** Marca la cuenta como temporal de 30 días. Si se deja desmarcada, queda como Renovable.
+7. **Fecha de Activación / Día de Corte:** Día del mes en que vence la cuenta con el mayorista.
+8. **Duración en Meses:** Tiempo contratado con el proveedor (1, 2, 3, 6 o 12 meses).
+9. Botón **`Guardar Cuenta`**: Crea la cuenta y genera todos sus perfiles en estado `LIBRE`.
 
-### 3.5. Botones y Acciones en Inventario
-- **`Vender` (en tarjeta de perfil):** Abre el modal de venta inmediata asignando ese slot exacto al cliente.
-- **`Vender Cuenta Completa` (en tarjeta de cuenta):** Vende todos los perfiles de la cuenta a un solo cliente (aplica para clientes corporativos o familias que compran la cuenta entera).
-- **`Modo Combo` (botón superior):** Permite activar casillas de verificación para seleccionar 2, 3 o 4 perfiles de distintas cuentas y venderlos en un solo paquete consolidado.
-- **`Garantía / Revivir`:** En perfiles con problemas, intercambia el perfil por otro libre del mismo servicio manteniendo el mismo PIN y la fecha del cliente.
-- **`Rotar Contraseña / PIN`:** Modifica la contraseña o el PIN en el sistema cuando el proveedor o el agente hace un cambio técnico.
-- **`Archivar`:** Oculta cuentas desechables vencidas para mantener limpia la vista de trabajo diario sin perder el histórico.
+### 3.5. Menú Universal de Inventario (`⋮`)
+- **`Nuevo Proveedor`:** Abre un modal rápido para crear un proveedor ingresando solo su nombre.
+- **`Prueba Recordatorio Bot`:** Envía un mensaje de prueba al bot para verificar que la pasarela de WhatsApp esté activa.
+- **`Cerrar Sesión`:** Desconecta la sesión administrativa de forma segura.
+
+### 3.6. Tarjeta de Cuenta Madre (Acciones por Cuenta)
+En la cabecera de cada cuenta se encuentran los siguientes controles:
+- **Ícono del Ojo / Ocultar:** Muestra u oculta la contraseña de la cuenta madre.
+- **Botón `Copiar Credenciales` (`📋`):** Copia al portapapeles el correo y la contraseña de la cuenta madre en formato limpio.
+- **Botón `Vender Cuenta Completa` (`💲`):** Abre el modal de venta para transferir todas las pantallas de esa cuenta a un único cliente.
+- **Botón `Editar Cuenta` (`✏️`):** Permite actualizar correo, contraseña, proveedor, día de corte, duración y notas.
+- **Botón `Garantía / Caída` (`🛡️`):** Marca la cuenta en estado de garantía o caída técnica, alertando que sus perfiles no deben usarse.
+- **Botón `Reemplazar Cuenta` (`🔄`):** Abre el asistente de migración masiva. Permite sustituir esta cuenta por otra nueva del proveedor, trasladando automáticamente a todos los clientes a la nueva cuenta sin perder sus fechas de corte.
+- **Botón `Archivar Cuenta` (`📦`):** Mueve la cuenta a la pestaña de archivadas (solo visible si la cuenta está vencida).
+- **Botón `Eliminar Cuenta` (`🗑️`):** Borra la cuenta del inventario (solo permitido si no tiene clientes activos asignados).
+
+### 3.7. Tarjeta de Perfil / Slot (Acciones por Perfil)
+Cada slot dentro de la cuenta muestra su nombre (Perfil 1, Perfil 2...), su PIN y su estado actual:
+- **Badge de Estado:**
+  - 🟢 `LIBRE`: Perfil disponible para la venta.
+  - 🔴 `OCUPADO`: Perfil vendido. Muestra el nombre y teléfono del cliente y su fecha de corte.
+  - 🟡 `CUARENTENA_PIN`: Perfil en revisión técnica por cambio de clave/PIN.
+  - 🟣 `GARANTIA`: Perfil apartado para resolver un reclamo.
+  - ⚫ `CAIDO`: Perfil reportado como inaccesible.
+- **Botón `Vender` (`+` o `💲`):** Disponible cuando está `LIBRE`. Abre el modal de venta con ese perfil preseleccionado.
+- **Botón `Copiar PIN`:** Copia el PIN de 4 dígitos de ese perfil.
+- **Botón `Rotar PIN / Cambiar PIN` (`✏️`):** Permite cambiar el PIN del perfil en el sistema.
+- **Botón `Cambiar Estado Manual`:** Permite alternar manualmente el estado entre LIBRE, CUARENTENA_PIN, GARANTIA o CAIDO.
+- **Si el perfil está OCUPADO:**
+  - **Botón `Garantía / Revivir`:** Sustituye inmediatamente este slot por otro libre del mismo servicio manteniendo la fecha de corte del cliente.
+  - **Botón `Liberar Perfil`:** Quita al cliente de la cuenta. **Exige ingresar un nuevo PIN obligatorio**.
+  - **Botón `Ver / Descargar Factura`:** Genera la factura PNG de la venta de este perfil.
+
+### 3.8. Modo Combo (Armado de Paquetes Multicuenta)
+1. Hacer clic en el botón superior **`Activar Modo Combo`**.
+2. Cada perfil del inventario mostrará una casilla de verificación.
+3. Marcar los perfiles de diferentes cuentas que integrarán el paquete (ej. 1 perfil de Netflix de una cuenta + 1 perfil de Disney de otra cuenta + 1 perfil de Max de una tercera cuenta).
+4. En la parte inferior aparecerá una barra flotante indicando: *"X perfiles seleccionados"*.
+5. Botones de la barra flotante:
+   - **`Cancelar`:** Deselecciona todos los perfiles y sale del modo combo.
+   - **`Vender Combo Seleccionado`:** Abre el modal de venta de combo para ingresar el cliente, precio total del paquete, método de pago y duración. Todas las cuentas quedan vinculadas bajo un mismo `groupId` y el mensaje oficial se genera de forma unificada.
+
+### 3.9. Panel "Cuentas Desechables Expiradas"
+- Ubicado en la parte superior del inventario como un banner colapsable.
+- Muestra el listado de todas las cuentas desechables cuyo periodo de 30 días ya expiró.
+- Botón **`Archivar Todas`**: Mueve en un solo clic todas las cuentas vencidas a la sección de archivo para no saturar la vista operativa.
 
 ---
 
-## 4. MÓDULO 2: FLUJO COMPLETO DE VENTAS (`/sales`)
+## 4. MÓDULO 2: FLUJO COMPLETO DE VENTAS Y FACTURACIÓN (`/sales`)
 
-En `/sales` se controlan todas las entradas de dinero y la emisión de credenciales oficiales.
+### 4.1. Barra de Navegación Temporal
+- **Botones de Modo:** Permite ver movimientos en modo `Diario`, `Semanal`, `Mensual` o `Anual`.
+- **Selector de Meses / Años:** Botones horizontales para saltar rápidamente de un mes a otro.
+- **Flechas `◀` y `▶`:** Navegan cronológicamente hacia atrás o adelante.
 
-### 4.1. Venta Simple de Perfil (Flujo Estándar)
-1. Hacer clic en **`Nueva Venta`** (botón verde superior o flotante en móvil).
-2. **Cliente:** Escribir el número de celular (ej. `+573145071762`) o su usuario de WhatsApp (ej. `@maryp0404`). Si el cliente ya existe, el autocompletado sugerirá su ficha.
-3. **Nombre del Cliente:** Confirmar o actualizar el nombre real.
-4. **Producto / Servicio:** Seleccionar del inventario disponible el perfil que se va a asignar (ej. *Netflix - Perfil 3*).
-5. **Monto:** El sistema precarga el precio sugerido según el servicio. Puede editarse si hubo descuento o promoción.
-6. **Método de Pago:** Seleccionar Nequi, Bancolombia, Daviplata, Efectivo o USDT.
-7. **Duración:** Definir los meses adquiridos (1, 2, 3, etc.). El sistema calcula la fecha de vencimiento con protección fin de mes (ej. 31 de enero + 1 mes = 28 de febrero).
-8. Hacer clic en **`Confirmar Venta`**.
-9. El perfil pasa inmediatamente a `OCUPADO` en Inventario y la venta queda registrada en Ingresos.
+### 4.2. Tarjeta de Balance General
+Muestra la salud financiera del periodo seleccionado:
+- **Balance Total:** $\text{Ingresos} - \text{Egresos}$.
+- **Caja de Ingresos (Verde):** Suma total de ventas del periodo.
+- **Caja de Egresos (Roja):** Suma total de gastos del periodo.
+- **Botón `Refrescar`:** Recarga los totales en tiempo real directamente de la base de datos.
 
-### 4.2. Venta de Cuenta Completa
-- Se utiliza cuando el cliente compra la cuenta madre entera (todas las pantallas).
-- Se ejecuta directamente desde el botón **`Vender Cuenta Completa`** en `/inventory` o seleccionando la cuenta en el modal de ventas.
-- El mensaje generado entrega el correo y contraseña maestro indicando las reglas de no modificar correos ni contraseñas principales.
+### 4.3. Pestañas `Ingresos` vs. `Egresos`
+- **Pestaña `Ingresos`:** Lista cronológica de todas las ventas realizadas a clientes.
+- **Pestaña `Egresos`:** Lista de todos los pagos a proveedores, nómina y gastos de operación.
 
-### 4.3. Venta Combo (2 a 4 Servicios)
-1. En `/inventory`, hacer clic en **`Activar Modo Combo`**.
-2. Marcar las casillas de los perfiles que integrarán el combo (ej. 1 perfil de Netflix + 1 perfil de Disney+ + 1 perfil de Max).
-3. Hacer clic en **`Vender Combo Seleccionado`**.
-4. Ingresar el cliente, método de pago, monto total del combo y duración.
-5. El sistema vincula las transacciones bajo un identificador común (`groupId`).
-6. Al finalizar, genera un **mensaje unificado** que incluye los correos, perfiles, PINs y la nota de inicio de sesión de Netflix en un solo texto limpio.
+### 4.4. Botón `+ Nueva Venta` (Formulario de Venta)
+Disponible arriba a la derecha en PC y como botón verde flotante en móvil:
+1. **Buscar Cliente:** Campo inteligente. Si el cliente ya existe, escribe parte de su nombre, celular o `@usuario` y selecciónalo de la lista para reutilizar su ficha. Si es nuevo, escribe su número o `@usuario` y abajo su nombre completo.
+2. **Producto / Servicio:** Lista desplegable organizada por categorías:
+   - *Perfiles Disponibles:* Muestra todos los slots libres del inventario con su cuenta y servicio.
+   - *Venta Libre:* Para ventas que no descuentan perfiles locales.
+3. **Monto:** Sugiere automáticamente el precio configurado para ese servicio. Permite modificarlo si se acordó una oferta.
+4. **Método de Pago:** Menú con Nequi, Bancolombia, Daviplata, Efectivo o USDT.
+5. **Fecha de Venta:** Selecciona la fecha del pago (por defecto hoy).
+6. **Duración (Meses):** Selecciona 1, 2, 3, etc. El sistema calcula la fecha de vencimiento exacta protegiendo los cierres de mes.
+7. Botón **`Confirmar Venta`**: Registra el ingreso financiero, asigna el perfil en inventario a estado `OCUPADO` y prepara el mensaje de entrega.
 
-### 4.4. Venta Libre (Sin Perfil Asociado)
-- Si se vende un servicio externo que no se administra dentro del inventario local (ej. recargas, IPTV externo, licencias de software), se selecciona la opción *"Venta Libre"*.
-- Suma al balance financiero sin descontar perfiles del inventario.
+### 4.5. Las 4 Modalidades de Venta
+1. **Venta Simple de Perfil:** Asigna 1 perfil de una cuenta madre a 1 cliente.
+2. **Venta de Cuenta Completa:** Se vende la cuenta matriz entera con todas sus pantallas.
+3. **Venta de Combo:** Creada desde el Modo Combo de Inventario; une múltiples perfiles con una sola fecha de corte y un solo pago.
+4. **Venta Libre:** Venta sin slot asociado (recargas, servicios externos).
 
-### 4.5. Facturación y Comprobantes de Pago
-- En la lista de ingresos, cada venta tiene un botón con ícono de flecha hacia abajo **`Descargar Factura`**.
-- Al pulsarlo, el sistema genera una imagen PNG profesional de comprobante con los logos de Estratosfera, fecha, monto, servicio y método de pago.
-- En dispositivos móviles, activa la opción nativa de **Compartir por WhatsApp** directamente.
+### 4.6. Fila de Cada Venta en la Lista (Acciones Directas)
+Cada venta registrada en la lista de Ingresos tiene los siguientes controles:
+- **Clic en cualquier parte de la fila:** Abre inmediatamente el modal de detalle y edición de esa venta.
+- **Botón `Descargar Factura` (`📥`):** Genera una imagen estética en PNG con el logo de Estratosfera, número de comprobante, cliente, servicio, monto y método de pago. En móviles abre la opción nativa de compartir por WhatsApp.
+- **Botón `Copiar Mensaje al Cliente` (`📋` violeta):** Copia al portapapeles el texto oficial de entrega para WhatsApp.
+- **Botón `Editar / Ver Detalle` (`✏️`):** Abre el modal completo de la transacción.
 
-### 4.6. El Botón Crítico: "Copiar Mensaje al Cliente (WhatsApp)"
+### 4.7. El Botón Crítico: "Copiar Mensaje al Cliente (WhatsApp)"
 > [!IMPORTANT]
-> **Regla de Oro Operativa:** Ningún agente debe redactar mensajes de entrega manualmente. Siempre debe usarse la plantilla oficial generada por la app.
+> **REGLA FUNDAMENTAL DE ATENCIÓN AL CLIENTE:**
+> Ningún agente debe redactar mensajes de entrega inventados por chat. Siempre debe usarse el botón oficial **«Copiar mensaje al cliente»**.
 
-- **Dónde está el botón:** En la lista de `/sales`, al lado derecho de cada venta de ingreso, verás el ícono violeta de dos hojas **`Copiar`**.
-- **En el detalle:** Si tocas la fila de la venta para abrir el modal de edición, encontrarás el botón ancho: **`Copiar mensaje al cliente (WhatsApp)`**.
-- **Qué contiene el mensaje copiado al portapapeles:**
-  - Saludo personalizado con el nombre del cliente.
-  - Servicio contratado y fecha de corte exacta.
-  - Correo electrónico y contraseña del servicio.
-  - Perfil asignado y PIN de 4 dígitos (si aplica).
-  - *Nota especial de Netflix:* Instrucciones para dar clic en "Obtener ayuda" -> "Usar contraseña" si la TV pide código de confirmación temporal.
-  - Advertencias claras de garantía (no modificar correo, no borrar perfiles, no abrir en más pantallas de las contratadas).
+**Ubicaciones del botón:**
+1. En la fila de cada venta en `/sales` (ícono violeta).
+2. Dentro del modal de detalle de la venta (botón ancho violeta: `Copiar mensaje al cliente (WhatsApp)`).
+
+**Qué incluye el mensaje generado:**
+- Saludo personalizado con el nombre del cliente.
+- Servicio adquirido y fecha de corte exacta.
+- Correo y contraseña de acceso.
+- Perfil asignado y PIN de 4 dígitos.
+- **Nota especial para Netflix:** Instrucción detallada de seleccionar *"Obtener ayuda"* &rarr; *"Usar contraseña"* en caso de que la app en el televisor solicite código temporal.
+- Reglas claras de garantía (prohibición de borrar perfiles, cambiar contraseñas o compartir pantallas).
+
+### 4.8. Modal de Edición de Venta y Eliminación Segura
+Permite modificar los datos de una venta ya realizada:
+- Cambiar perfil asignado (con advertencia de liberación del perfil previo).
+- Modificar fecha de venta, duración en meses, teléfono, nombre del cliente, monto o método de pago.
+- Botón **`Copiar mensaje al cliente (WhatsApp)`**: Regenera y copia el mensaje con los datos más recientes.
+- Botón **`Guardar Cambios`**: Actualiza la transacción y la ficha del cliente.
+- Botón **`Eliminar` (`🗑️` rojo):**
+  - Si una venta fue creada por error o de prueba y se elimina, el sistema ejecuta una transacción atómica que:
+    1. Elimina la transacción financiera.
+    2. **Libera el perfil en Inventario dejándolo en estado `LIBRE` y sin cliente asociado.**
+    3. **Elimina el riesgo de "rehidratación de dueños viejos":** El perfil no volverá a mostrar al cliente anterior ($N-1$).
+
+### 4.9. Botón `+ Nuevo Gasto` (Formulario de Egresos)
+1. **Categoría:**
+   - `PROVEEDOR`: Pago de cuentas a mayoristas. Despliega la lista de proveedores para vincularlo.
+   - `NOMINA`: Pago a agentes o personal.
+   - `GASTO_ADMIN`: Pago de servidores, bots, dominios, telefonía.
+   - `PUBLICIDAD`: Pauta en redes o anuncios.
+   - `OTRO`: Gastos misceláneos.
+2. **Proveedor:** Selecciona el proveedor si la categoría fue `PROVEEDOR`.
+3. **Fecha del Gasto:** Día del egreso.
+4. **Descripción:** Concepto detallado del pago.
+5. **Monto y Método de Pago:** Cifra exacta y canal (Nequi, Bancolombia, etc.).
+6. Botón **`Guardar Gasto`**: Registra la salida de dinero y la descuenta del balance total.
 
 ---
 
-## 5. MÓDULO 3: GESTIÓN DE CLIENTES, CICLOS Y DUPLICADOS (`/clients`)
+## 5. MÓDULO 3: CARTERA DE CLIENTES, CICLOS Y DUPLICADOS (`/clients`)
 
-En `/clients` se administra la cartera de compradores, su fidelidad y su historial de renovaciones.
+### 5.1. Identidad de Cliente Flexible
+- Admite números con formato internacional (ej. `+57 314 5071762`) y nombres de usuario de WhatsApp (ej. `@maryp0404`).
+- Cuenta con un limpiador automático de caracteres invisibles Unicode (`cleanContactString`) que elimina caracteres residuales pegados desde WhatsApp Web, garantizando que el enlace `wa.me/usuario` siempre abra el chat de forma instantánea.
 
-### 5.1. Identidad de Cliente: Celular vs. `@usuario` de WhatsApp
-- Los clientes pueden registrarse con su número telefónico (ej. `+57 314 5071762`) o con su usuario de WhatsApp (ej. `@maryp0404`).
-- El sistema cuenta con un filtro automático que elimina caracteres invisibles Unicode (`\u2066`, `\u2069`) que suelen pegarse desde WhatsApp Web y que rompían los enlaces directos de chat.
-- Al pulsar el botón de WhatsApp, el sistema abre directamente la conversación con la persona sin importar si es número o `@handle`.
+### 5.2. Los 3 Modos de Vista
+En la parte superior de `/clients`:
+- **`Clientes` (Lista):** Directorio completo de clientes con sus tarjetas individuales.
+- **`Auditoría` (con contador numérico):** Vista técnica de discrepancias entre vencimiento con proveedor y corte del cliente.
+- **`Unificar / Duplicados` (con contador numérico):** Herramienta de detección y fusión de clientes duplicados.
 
-### 5.2. Semáforo de Vencimientos
-Cada tarjeta de cliente tiene un indicador visual del estado de su servicio:
-- 🟢 **Verde (`Normal`):** Faltan más de 3 días para su fecha de corte. El cliente está al día.
-- 🟡 **Amarillo (`Alerta`):** Faltan entre 1 y 3 días para vencer. Momento ideal para enviar recordatorio preventivo.
-- 🔴 **Rojo (`Urgente / Vencido`):** Vence hoy (0 días) o tiene días negativos (vencido sin pagar). Requiere cobro o corte.
-- 🔵 **Azul (`Renovado`):** El cliente ya pagó su ciclo siguiente por adelantado.
+### 5.3. Tarjeta de Cliente y Semáforo de Colores
+Cada tarjeta resume la situación del cliente:
+- 🟢 **Verde (`Normal`):** Faltan más de 3 días para el vencimiento.
+- 🟡 **Amarillo (`Alerta`):** Faltan entre 1 y 3 días. Ideal para aviso preventivo.
+- 🔴 **Rojo (`Urgente / Vencido`):** Vence hoy (`0 días`) o tiene días negativos (`-1, -2...`). Requiere gestión de cobro o corte.
+- 🔵 **Azul (`Renovado`):** El cliente ya pagó su siguiente ciclo anticipadamente.
+- **Ícono de Lápiz (`✏️` junto a los días):** Abre el modal rápido de **`Corregir Vencimiento`** para ajustar la fecha de corte sin generar un cobro nuevo ni alterar la contabilidad.
 
-### 5.3. Menú de Acciones por Cliente (Botón `...`)
-Al tocar los tres puntos en cualquier cliente, se despliegan las siguientes opciones:
+### 5.4. Botones Rápidos de la Tarjeta
+- **Botón `Enviar Recordatorio` (`💬`):** Abre WhatsApp Web o la App móvil con el mensaje oficial de cobranza prearmado con los días restantes, el monto y los métodos de pago disponibles.
+- **Botón `Renovar Servicio` (`✅`):** Abre el modal de renovación para extender el servicio 1, 3, 6 o 12 meses registrando el método de pago y el nuevo ingreso.
 
-1. **`Enviar Recordatorio` (Ícono Chat):** Abre WhatsApp con el mensaje preformateado indicando los días restantes, el monto y los métodos de pago (Nequi, Bancolombia, Bre-B, Nu Bank, PayPal).
-2. **`Renovar Servicio` (Ícono Check):**
-   - Registra el nuevo pago del cliente.
-   - Extiende la fecha de corte 1, 3, 6 o 12 meses.
-   - Genera el ingreso financiero correspondiente.
-3. **`Corregir Vencimiento` (Ícono Lápiz junto a los días):**
-   - Permite ajustar la fecha de corte cuando hubo un error de digitación sin crear un pago nuevo ni alterar la caja.
-4. **`Reenviar Datos`:** Copia o envía nuevamente las credenciales oficiales de la cuenta.
-5. **`Garantía (Auto)`:** Busca automáticamente en Inventario otro perfil libre del mismo servicio y lo asigna al cliente conservando su fecha de corte original.
-6. **`Migrar (Manual)`:** Permite elegir manualmente una cuenta o perfil específico de reemplazo.
-7. **`Pass / PIN`:** Envía al cliente una plantilla técnica cuando se cambió la clave o el PIN del perfil.
-8. **`Cambiar Plan / Upgrade`:** Pasa al cliente a un servicio superior (ej. de Max a Combo) y permite liberar el perfil anterior.
-9. **`Liberar Perfil` (Ícono X roja):**
-   - Se usa cuando el cliente **NO** renueva.
-   - **Exigencia del sistema:** Solicita obligatoriamente ingresar un **NUEVO PIN** para el perfil liberado en inventario. Esto garantiza que el cliente saliente no pueda seguir usando el servicio.
-10. **`Fusionar / Unificar`:** Abre el asistente para unir este cliente con otra ficha duplicada.
+### 5.5. Menú Desplegable del Cliente (`...`) — Las 10 Acciones
+1. **`Reenviar Datos` (`📄`):** Genera y envía nuevamente las credenciales oficiales de la cuenta. Si es combo, genera el mensaje consolidado.
+2. **`Garantía (Auto)` (`🛡️`):** Busca automáticamente un slot libre del mismo servicio en Inventario, hace el intercambio en segundo plano y mantiene intacta la fecha de corte del cliente.
+3. **`Migrar (Manual)` (`🔄`):** Permite elegir manualmente una cuenta o perfil específico de reemplazo cuando no se desea usar la asignación automática.
+4. **`Pass / PIN` (`🔑`):** Envía al cliente una plantilla técnica notificándole que se actualizó la contraseña o el PIN de su perfil.
+5. **`Asignar Nuevo` (`👤+`):** Agrega un nuevo servicio o perfil adicional al cliente sin sustituir el actual.
+6. **`Liberar Perfil` (`❌` roja):**
+   - Se utiliza cuando el cliente **NO** renueva.
+   - **Exigencia crítica del sistema:** Solicita obligatoriamente ingresar un **NUEVO PIN** para ese perfil. El sistema cambia el PIN en inventario y deja el slot en estado `LIBRE`, asegurando que el cliente anterior no pueda seguir viendo gratis.
+7. **`Cambiar Plan / Upgrade`:** Permite pasar al cliente a un servicio superior (ej. de una pantalla simple a un combo multicuenta), dando la opción de liberar el perfil anterior.
+8. **`Fusionar / Unificar` (`👥`):** Abre el asistente de fusión manual preseleccionando a este cliente como uno de los candidatos.
 
-### 5.4. Pestaña de Auditoría (Acciones Prioritarias)
-- Ubicada en la parte superior de `/clients`.
-- Muestra el cruce entre la **Fecha Técnica** (cuándo vence la cuenta con el proveedor) y la **Fecha de Cobro** (cuándo vence el pago del cliente).
-- Identifica dos tipos de alertas críticas:
-  - 🔴 **`CORTAR / DEFICIT TECNICO`:** La cuenta del proveedor vence antes que el mes del cliente. Requiere cambio técnico urgente para que el cliente no se quede sin señal.
-  - 🟢 **`COBRAR`:** El ciclo del cliente vence en los próximos 3 días.
+### 5.6. Vista de Auditoría (`Auditoría`)
+Cruce entre la fecha de caducidad de la cuenta madre con el proveedor y la fecha de corte del cliente:
+- 🔴 **`CORTAR / DEFICIT TECNICO`:** La cuenta del proveedor vencerá antes que el mes pagado por el cliente. Requiere migración técnica urgente para que el cliente no se quede sin señal a mitad de mes.
+- 🟢 **`COBRAR`:** El cliente está por vencer en los próximos 3 días.
+- **Etiquetas de Tiempo Natural:** `HOY`, `MAÑANA`, `PASADO MAÑANA`, `AYER`, `HACE X DÍAS`, `EN X DÍAS`.
+- **Botón `Gestionar Todo`:** Abre WhatsApp con un mensaje redactado a la medida de la situación técnica del cliente.
 
-### 5.5. Pestaña de Unificación / Fusión de Clientes Duplicados
-- **El problema histórico:** Clientes que antes pagaban con celular (ej. Mary Pérez con `+57 314 5071762`) y luego pasaron a escribir desde `@maryp0404`. Se creaban 2 fichas separadas y el historial quedaba partido.
-- **La solución atómica:**
-  1. Entrar a la pestaña **`Unificar / Duplicados`**.
-  2. El sistema detecta automáticamente clientes con nombres similares que tienen múltiples números o handles.
-  3. Al seleccionar cuál se conserva como Principal (ej. `@maryp0404`) y cuál se absorbe (ej. el celular viejo), el sistema traslada el **100% de las ventas pasadas, servicios y notas** a la ficha principal y borra de forma segura la ficha secundaria.
-  4. También se puede usar el botón **`Fusión Manual`** para buscar y unir cualquier par de clientes en cualquier momento.
+### 5.7. Vista de Unificación / Fusión de Clientes Duplicados
+- **Propósito:** Resolver casos en los que un cliente tiene ventas registradas bajo su celular histórico (ej. `+57 314 5071762`) y otras ventas bajo su usuario de WhatsApp (ej. `@maryp0404`).
+- **Detección Automática:** Agrupa clientes que coinciden en nombre normalizado pero tienen identificadores diferentes.
+- **Botón `Conservar como Principal`:**
+  - Abre el modal de fusión con el cliente principal y el secundario preseleccionados.
+  - Al confirmar, el sistema ejecuta una transacción atómica que:
+    1. Transfiere el **100% de las ventas pasadas y servicios** de la ficha secundaria a la principal.
+    2. Elimina la ficha duplicada vacía.
+    3. Conserva todo el historial unificado bajo el contacto activo.
+- **Botón `Fusión Manual`:** Permite buscar y unir manualmente cualquier par de clientes aunque tengan nombres ligeramente distintos.
+- **Botón `Refrescar`:** Vuelve a analizar la base de datos en busca de posibles duplicados.
+
+### 5.8. Menú Superior de Clientes (`⋮`)
+- **`Fusión Manual de Clientes`:** Acceso directo al modal de unión de fichas.
+- **`Enviar Mensaje Masivo Bot`:** Dispara el bot de WhatsApp para enviar recordatorios a todos los clientes en ventana de corte.
+- **`Reenviar Bienvenida con Corrección`:** Reenvía el mensaje de bienvenida y acceso al portal a clientes nuevos.
+- **`Cerrar Sesión`:** Desconecta el acceso administrativo.
 
 ---
 
 ## 6. MÓDULO 4: ADMINISTRACIÓN, COBRANZAS DEL DÍA Y PROVEEDORES (`/administracion`)
 
-Este módulo está destinado a la supervisión operativa del negocio y la liquidación de cuentas.
+### 6.1. Métricas de Salud Financiera
+- **Ingresos Totales:** Facturación acumulada del mes.
+- **Egresos Totales:** Gastos de proveedores y nómina.
+- **Ganancia Neta:** Utilidad real disponible.
 
-### 6.1. Señal de Cobro y Ciclo Derivado
-- Históricamente, el campo `estado_pago` decía `PAGADO` en casi todas las ventas porque el cliente pagó al inicio de su mes. Esto impedía saber quién debía hoy.
-- Ahora el sistema calcula el **Estado Derivado de Ciclo**:
-  - **`VIGENTE`:** La fecha de vencimiento es mayor a hoy (fin de día Bogotá).
-  - **`POR_VENCER`:** Faltan entre 1 y 3 días.
-  - **`VENCIDO / POR COBRAR`:** La fecha de vencimiento ya pasó y el cliente no tiene una venta de renovación posterior.
+### 6.2. Sección "Cobros del Día"
+- En lugar de depender de si la transacción dice "PAGADO", la sección evalúa el **Estado Derivado de Ciclo**:
+  - `VIGENTE`: El servicio está al día.
+  - `POR_VENCER`: Vence en los próximos 3 días.
+  - `VENCIDO / POR COBRAR`: Su ciclo terminó y no tiene renovación registrada.
+- **Filtros Rápidos:**
+  - `TODOS`: Muestra la cartera completa.
+  - `DEBEN HOY`: Muestra únicamente los clientes cuyo corte es hoy (hora de Bogotá UTC-5).
+  - `VENCIDOS`: Muestra clientes con cortes atrasados pendientes de cobro o corte.
+  - `POR VENCER`: Clientes a los que les quedan 1 a 3 días.
+- Cada cliente en la lista tiene:
+  - Botón directo de **WhatsApp** con el mensaje de cobro listo.
+  - Botón de **Renovación** rápida para asentar el pago en un clic.
 
-### 6.2. Lista "Cobros del Día"
-- En `/administracion`, filtra automáticamente todas las ventas cuyo vencimiento ocurre en el día actual (o están vencidas sin renovar).
-- Permite contactar rápidamente a los clientes en mora sin tener que revisar uno por uno en la lista general.
+### 6.3. Botón `Disparar Recordatorios Bot`
+- Ubicado en la cabecera del módulo de Administración.
+- Envía automáticamente a través de la API oficial de mensajería el recordatorio a todos los clientes que tengan entre 0 y 2 días restantes para vencer.
 
-### 6.3. Disparo Masivo de Recordatorios (Bot Automático)
-- Botón **`Disparar Recordatorios Bot`** en la cabecera.
-- Envía automáticamente a través de la API de mensajería el recordatorio oficial a todos los clientes que tengan entre 0 y 2 días restantes para vencer.
+### 6.4. Vencimientos con Proveedores (Cuentas Madres)
+Organiza las cuentas de mayoristas que deben renovarse en 4 bloques colapsables:
+- 🔴 **`AYER`:** Cuentas vencidas con el proveedor que requieren atención urgente.
+- 🟡 **`HOY`:** Cuentas que vencen hoy con el mayorista.
+- 🔵 **`MAÑANA`:** Cuentas que vencen el día de mañana.
+- ⚪ **`PRÓXIMOS`:** Cuentas que vencen en los siguientes 7 días.
 
-### 6.4. Vencimientos de Cuentas con Proveedores
-- Agrupa las cuentas madres que deben pagarse al mayorista en cuatro bloques:
-  - 🔴 **`AYER`:** Cuentas vencidas que requieren pago o cancelación inmediata.
-  - 🟡 **`HOY`:** Cuentas que vencen hoy con el proveedor.
-  - 🔵 **`MAÑANA`:** Cuentas que vencen el día siguiente.
-  - ⚪ **`PRÓXIMOS`:** Vencimientos de la semana.
-- Cada tarjeta permite:
-  - Ver el proveedor, correo de la cuenta y cantidad de perfiles ocupados por clientes.
-  - Marcar como pagada creando automáticamente el gasto a proveedor.
-  - Ocultar del listado temporalmente.
+**Acciones por cuenta de proveedor:**
+- Ver servicio, correo de la cuenta y cantidad de perfiles ocupados por clientes finales.
+- **Botón `Marcar Pagado`:** Registra automáticamente el egreso contable en la categoría `PROVEEDOR` por el valor de la cuenta y oculta el aviso de vencimiento.
+- **Botón `Ocultar`:** Oculta temporalmente la tarjeta de vencimiento (se guarda en memoria local).
 
-### 6.5. Control y Pago de Nómina
-- El sistema acumula diariamente el valor pactado de nómina según los días trabajados.
-- Botón **`Pagar Nómina`**: Solicita confirmar el monto pagado, registra el egreso contable en la categoría `NOMINA` y reinicia el contador de días para el siguiente periodo.
+### 6.5. Módulo y Pago de Nómina
+- Acumula los días trabajados del equipo y el monto acumulado a pagar.
+- **Botón `Pagar Nómina`:**
+  - Solicita confirmar el monto exacto a liquidar.
+  - Crea automáticamente el egreso contable en la categoría `NOMINA`.
+  - Reinicia el contador de días para el siguiente ciclo de nómina.
+
+### 6.6. Widget de Stock Bajo / Alerta de Reabastecimiento
+- Monitorea en tiempo real la cantidad de perfiles libres por servicio.
+- Si un servicio tiene 0 o muy pocos perfiles disponibles, emite una alerta visual para que el administrador compre cuentas madres a los proveedores antes de quedarse sin stock para ventas nuevas o garantías.
 
 ---
 
-## 7. MÓDULO 5: EGRESOS Y CONTROL FINANCIERO
+## 7. MÓDULO 5: ANALYTICS Y RENDIMIENTO FINANCIERO (`/analytics`)
 
-Para que el balance de caja sea exacto, ningún gasto debe quedar por fuera.
-
-### 7.1. Registro de Gastos (`/sales` -> Pestaña Egresos)
-1. Hacer clic en **`Nuevo Gasto`** (botón rojo).
-2. **Categoría:**
-   - `PROVEEDOR`: Pago de cuentas madres a mayoristas. Permite seleccionar el proveedor de la lista.
-   - `NOMINA`: Pagos a colaboradores o agentes.
-   - `GASTO_ADMIN`: Herramientas de software, servidores, hosting, etc.
-   - `PUBLICIDAD`: Pauta digital, anuncios o promociones.
-   - `OTRO`: Gastos varios no clasificados.
-3. **Monto y Método:** Ingresar la cifra exacta y la vía de pago.
-4. **Fecha y Descripción:** Detallar el concepto del gasto.
-
-### 7.2. Balance Financiero
-En la parte superior de `/sales` y en `/administracion`:
-$$\text{Balance Total} = \text{Total Ingresos} - \text{Total Egresos}$$
-Permite evaluar la rentabilidad real del negocio filtrando por día, semana, mes o año.
+Permite tomar decisiones estratégicas de compra y marketing:
+- **Selector de Año y Mes:** Para comparar el crecimiento periodo a periodo.
+- **Gráfico Comparativo de Ingresos vs. Egresos:** Visualiza los meses de mayor rentabilidad neta.
+- **Ranking de Servicios Más Vendidos:** Identifica cuáles plataformas generan más volumen (Netflix, Max, Disney+, etc.).
+- **Tasa de Retención de Clientes:** Mide el porcentaje de clientes que renuevan mes a mes frente a los que abandonan el servicio.
 
 ---
 
 ## 8. MÓDULO 6: PORTAL DE AUTOSERVICIO DEL CLIENTE (`/portal`)
 
-El portal reduce hasta un 70% las preguntas repetitivas de soporte por WhatsApp (*"¿Cuál era mi clave?", "¿Cuándo se me vence?", "¿Qué perfil me tocó?"*).
-
-### 8.1. Cómo Accede el Cliente
-- El cliente entra a `https://tu-dominio.com/portal`.
-- Escribe su celular o `@usuario`.
-- El sistema le permite ingresar mediante código OTP temporal o mediante su **Magic Link** único generado por el bot.
-
-### 8.2. Qué Puede Ver el Cliente
-- Lista de todos sus servicios contratados activos.
-- Correo y contraseña actualizados de cada plataforma.
-- Nombre de su perfil y PIN asignado.
-- Contador regresivo de días restantes para su fecha de corte.
-- Botón directo para solicitar renovación o soporte por WhatsApp.
+Espacio web para que los clientes consulten sus accesos sin saturar la atención por WhatsApp:
+- **Acceso:** El cliente ingresa a `/portal` y digita su celular o `@usuario`. Puede validar con un código OTP o entrar mediante su **Magic Link** privado enviado por el bot.
+- **Información que visualiza el cliente:**
+  - Todos sus servicios activos contratados con sus logotipos oficiales.
+  - Correo electrónico y contraseña actualizados.
+  - Nombre del perfil asignado y PIN de 4 dígitos.
+  - Contador regresivo de días restantes para su fecha de corte.
+  - Botón de un solo clic para solicitar renovación o soporte técnico directo a WhatsApp.
 
 ---
 
-## 9. PROTOCOLO OPERATIVO ESTÁNDAR (SOP) PARA AGENTES
+## 9. PROTOCOLOS OPERATIVOS ESTÁNDAR (SOP) Y BUENAS PRÁCTICAS
 
-Guía rápida paso a paso que todo agente nuevo o en turno debe seguir rigurosamente:
+### 9.1. Flujo Paso a Paso para una Venta Nueva
+1. Abrir `/inventory` y buscar un perfil en verde (`LIBRE`) del servicio solicitado.
+2. Hacer clic en **`Vender`**.
+3. Ingresar el contacto del cliente (asegurarse de que si es `@usuario` no tenga espacios).
+4. Seleccionar el método de pago recibido y guardar la venta.
+5. Inmediatamente hacer clic en **`Copiar mensaje al cliente`** (en `/sales` o en el detalle).
+6. Pegar el texto en el chat de WhatsApp del cliente y enviar.
 
-### 9.1. Procedimiento para Vender un Servicio
-1. Verificar disponibilidad en `/inventory`.
-2. Si el perfil está en verde (`LIBRE`), hacer clic en **`Vender`**.
-3. Ingresar el contacto del cliente asegurándose de no dejar espacios raros.
-4. Registrar el pago y guardar la venta.
-5. Inmediatamente hacer clic en **`Copiar mensaje al cliente`** (o en la lista de ventas) y pegar el texto en el chat de WhatsApp del cliente.
-6. **Prohibido:** Inventar textos propios o pasar solo la clave sin las advertencias de garantía.
+### 9.2. Flujo Paso a Paso para una Renovación
+1. Ubicar al cliente en `/clients` o en `/administracion` (`Cobros del Día`).
+2. Verificar el comprobante de pago enviado por el cliente por chat.
+3. Hacer clic en los tres puntos `...` del cliente &rarr; **`Renovar Servicio`**.
+4. Confirmar los meses pagados y el método de pago.
+5. Copiar el mensaje oficial de renovación generado y enviárselo al cliente.
 
-### 9.2. Procedimiento para Renovar un Servicio
-1. Localizar al cliente en `/clients` o en `/administracion` (en Cobros del Día).
-2. Verificar el comprobante de pago enviado por el cliente en WhatsApp.
-3. Hacer clic en los tres puntos `...` del cliente -> **`Renovar Servicio`**.
-4. Seleccionar los meses pagados y el método de pago recibido.
-5. Enviar el mensaje de confirmación de renovación que genera el sistema.
+### 9.3. Flujo Paso a Paso para una Garantía
+1. Buscar al cliente afectado en `/clients`.
+2. Hacer clic en `...` &rarr; **`Garantía (Auto)`**.
+3. El sistema asignará otro slot libre del mismo servicio sin alterar su fecha de vencimiento pagada.
+4. Copiar el mensaje oficial de garantía (que incluye las instrucciones para cerrar sesión previa en el televisor) y enviarlo al cliente.
 
-### 9.3. Procedimiento para Dar Garantía (Falla de Cuenta o Perfil)
-1. Buscar al cliente en `/clients`.
-2. Ir a `...` -> **`Garantía (Auto)`**.
-3. El sistema buscará otro perfil del mismo servicio que esté `LIBRE` y hará el intercambio.
-4. La fecha de corte del cliente **no cambiará** (se preservan los días que ya pagó).
-5. Copiar el mensaje oficial de garantía que explica cómo cerrar sesión en el televisor y le entrega las nuevas credenciales.
+### 9.4. Flujo Paso a Paso para Dar de Baja (Cliente que No Renueva)
+1. Ubicar al cliente vencido en `/clients`.
+2. Hacer clic en `...` &rarr; **`Liberar Perfil`**.
+3. **Paso Obligatorio:** Ingresar un **NUEVO PIN** de 4 dígitos en la plataforma de streaming y registrarlo en la ventana de la app.
+4. El perfil volverá a quedar `LIBRE` en el inventario con el nuevo PIN, listo para ser vendido a otro usuario sin que el cliente anterior pueda ingresar.
 
-### 9.4. Procedimiento para Dar de Baja (Cliente que No Renueva)
-1. Ir a `/clients` y ubicar al cliente vencido.
-2. Hacer clic en `...` -> **`Liberar Perfil`**.
-3. **Paso Obligatorio:** Ingresar un **NUEVO PIN** de 4 dígitos para ese perfil en la plataforma de streaming y escribirlo en la app.
-4. El perfil volverá a estar `LIBRE` en el inventario con el nuevo PIN, listo para ser vendido a otro cliente sin riesgo de intrusos.
-
-### 9.5. Errores Críticos que Deben Evitarse a Toda Costa
-- ❌ **Borrar ventas a ciegas:** Si se borra una venta de prueba, asegurarse de que el perfil en inventario quede `LIBRE` y sin cliente asignado.
-- ❌ **Crear fichas duplicadas:** Si un cliente cambia de número a `@usuario`, usar la herramienta de **Fusión de Clientes** en vez de crear un cliente nuevo desde cero.
-- ❌ **No cambiar el PIN al liberar:** Si liberas un perfil sin cambiar el PIN, el cliente anterior podrá seguir viendo gratis y le bloqueará la pantalla al nuevo comprador.
-- ❌ **Modificar correos de cuentas madres:** Las cuentas de proveedores nunca deben ser modificadas en correo ni clave principal sin autorización del administrador.
+### 9.5. Los 7 Pecados Capitales del Agente (Errores Operativos Prohibidos)
+1. ❌ **Liberar un perfil sin cambiar el PIN:** Si liberas un slot sin cambiar el PIN, el cliente saliente seguirá entrando gratis y le bloqueará la pantalla al nuevo comprador.
+2. ❌ **Redactar mensajes propios a mano:** Prohibido escribir correos y claves sueltas por WhatsApp. Siempre se debe usar el botón oficial **`Copiar mensaje al cliente`**.
+3. ❌ **Crear fichas duplicadas:** Si un cliente cambia de celular a `@usuario`, usar la herramienta de **Fusión de Clientes** en vez de crear una ficha nueva que disperse el historial.
+4. ❌ **Modificar correos de cuentas madres:** Las credenciales matrices compradas a proveedores no deben cambiarse bajo ningún motivo para no anular la garantía mayorista.
+5. ❌ **Vender perfiles en cuentas vencidas:** Siempre revisar el día de corte de la cuenta madre antes de vender un perfil para evitar déficits técnicos.
+6. ❌ **Olvidar registrar gastos:** Todo pago realizado a proveedores o colaboradores debe asentarse en **`Nuevo Gasto`** para no distorsionar la ganancia neta.
+7. ❌ **Eliminar ventas de forma incorrecta:** Si se anula una venta, verificar que el perfil en inventario quede en estado `LIBRE` y sin cliente asignado.
 
 ---
-*Manual actualizado y verificado para la versión en producción de Estratosfera.*
+*Manual verificado y actualizado con el 100% de los botones, formularios y flujos de la versión en producción de Estratosfera.*
