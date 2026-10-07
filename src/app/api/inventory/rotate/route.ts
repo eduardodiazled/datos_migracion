@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { findSellableProfiles } from '@/lib/inventoryValidation'
 
 export async function POST(request: Request) {
     try {
@@ -38,19 +39,16 @@ export async function POST(request: Request) {
             })
         }
 
-        // 3. Find a replacement profile (Same Service, LIBRE)
-        const newProfile = await prisma.salesProfile.findFirst({
-            where: {
-                estado: 'LIBRE',
-                account: {
-                    servicio: oldProfile.account.servicio
-                }
-            },
-            include: { account: true }
+        // 3. Find a replacement profile (Same Service, LIBRE and Sellable Stock)
+        const candidates = await findSellableProfiles({
+            service: oldProfile.account.servicio,
+            excludeAccountId: oldProfile.accountId,
+            excludeProfileId: oldProfile.id
         })
+        const newProfile = candidates[0] || null
 
         if (!newProfile) {
-            return NextResponse.json({ error: 'No free profiles available for swap. Cannot rotate client.' }, { status: 409 })
+            return NextResponse.json({ error: `No hay stock real vendible disponible de ${oldProfile.account.servicio} para rotación.` }, { status: 409 })
         }
 
         // 4. Perform the Swap (Transaction)

@@ -1103,34 +1103,40 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-500 uppercase">1. Selecciona Producto</label>
-                                    {inventory.map((group: any) => (
-                                        <div key={group.service} className="space-y-1">
-                                            <p className="text-xs text-white font-bold bg-slate-800 px-2 py-1 rounded">{group.service}</p>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {group.accounts.map((acc: any) => (
-                                                    <button
-                                                        key={acc.id}
-                                                        onClick={() => setSelectedProduct({ id: acc.id, name: acc.name, type: 'ACCOUNT' })}
-                                                        className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === acc.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
-                                                    >
-                                                        {acc.name}
-                                                    </button>
-                                                ))}
-                                                {group.profiles.map((prof: any) => (
-                                                    <button
-                                                        key={prof.id}
-                                                        onClick={() => {
-                                                            setSelectedProduct({ id: prof.id, name: prof.name, type: 'PROFILE' })
-                                                            setAssignPrice(String(prof.price || ''))
-                                                        }}
-                                                        className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === prof.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
-                                                    >
-                                                        {prof.name}
-                                                    </button>
-                                                ))}
-                                            </div>
+                                    {inventory.length === 0 ? (
+                                        <div className="p-4 text-center text-xs text-rose-400 border border-rose-500/20 rounded-xl bg-rose-500/5">
+                                            ⚠️ No hay productos con stock real disponible en este momento.
                                         </div>
-                                    ))}
+                                    ) : (
+                                        inventory.map((group: any) => (
+                                            <div key={group.service} className="space-y-1">
+                                                <p className="text-xs text-white font-bold bg-slate-800 px-2 py-1 rounded">{group.service}</p>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {group.accounts.map((acc: any) => (
+                                                        <button
+                                                            key={acc.id}
+                                                            onClick={() => setSelectedProduct({ id: acc.id, name: acc.name, type: 'ACCOUNT' })}
+                                                            className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === acc.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
+                                                        >
+                                                            {acc.name}
+                                                        </button>
+                                                    ))}
+                                                    {group.profiles.map((prof: any) => (
+                                                        <button
+                                                            key={prof.id}
+                                                            onClick={() => {
+                                                                setSelectedProduct({ id: prof.id, name: prof.name, type: 'PROFILE' })
+                                                                setAssignPrice(String(prof.price || ''))
+                                                            }}
+                                                            className={`p-2 rounded border text-left text-xs transition ${selectedProduct?.id === prof.id ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-600'}`}
+                                                        >
+                                                            {prof.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
 
                                 {(assignMode === 'NEW' || assignMode === 'UPGRADE') && (

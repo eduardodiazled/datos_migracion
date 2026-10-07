@@ -654,12 +654,18 @@ export default function SalesPage() {
                                     <div className="space-y-2">
                                         <h3 className="text-xs font-bold text-slate-400 uppercase ml-1">Seleccionar Producto</h3>
                                         <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                                            {inventory.map(inv => (
-                                                <button key={inv.id} onClick={() => setSelectedProduct(inv)} className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}>
-                                                    <div><div className="text-sm font-bold text-white">{inv.service}</div><div className="text-xs text-slate-500">{inv.name}</div></div>
-                                                    {selectedProduct?.id === inv.id && <Check size={16} className="text-emerald-500" />}
-                                                </button>
-                                            ))}
+                                            {inventory.length === 0 ? (
+                                                <div className="p-4 text-center text-xs text-rose-400 border border-rose-500/20 rounded-xl bg-rose-500/5">
+                                                    ⚠️ Sin stock real disponible en este momento.
+                                                </div>
+                                            ) : (
+                                                inventory.map(inv => (
+                                                    <button key={inv.id} onClick={() => setSelectedProduct(inv)} className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}>
+                                                        <div><div className="text-sm font-bold text-white">{inv.service}</div><div className="text-xs text-slate-500">{inv.name}</div></div>
+                                                        {selectedProduct?.id === inv.id && <Check size={16} className="text-emerald-500" />}
+                                                    </button>
+                                                ))
+                                            )}
                                         </div>
                                     </div>
                                 ) : (

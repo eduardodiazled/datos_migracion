@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { findSellableProfiles } from '@/lib/inventoryValidation'
 
 export async function POST(request: Request) {
     try {
@@ -30,26 +31,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: true, message: 'Profile marked as GARANTIA (No active client).' })
         }
 
-        // 3. Find replacement in ANY account (Pool Strategy)
-        // We exclude the current profile's account ONLY if it's a "Warranty" (assuming the whole account might be bad),
-        // but the user said "replace with available profiles". 
-        // If the account is fine but just one profile is bad, we COULD use another profile in the same account?
-        // Usually warranty implies the credential might be compromised or the screen is locked.
-        // Let's look for ANY 'LIBRE' profile in the same service.
-        const newProfile = await prisma.salesProfile.findFirst({
-            where: {
-                estado: 'LIBRE',
-                account: {
-                    servicio: oldProfile.account.servicio,
-                    // We don't strictly exclude the current account, unless the user wants to.
-                    // But to be safe (if pass changed), maybe prefer other accounts?
-                    // Let's sort by "Is Different Account" if possible? 
-                    // For simplicity/performance: Just find ANY free one.
-                    // If the whole account is bad, the user should probably mark all as warranty.
-                }
-            },
-            include: { account: true }
+        // 3. Find replacement in healthy active account (Sellable Stock)
+        const candidates = await findSellableProfiles({
+            service: oldProfile.account.servicio,
+            excludeAccountId: oldProfile.accountId,
+            excludeProfileId: oldProfile.id
         })
+        const newProfile = candidates[0] || null
 
         if (!newProfile) {
             // CASE: No Stock Available
@@ -62,7 +50,7 @@ export async function POST(request: Request) {
             return NextResponse.json({
                 success: true,
                 warning: true,
-                message: 'Marcado como GARANTÍA. No hay stock para reemplazo automático. Intenta de nuevo cuando agregues cuentas.'
+                message: `Marcado como GARANTÍA. No hay stock real vendible de ${oldProfile.account.servicio} para reemplazo automático. Intenta de nuevo cuando agregues cuentas activas.`
             })
         }
 

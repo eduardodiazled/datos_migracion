@@ -5,6 +5,7 @@ import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { MessageGenerator } from '@/lib/messageGenerator'
 import { sendToBot } from '@/services/whatsapp'
 import { cleanContactString } from '@/lib/whatsappUtils'
+import { findSellableProfiles, validateProfileIsSellable, validateAccountIsSellable } from '@/lib/inventoryValidation'
 
 
 // Helper: Normalize Date to prevent Timezone shifts
@@ -914,6 +915,13 @@ export async function createSale(clientId: string, clientName: string, profileId
 
         // Atomic transaction: client upsert + transaction creation + profile lock as OCUPADO
         const tx = await prisma.$transaction(async (txClient) => {
+            if (profileId) {
+                const check = await validateProfileIsSellable(profileId, txClient)
+                if (!check.ok) {
+                    throw new Error(`No se puede vender el perfil #${profileId}: ${check.reason}`)
+                }
+            }
+
             await txClient.client.upsert({
                 where: { celular: cleanId },
                 update: { nombre: clientName },
@@ -1039,11 +1047,12 @@ export async function createComboSale(
                 let description = ''
 
                 if (item.type === 'FULL_ACCOUNT') {
-                    const account = await txClient.inventoryAccount.findUnique({
-                        where: { id: item.accountId },
-                        include: { provider: true }
-                    })
-                    if (account) description = `Venta ${account.servicio} (Cuenta Completa)`
+                    const accCheck = await validateAccountIsSellable(item.accountId, txClient)
+                    if (!accCheck.ok) {
+                        throw new Error(`Error en venta de combo cuenta #${item.accountId}: ${accCheck.reason}`)
+                    }
+                    const account = accCheck.account
+                    description = `Venta ${account.servicio} (Cuenta Completa)`
 
                     // Lock ALL profiles in account
                     await txClient.salesProfile.updateMany({
@@ -1051,11 +1060,12 @@ export async function createComboSale(
                         data: { estado: 'OCUPADO' }
                     })
                 } else {
-                    const profile = await txClient.salesProfile.findUnique({
-                        where: { id: item.profileId },
-                        include: { account: true }
-                    })
-                    if (profile) description = `Venta ${profile.account.servicio} - ${profile.nombre_perfil}`
+                    const check = await validateProfileIsSellable(item.profileId, txClient)
+                    if (!check.ok) {
+                        throw new Error(`Error en venta de combo perfil #${item.profileId}: ${check.reason}`)
+                    }
+                    const profile = check.profile
+                    description = `Venta ${profile.account.servicio} - ${profile.nombre_perfil}`
 
                     // Mark Profile as Occupied and verify
                     const updated = await txClient.salesProfile.update({
@@ -1187,6 +1197,11 @@ export async function assignProfile(clientId: string, clientName: string, profil
         const startObj = startDate ? new Date(startDate) : new Date()
 
         await prisma.$transaction(async (txClient) => {
+            const check = await validateProfileIsSellable(profileId, txClient)
+            if (!check.ok) {
+                throw new Error(`No se puede asignar el perfil #${profileId}: ${check.reason}`)
+            }
+
             await txClient.client.upsert({
                 where: { celular: cleanId },
                 update: { nombre: clientName },
@@ -1224,10 +1239,7 @@ export async function assignProfile(clientId: string, clientName: string, profil
 
 export async function getAvailableInventory() {
     try {
-        const profiles = await prisma.salesProfile.findMany({
-            where: { estado: 'LIBRE' },
-            include: { account: true }
-        })
+        const profiles = await findSellableProfiles()
         return profiles.map(p => ({
             id: p.id,
             name: p.nombre_perfil,
@@ -1596,26 +1608,24 @@ export async function applyWarrantySwap(currentProfileId: number, targetProfileI
         // but the core value is preserving the client link.
         // If no client, acts like a simple swap.
 
-        // 2. Determine New Profile
-        let newProfile = null
+        // 2. Determine New Profile (Must be Sellable Stock)
+        let newProfile: any = null
 
         if (targetProfileId) {
             // Manual Swap
-            newProfile = await prisma.salesProfile.findUnique({
-                where: { id: targetProfileId },
-                include: { account: true }
-            })
+            const check = await validateProfileIsSellable(targetProfileId)
+            if (!check.ok) {
+                return { success: false, message: `Perfil destino inválido: ${check.reason}` }
+            }
+            newProfile = check.profile
         } else {
-            // Auto Swap (Same Service)
-            newProfile = await prisma.salesProfile.findFirst({
-                where: {
-                    estado: 'LIBRE',
-                    account: {
-                        servicio: currentProfile.account.servicio,
-                    }
-                },
-                include: { account: true }
+            // Auto Swap (Same Service, healthy active account, not in warranty)
+            const candidates = await findSellableProfiles({
+                service: currentProfile.account.servicio,
+                excludeAccountId: currentProfile.accountId,
+                excludeProfileId: currentProfileId
             })
+            newProfile = candidates[0] || null
         }
 
         if (!newProfile) {
@@ -1624,7 +1634,10 @@ export async function applyWarrantySwap(currentProfileId: number, targetProfileI
                 where: { id: currentProfileId },
                 data: { estado: 'GARANTIA' }
             })
-            return { success: false, message: 'Marcado como GARANTÍA, pero NO había stock para reemplazo automático.' }
+            return {
+                success: false,
+                message: `Marcado como GARANTÍA. NO hay stock real vendible de ${currentProfile.account.servicio} para reemplazo automático. Agrega cuentas activas para reemplazar.`
+            }
         }
 
         // 3. Execute Atomic Swap
@@ -1714,6 +1727,14 @@ export async function updateTransaction(id: number, data: {
 
         if (data.profileId !== undefined) {
             if (data.profileId) {
+                // Validate new profile is sellable if changing profile
+                if (currentTx.perfilId !== data.profileId) {
+                    const check = await validateProfileIsSellable(data.profileId)
+                    if (!check.ok) {
+                        throw new Error(`El nuevo perfil seleccionado (#${data.profileId}) no es válido: ${check.reason}`)
+                    }
+                }
+
                 // Free previous profile if it changed
                 if (currentTx.perfilId && currentTx.perfilId !== data.profileId) {
                     await prisma.salesProfile.update({
@@ -2120,6 +2141,11 @@ export async function sellFullAccount(
         end.setHours(23, 59, 59)
 
         const transaction = await prisma.$transaction(async (txClient) => {
+            const accCheck = await validateAccountIsSellable(accountId, txClient)
+            if (!accCheck.ok) {
+                throw new Error(`No se puede vender la cuenta #${accountId}: ${accCheck.reason}`)
+            }
+
             const client = await txClient.client.upsert({
                 where: { celular: cleanId },
                 update: { nombre: clientName },
@@ -3055,10 +3081,7 @@ export async function resetPayroll() {
 
 export async function getAssignInventory() {
     try {
-        const freeProfiles = await prisma.salesProfile.findMany({
-            where: { estado: 'LIBRE' },
-            include: { account: true }
-        })
+        const freeProfiles = await findSellableProfiles()
 
         const groups: Record<string, any> = {}
 
@@ -3083,7 +3106,7 @@ export async function getAssignInventory() {
 
 export async function migrateProfile(oldProfileId: number, newProfileId: number, reason: 'FALLA_PIN' | 'CAIDA_PAGO' | 'MES_FINALIZADO' | 'OTRO' | 'FALLA_CODIGO' = 'OTRO') {
     try {
-        // 1. Validate Old Profile (Must be Occupied) & New Profile (Must be Free)
+        // 1. Validate Old Profile (Must be Occupied) & New Profile (Must be Sellable Stock)
         const oldProfile = await prisma.salesProfile.findUnique({
             where: { id: oldProfileId },
             include: {
@@ -3092,13 +3115,13 @@ export async function migrateProfile(oldProfileId: number, newProfileId: number,
             }
         })
 
-        const newProfile = await prisma.salesProfile.findUnique({
-            where: { id: newProfileId },
-            include: { account: true }
-        })
+        const checkNew = await validateProfileIsSellable(newProfileId)
+        if (!checkNew.ok) return { success: false, error: `Perfil destino no vendible: ${checkNew.reason}` }
+        const newProfile = checkNew.profile
 
-        if (!oldProfile || oldProfile.estado !== 'OCUPADO') return { success: false, error: 'Perfil origen no válido o no ocupado' }
-        if (!newProfile || newProfile.estado !== 'LIBRE') return { success: false, error: 'Perfil destino no válido o no libre' }
+        if (!oldProfile || (oldProfile.estado !== 'OCUPADO' && oldProfile.estado !== 'GARANTIA')) {
+            return { success: false, error: 'Perfil origen no válido o no ocupado/en garantía' }
+        }
 
         const activeTransaction = oldProfile.transactions[0]
         if (!activeTransaction) return { success: false, error: 'No se encontró venta activa para migrar' }
