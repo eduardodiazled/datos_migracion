@@ -75,3 +75,32 @@ WHERE
     )
 ORDER BY t."createdAt" DESC
 LIMIT 100;
+
+-- ============================================================================
+-- AUDITORÍA: PERFILES EN 'LIBRE' CON TRANSACCIONES ACTIVAS NO SUPERSEDIDAS
+-- Ancla: Perfil #2400 / Tx #11786 (Fontecha - Prime Video)
+-- ============================================================================
+SELECT 
+    sp.id AS perfil_id,
+    sp.nombre_perfil,
+    sp.estado AS perfil_estado,
+    ia.id AS account_id,
+    ia.email AS account_email,
+    ia.servicio,
+    t.id AS tx_id,
+    t."clienteId" AS cliente_celular,
+    c.nombre AS cliente_nombre,
+    t.fecha_inicio,
+    t.fecha_vencimiento,
+    t.monto,
+    t."supersededAt",
+    t."supersededReason"
+FROM "SalesProfile" sp
+INNER JOIN "InventoryAccount" ia ON ia.id = sp."accountId"
+INNER JOIN "Transaction" t ON t."perfilId" = sp.id
+INNER JOIN "Client" c ON c.celular = t."clienteId"
+WHERE sp.estado = 'LIBRE'
+  AND t.fecha_vencimiento > NOW()
+  AND t."supersededAt" IS NULL
+ORDER BY sp.id ASC;
+

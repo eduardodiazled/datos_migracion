@@ -64,6 +64,8 @@ model Transaction {
   fecha_vencimiento DateTime
   monto             Float
   descripcion       String?
+  supersededAt      DateTime?
+  supersededReason  String?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   account           InventoryAccount? @relation(fields: [accountId], references: [id])

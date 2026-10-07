@@ -475,16 +475,19 @@ export async function releaseService(profileId: number, newPin?: string) {
 
         // 2. Expire the Transaction (So client shows as "Vencido" instead of disappearing or staying active)
         // We set expiration to Yesterday
+        const now = new Date()
         const yesterday = new Date()
         yesterday.setDate(yesterday.getDate() - 1)
 
         await prisma.transaction.updateMany({
             where: {
                 perfilId: profileId,
-                fecha_vencimiento: { gt: new Date() }
+                fecha_vencimiento: { gt: now }
             },
             data: {
-                fecha_vencimiento: yesterday
+                fecha_vencimiento: yesterday,
+                supersededAt: now,
+                supersededReason: 'LIBERADA'
             }
         })
 

@@ -74,18 +74,19 @@ export async function validateProfileIsSellable(profileId: number, tx: any = pri
         return { ok: false, reason: accCheck.reason, profile }
     }
 
-    // Regla 4: No puede tener otra transacción activa vigente apuntando a este perfilId
+    // Regla 4: No puede tener otra transacción activa vigente apuntando a este perfilId que no haya sido supersedida
     const now = new Date()
     const activeTx = await tx.transaction.findFirst({
         where: {
             perfilId: profileId,
-            fecha_vencimiento: { gt: now }
+            fecha_vencimiento: { gt: now },
+            supersededAt: null
         }
     })
     if (activeTx) {
         return {
             ok: false,
-            reason: `El perfil #${profileId} ya tiene una venta activa asignada (vence el ${new Date(activeTx.fecha_vencimiento).toLocaleDateString('es-CO')}).`,
+            reason: `El perfil #${profileId} ya tiene una venta activa asignada (Tx #${activeTx.id}, vence el ${new Date(activeTx.fecha_vencimiento).toLocaleDateString('es-CO')}).`,
             profile
         }
     }
@@ -120,19 +121,20 @@ export async function validateAccountIsSellable(accountId: number, tx: any = pri
         }
     }
 
-    // Comprobar que ningún perfil tenga transacciones activas
+    // Comprobar que ningún perfil tenga transacciones activas no supersedidas
     const now = new Date()
     const profileIds = account.perfiles.map((p: any) => p.id)
     const activeTx = await tx.transaction.findFirst({
         where: {
             perfilId: { in: profileIds },
-            fecha_vencimiento: { gt: now }
+            fecha_vencimiento: { gt: now },
+            supersededAt: null
         }
     })
     if (activeTx) {
         return {
             ok: false,
-            reason: `La cuenta tiene perfiles con ventas activas vigentes. No se puede vender completa.`,
+            reason: `La cuenta tiene perfiles con ventas activas vigentes (Tx #${activeTx.id}). No se puede vender completa.`,
             account
         }
     }
@@ -159,10 +161,11 @@ export async function findSellableProfiles(
         where: {
             estado: 'LIBRE',
             ...(excludeProfileId ? { id: { not: excludeProfileId } } : {}),
-            // Regla 4: Sin transacciones activas vigentes
+            // Regla 4: Sin transacciones activas vigentes no supersedidas
             transactions: {
                 none: {
-                    fecha_vencimiento: { gt: now }
+                    fecha_vencimiento: { gt: now },
+                    supersededAt: null
                 }
             },
             account: {
