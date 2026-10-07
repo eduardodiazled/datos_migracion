@@ -904,7 +904,12 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
         setInvoiceData(receiptData)
 
         // 2. Process Renewal
-        await renewService(client.id, client.lastTxId, renewalDate, paymentMethod, renewalMonths)
+        const res = await renewService(client.id, client.lastTxId, renewalDate, paymentMethod, renewalMonths)
+        if (!res.success) {
+            toast.error(res.error || 'Error al procesar la renovación: el perfil no pudo ser marcado como OCUPADO.')
+            setIsProcessing(false)
+            return
+        }
 
         // 3. Prepare Success Data (Using message generator logic mostly)
         // We know renewService sent the text, but for the modal we want to show it too?

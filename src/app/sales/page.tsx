@@ -207,7 +207,7 @@ export default function SalesPage() {
             setSelectedProduct(null)
             loadData()
         } else {
-            alert('Error: ' + res.error)
+            toast.error('Error al registrar la venta: ' + (res.error || 'no se pudo marcar el perfil como OCUPADO'))
         }
     }
 

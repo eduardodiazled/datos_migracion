@@ -597,7 +597,7 @@ export default function InventoryPage() {
       }
 
     } else {
-      toast.error('Error en venta')
+      toast.error(res?.error || 'Error en venta: no se pudo asegurar el perfil en estado OCUPADO.')
     }
   }
 
@@ -618,7 +618,7 @@ export default function InventoryPage() {
       setShowAssignModal(false)
       fetchInventory()
     } else {
-      toast.error('Error al asignar')
+      toast.error(res?.error || 'Error al asignar: no se pudo marcar el perfil como OCUPADO.')
     }
   }
 

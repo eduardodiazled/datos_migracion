@@ -353,7 +353,7 @@ export async function renewService(clientId: string, previousTxId: number, custo
             where: { id: previousTxId }
         })
 
-        if (!prevTx) throw new Error("Transaction not found")
+        if (!prevTx) throw new Error("Transacción original no encontrada")
 
         const startDate = normalizeDate(customDate)
 
@@ -361,26 +361,44 @@ export async function renewService(clientId: string, previousTxId: number, custo
         const days = months * 30
         const endTs = startTs + (days * 24 * 60 * 60 * 1000)
 
-        const newTx = await prisma.transaction.create({
-            data: {
-                clienteId: clientId,
-                perfilId: prevTx.perfilId,
-                estado_pago: 'PAGADO',
-                metodo_pago: paymentMethod,
-                fecha_inicio: startDate,
-                fecha_vencimiento: new Date(endTs),
-                monto: prevTx.monto
+        // Atomic transaction: create renewal transaction and lock profile/account as OCUPADO
+        const { newTx, profile, client } = await prisma.$transaction(async (txClient) => {
+            const createdTx = await txClient.transaction.create({
+                data: {
+                    clienteId: clientId,
+                    perfilId: prevTx.perfilId,
+                    accountId: prevTx.accountId,
+                    estado_pago: 'PAGADO',
+                    metodo_pago: paymentMethod,
+                    fecha_inicio: startDate,
+                    fecha_vencimiento: new Date(endTs),
+                    monto: prevTx.monto
+                }
+            })
+
+            let updatedProfile = null
+            if (prevTx.perfilId) {
+                updatedProfile = await txClient.salesProfile.update({
+                    where: { id: prevTx.perfilId },
+                    data: { estado: 'OCUPADO' },
+                    include: { account: true }
+                })
+                if (!updatedProfile || updatedProfile.estado !== 'OCUPADO') {
+                    throw new Error(`El perfil #${prevTx.perfilId} no pudo ser marcado como OCUPADO.`)
+                }
+            } else if (prevTx.accountId) {
+                await txClient.salesProfile.updateMany({
+                    where: { accountId: prevTx.accountId },
+                    data: { estado: 'OCUPADO' }
+                })
             }
+
+            const c = await txClient.client.findUnique({ where: { celular: clientId } })
+
+            return { newTx: createdTx, profile: updatedProfile, client: c }
         })
 
         // AUTO-SEND BOT MESSAGE (Credentials)
-        // Fetch Profile & Client for Message
-        const profile = await prisma.salesProfile.findUnique({
-            where: { id: prevTx.perfilId || 0 },
-            include: { account: true }
-        })
-        const client = await prisma.client.findUnique({ where: { celular: clientId } })
-
         if (profile && client) {
             const msg = MessageGenerator.generate('RENEWAL', {
                 clientName: client.nombre,
@@ -396,9 +414,9 @@ export async function renewService(clientId: string, previousTxId: number, custo
         }
 
         return { success: true, transactionId: newTx.id }
-    } catch (e) {
+    } catch (e: any) {
         console.error("Renewal Error", e)
-        return { success: false }
+        return { success: false, error: e?.message || "Error procesando la renovación" }
     }
 }
 
@@ -830,12 +848,6 @@ export async function getSaleMessage(transactionId: number) {
 export async function createSale(clientId: string, clientName: string, profileId: number | undefined, price: number, paymentMethod: string = 'EFECTIVO', date?: string, months: number = 1) {
     try {
         const cleanId = cleanContactString(clientId)
-        await prisma.client.upsert({
-            where: { celular: cleanId },
-            update: { nombre: clientName },
-            create: { celular: cleanId, nombre: clientName }
-        })
-
         const now = normalizeDate(date) // Use 'now' as the variable name to match existing code logic
 
         // Logic: Number to Number with Safe Clamping
@@ -850,28 +862,42 @@ export async function createSale(clientId: string, clientName: string, profileId
         // Ensure End Date is End of Day
         end.setHours(23, 59, 59)
 
-        const tx = await prisma.transaction.create({
-            data: {
-                clienteId: cleanId,
-                perfilId: profileId || null,
-                monto: price,
-                estado_pago: 'PAGADO',
-                metodo_pago: paymentMethod,
-                fecha_inicio: now,
-                fecha_vencimiento: end
-            },
-            include: {
-                client: true,
-                profile: { include: { account: true } }
-            }
-        })
-
-        if (profileId) {
-            await prisma.salesProfile.update({
-                where: { id: profileId },
-                data: { estado: 'OCUPADO' }
+        // Atomic transaction: client upsert + transaction creation + profile lock as OCUPADO
+        const tx = await prisma.$transaction(async (txClient) => {
+            await txClient.client.upsert({
+                where: { celular: cleanId },
+                update: { nombre: clientName },
+                create: { celular: cleanId, nombre: clientName }
             })
-        }
+
+            const createdTx = await txClient.transaction.create({
+                data: {
+                    clienteId: cleanId,
+                    perfilId: profileId || null,
+                    monto: price,
+                    estado_pago: 'PAGADO',
+                    metodo_pago: paymentMethod,
+                    fecha_inicio: now,
+                    fecha_vencimiento: end
+                },
+                include: {
+                    client: true,
+                    profile: { include: { account: true } }
+                }
+            })
+
+            if (profileId) {
+                const updatedProfile = await txClient.salesProfile.update({
+                    where: { id: profileId },
+                    data: { estado: 'OCUPADO' }
+                })
+                if (!updatedProfile || updatedProfile.estado !== 'OCUPADO') {
+                    throw new Error(`El perfil #${profileId} no pudo ser marcado como OCUPADO.`)
+                }
+            }
+
+            return createdTx
+        })
 
         // Welcome Bot Trigger (Async, don't block)
         // Rule: ALWAYS SEND (No restriction)
@@ -884,7 +910,6 @@ export async function createSale(clientId: string, clientName: string, profileId
             }
 
             // 2. Credentials Message (After Welcome)
-            // Actually, let's fetch profile details to get service name and credentials
             if (profileId) {
                 const profile = await prisma.salesProfile.findUnique({
                     where: { id: profileId },
@@ -904,15 +929,12 @@ export async function createSale(clientId: string, clientName: string, profileId
                     sendToBot(tx.client.celular, msg).catch(e => console.error('Auto Bot Error', e))
                 }
             }
-
-
-
         }
 
         return { success: true, transaction: tx }
-    } catch (e) {
+    } catch (e: any) {
         console.error("Create Sale Error", e)
-        return { success: false, error: String(e) }
+        return { success: false, error: e?.message || String(e) }
     }
 }
 
@@ -928,73 +950,71 @@ export async function createComboSale(
 ) {
     try {
         const cleanId = cleanContactString(clientId)
-        // 1. Ensure Client Exists
-        await prisma.client.upsert({
-            where: { celular: cleanId },
-            update: { nombre: clientName },
-            create: { celular: cleanId, nombre: clientName }
-        })
-
-        // 2. Generate Group ID
         const groupId = globalThis.crypto.randomUUID()
-
         const now = normalizeDate(date)
-
         const days = months * 30
         const endTs = now.getTime() + (days * 24 * 60 * 60 * 1000)
 
-        // 3. Create Transactions Loop
-        const transactions = []
-        for (const item of items) {
-            let description = ''
-
-            if (item.type === 'FULL_ACCOUNT') {
-                const account = await prisma.inventoryAccount.findUnique({
-                    where: { id: item.accountId },
-                    include: { provider: true }
-                })
-                if (account) description = `Venta ${account.servicio} (Cuenta Completa)`
-
-                // Lock ALL profiles
-                await prisma.salesProfile.updateMany({
-                    where: { accountId: item.accountId },
-                    data: { estado: 'OCUPADO' }
-                })
-            } else {
-                // Check if profile exists
-                const profile = await prisma.salesProfile.findUnique({
-                    where: { id: item.profileId },
-                    include: { account: true }
-                })
-                if (profile) description = `Venta ${profile.account.servicio} - ${profile.nombre_perfil}`
-
-                // Mark Profile as Occupied
-                await prisma.salesProfile.update({
-                    where: { id: item.profileId },
-                    data: { estado: 'OCUPADO' }
-                })
-            }
-
-            const tx = await prisma.transaction.create({
-                data: {
-                    clienteId: cleanId,
-                    // Only link profileId if it's a profile sale, otherwise it might be null/irrelevant?
-                    // But schema might require it? If optional, good. If not, need to check. 
-                    // Assuming optional or we pick the first one? Let's assume optional or null is fine for full account if logic supports.
-                    // Actually, for full account, we might not link a specific profile ID in transaction if schema allows null.
-                    perfilId: item.type === 'PROFILE' ? item.profileId : null,
-                    accountId: item.accountId,
-                    monto: item.price,
-                    descripcion: description, // Custom description
-                    estado_pago: 'PAGADO',
-                    metodo_pago: paymentMethod,
-                    fecha_inicio: now,
-                    fecha_vencimiento: new Date(endTs),
-                    groupId: groupId
-                }
+        // Atomic transaction: client upsert + all combo transactions + all profile locks
+        const transactions = await prisma.$transaction(async (txClient) => {
+            // 1. Ensure Client Exists
+            await txClient.client.upsert({
+                where: { celular: cleanId },
+                update: { nombre: clientName },
+                create: { celular: cleanId, nombre: clientName }
             })
-            transactions.push(tx)
-        } // End Loop
+
+            const createdTxs = []
+            for (const item of items) {
+                let description = ''
+
+                if (item.type === 'FULL_ACCOUNT') {
+                    const account = await txClient.inventoryAccount.findUnique({
+                        where: { id: item.accountId },
+                        include: { provider: true }
+                    })
+                    if (account) description = `Venta ${account.servicio} (Cuenta Completa)`
+
+                    // Lock ALL profiles in account
+                    await txClient.salesProfile.updateMany({
+                        where: { accountId: item.accountId },
+                        data: { estado: 'OCUPADO' }
+                    })
+                } else {
+                    const profile = await txClient.salesProfile.findUnique({
+                        where: { id: item.profileId },
+                        include: { account: true }
+                    })
+                    if (profile) description = `Venta ${profile.account.servicio} - ${profile.nombre_perfil}`
+
+                    // Mark Profile as Occupied and verify
+                    const updated = await txClient.salesProfile.update({
+                        where: { id: item.profileId },
+                        data: { estado: 'OCUPADO' }
+                    })
+                    if (!updated || updated.estado !== 'OCUPADO') {
+                        throw new Error(`El perfil #${item.profileId} no pudo ser marcado como OCUPADO en el combo.`)
+                    }
+                }
+
+                const tx = await txClient.transaction.create({
+                    data: {
+                        clienteId: cleanId,
+                        perfilId: item.type === 'PROFILE' ? item.profileId : null,
+                        accountId: item.accountId,
+                        monto: item.price,
+                        descripcion: description,
+                        estado_pago: 'PAGADO',
+                        metodo_pago: paymentMethod,
+                        fecha_inicio: now,
+                        fecha_vencimiento: new Date(endTs),
+                        groupId: groupId
+                    }
+                })
+                createdTxs.push(tx)
+            }
+            return createdTxs
+        })
 
         // AUTO-SEND BOT MESSAGE (Unified Combo Message)
         // Rule: ALWAYS SEND (No restriction)
@@ -1064,37 +1084,42 @@ export async function createComboSale(
 export async function assignProfile(clientId: string, clientName: string, profileId: number, dueDate: string, startDate?: string) {
     try {
         const cleanId = cleanContactString(clientId)
-        await prisma.client.upsert({
-            where: { celular: cleanId },
-            update: { nombre: clientName },
-            create: { celular: cleanId, nombre: clientName }
-        })
-
         const endObj = new Date(dueDate)
         endObj.setHours(23, 59, 59)
 
         const startObj = startDate ? new Date(startDate) : new Date()
 
-        await prisma.transaction.create({
-            data: {
-                clienteId: cleanId,
-                perfilId: profileId,
-                monto: 0,
-                estado_pago: 'PAGADO',
-                fecha_inicio: startObj,
-                fecha_vencimiento: endObj
+        await prisma.$transaction(async (txClient) => {
+            await txClient.client.upsert({
+                where: { celular: cleanId },
+                update: { nombre: clientName },
+                create: { celular: cleanId, nombre: clientName }
+            })
+
+            await txClient.transaction.create({
+                data: {
+                    clienteId: cleanId,
+                    perfilId: profileId,
+                    monto: 0,
+                    estado_pago: 'PAGADO',
+                    fecha_inicio: startObj,
+                    fecha_vencimiento: endObj
+                }
+            })
+
+            const updatedProfile = await txClient.salesProfile.update({
+                where: { id: profileId },
+                data: { estado: 'OCUPADO' }
+            })
+            if (!updatedProfile || updatedProfile.estado !== 'OCUPADO') {
+                throw new Error(`El perfil #${profileId} no pudo ser marcado como OCUPADO al asignar.`)
             }
         })
 
-        await prisma.salesProfile.update({
-            where: { id: profileId },
-            data: { estado: 'OCUPADO' }
-        })
-
         return { success: true }
-    } catch (e) {
+    } catch (e: any) {
         console.error("Assign Error", e)
-        return { success: false, error: String(e) }
+        return { success: false, error: e?.message || String(e) }
     }
 }
 
@@ -1988,19 +2013,7 @@ export async function sellFullAccount(
     months: number = 1
 ) {
     try {
-        const client = await prisma.client.upsert({
-            where: { celular: clientPhone },
-            update: { nombre: clientName },
-            create: { celular: clientPhone, nombre: clientName }
-        })
-
-        // Update all profiles to OCUPADO
-        await prisma.salesProfile.updateMany({
-            where: { accountId },
-            data: { estado: 'OCUPADO' }
-        })
-
-        // Date Logic
+        const cleanId = cleanContactString(clientPhone)
         const now = normalizeDate(date)
 
         const end = new Date(now)
@@ -2009,24 +2022,38 @@ export async function sellFullAccount(
         if (end.getDate() !== originalDay) end.setDate(0)
         end.setHours(23, 59, 59)
 
-        const transaction = await prisma.transaction.create({
-            data: {
-                monto: price,
-                descripcion: 'Venta de Cuenta Completa',
-                estado_pago: 'PAGADO',
-                metodo_pago: method,
-                fecha_inicio: now,
-                fecha_vencimiento: end,
-                clienteId: client.celular,
-                accountId: accountId,
-            }
+        const transaction = await prisma.$transaction(async (txClient) => {
+            const client = await txClient.client.upsert({
+                where: { celular: cleanId },
+                update: { nombre: clientName },
+                create: { celular: cleanId, nombre: clientName }
+            })
+
+            // Update all profiles to OCUPADO
+            await txClient.salesProfile.updateMany({
+                where: { accountId },
+                data: { estado: 'OCUPADO' }
+            })
+
+            return await txClient.transaction.create({
+                data: {
+                    monto: price,
+                    descripcion: 'Venta de Cuenta Completa',
+                    estado_pago: 'PAGADO',
+                    metodo_pago: method,
+                    fecha_inicio: now,
+                    fecha_vencimiento: end,
+                    clienteId: client.celular,
+                    accountId: accountId,
+                }
+            })
         })
 
         return { success: true, tx: transaction }
 
-    } catch (e) {
-        console.error(e)
-        return { success: false, error: String(e) }
+    } catch (e: any) {
+        console.error("Sell Full Account Error", e)
+        return { success: false, error: e?.message || String(e) }
     }
 }
 
