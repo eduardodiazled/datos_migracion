@@ -351,76 +351,18 @@ export default function SalesPage() {
 
     const handleCopySaleMessage = async (item: any) => {
         try {
-            toast.loading('Generando mensaje...', { id: 'copy-msg' })
+            toast.loading('Obteniendo credenciales del inventario...', { id: 'copy-msg' })
 
-            // Prefer server action to fetch fresh credentials and correct template
+            // ALWAYS fetch fresh credentials from the database for this specific transaction
             const res = await getSaleMessage(item.id)
             if (res.success && res.message) {
                 await navigator.clipboard.writeText(res.message)
-                toast.success('✅ Mensaje copiado al portapapeles', { id: 'copy-msg' })
+                toast.success('✅ Mensaje copiado con credenciales del inventario', { id: 'copy-msg' })
                 return
             }
 
-            // Fallback to client-side data if server action didn't find credentials
-            let message = ''
-            if (item.isCombo) {
-                const validItems = item.items?.filter((i: any) => i.email && i.password)
-                if (validItems && validItems.length > 0) {
-                    const comboItems = validItems.map((i: any) => ({
-                        service: i.service,
-                        email: i.email,
-                        password: i.password,
-                        profile: i.name,
-                        pin: i.pin || null
-                    }))
-                    const expirationDate = item.endDate
-                        ? new Date(item.endDate).toLocaleDateString('es-CO')
-                        : '—'
-                    message = MessageGenerator.generate('COMBO', {
-                        clientName: item.client,
-                        items: comboItems,
-                        expirationDate
-                    })
-                }
-            } else if (item.email && item.password) {
-                const isFullAccount = !item.profileId || item.description?.toLowerCase().includes('cuenta completa')
-                const saleDate = item.endDate
-                    ? new Date(item.endDate).toLocaleDateString('es-CO')
-                    : new Date(item.date).toLocaleDateString('es-CO')
-
-                if (isFullAccount) {
-                    message = MessageGenerator.generate('FULL_ACCOUNT_SALE', {
-                        clientName: item.client,
-                        service: item.category,
-                        email: item.email,
-                        password: item.password,
-                        date: saleDate
-                    })
-                } else {
-                    const profileNameRaw = item.profileName || ''
-                    const profileName = profileNameRaw.includes(' - ')
-                        ? profileNameRaw.split(' - ').slice(1).join(' - ')
-                        : profileNameRaw
-                    const service = item.category || profileNameRaw
-
-                    message = MessageGenerator.generate('SALE', {
-                        clientName: item.client,
-                        service,
-                        email: item.email,
-                        password: item.password,
-                        pin: item.pin || null,
-                        profileName,
-                        date: saleDate
-                    })
-                }
-            }
-
-            if (message && message.trim() !== '') {
-                await navigator.clipboard.writeText(message)
-                toast.success('✅ Mensaje copiado al portapapeles', { id: 'copy-msg' })
-            } else {
-                toast.error(res.error || 'No hay credenciales registradas para esta venta.', { id: 'copy-msg' })
-            }
+            // Do NOT fallback to client-side cached data!
+            toast.error(res.error || 'No se puede generar el texto: faltan credenciales en el inventario.', { id: 'copy-msg' })
         } catch (err: any) {
             console.error('Copy message error:', err)
             toast.error('Error al copiar el mensaje: ' + err.message, { id: 'copy-msg' })

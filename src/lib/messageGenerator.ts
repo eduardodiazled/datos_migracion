@@ -20,9 +20,19 @@ type MessageData = {
 export const MessageGenerator = {
     generate: (type: MessageType, data: MessageData): string => {
         const isNetflix = data.service?.toLowerCase().includes('netflix')
-        const hasPin = data.pin && data.pin.length > 0
-        const hasProfile = data.profileName && data.profileName.length > 0
+        const hasPin = Boolean(data.pin && data.pin.trim().length > 0)
+        const hasProfile = Boolean(data.profileName && data.profileName.trim().length > 0)
         const netflixHelpNote = `📌 *NOTA IMPORTANTE:* Si te pide código al iniciar sesión, por favor dale a la opción *Obtener ayuda* y luego a la opción *Usar contraseña*.`
+
+        // Validaciones estrictas de credenciales requeridas
+        if (['SALE', 'RENEWAL', 'FULL_ACCOUNT_SALE', 'WARRANTY', 'ROTATION'].includes(type)) {
+            if (!data.password || data.password.trim() === '') {
+                throw new Error('Falta la contraseña de la cuenta en el inventario. No se puede armar el texto de acceso.')
+            }
+            if (isNetflix && hasProfile && !hasPin) {
+                throw new Error('Falta el PIN del perfil de Netflix en el inventario. No se puede armar el texto de acceso.')
+            }
+        }
 
         // Helper to build credential block conditionally
         const buildCredentials = () => {
@@ -159,7 +169,20 @@ ${data.magicLink || `${appUrl}/portal?phone=${data.phone}`}
 ¡Gracias por confiar en nosotros!`
 
             case 'COMBO':
-                const itemsList = data.items?.map(i => {
+                if (!data.items || data.items.length === 0) {
+                    throw new Error('El combo no tiene servicios registrados para generar el mensaje.')
+                }
+                for (const i of data.items) {
+                    if (!i.password || i.password.trim() === '') {
+                        throw new Error(`Falta la contraseña para el servicio ${i.service} en el inventario.`)
+                    }
+                    const itemIsNetflix = i.service.toLowerCase().includes('netflix')
+                    if (itemIsNetflix && i.profile !== 'Cuenta Completa' && (!i.pin || i.pin.trim() === '')) {
+                        throw new Error(`Falta el PIN del perfil ${i.profile} (${i.service}) en el inventario.`)
+                    }
+                }
+
+                const itemsList = data.items.map(i => {
                     const itemIsNetflix = i.service.toLowerCase().includes('netflix')
                     let itemText = `📺 *${i.service}*: ${i.email}\n🔑: ${i.password}\n📌 Perfil: ${i.profile} ${i.pin ? `(PIN: ${i.pin})` : ''}`
                     if (itemIsNetflix) {

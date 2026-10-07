@@ -399,21 +399,43 @@ export async function renewService(clientId: string, previousTxId: number, custo
         })
 
         // AUTO-SEND BOT MESSAGE (Credentials)
+        let generatedMsg: string | null = null
+        let credWarning: string | null = null
+
         if (profile && client) {
-            const msg = MessageGenerator.generate('RENEWAL', {
-                clientName: client.nombre,
-                service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
-                daysLeft: months * 30, // Approx
-                email: profile.account.email,
-                password: profile.account.password,
-                pin: profile.pin,
-                profileName: profile.nombre_perfil,
-                date: new Date(endTs).toLocaleDateString('es-CO')
-            })
-            sendToBot(clientId, msg).catch(e => console.error("Auto Renew Bot Error", e))
+            const hasPassword = Boolean(profile.account?.password && profile.account.password.trim().length > 0)
+            const isNetflix = profile.account?.servicio?.toLowerCase().includes('netflix')
+            const hasPin = Boolean(profile.pin && profile.pin.trim().length > 0)
+
+            if (!hasPassword) {
+                credWarning = 'Renovación registrada, pero NO se generó el texto: la cuenta no tiene contraseña en el inventario.'
+            } else if (isNetflix && !hasPin) {
+                credWarning = 'Renovación registrada, pero NO se generó el texto: el perfil de Netflix no tiene PIN en el inventario.'
+            } else {
+                try {
+                    generatedMsg = MessageGenerator.generate('RENEWAL', {
+                        clientName: client.nombre,
+                        service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
+                        daysLeft: months * 30, // Approx
+                        email: profile.account.email,
+                        password: profile.account.password,
+                        pin: profile.pin,
+                        profileName: profile.nombre_perfil,
+                        date: new Date(endTs).toLocaleDateString('es-CO')
+                    })
+                    sendToBot(clientId, generatedMsg).catch(e => console.error("Auto Renew Bot Error", e))
+                } catch (genErr: any) {
+                    credWarning = genErr?.message || 'Error al generar texto de renovación.'
+                }
+            }
         }
 
-        return { success: true, transactionId: newTx.id }
+        return {
+            success: true,
+            transactionId: newTx.id,
+            message: generatedMsg,
+            warning: credWarning
+        }
     } catch (e: any) {
         console.error("Renewal Error", e)
         return { success: false, error: e?.message || "Error procesando la renovación" }
@@ -760,7 +782,7 @@ export async function getSaleMessage(transactionId: number) {
         })
 
         if (!tx) {
-            return { success: false, error: 'Transacción no encontrada' }
+            return { success: false, error: 'Transacción no encontrada.' }
         }
 
         // If combo sale:
@@ -776,19 +798,33 @@ export async function getSaleMessage(transactionId: number) {
             const items: { service: string, email: string, password: string, profile: string, pin?: string | null }[] = []
 
             for (const item of groupTxs) {
-                const email = item.profile?.account?.email || item.account?.email
-                const password = item.profile?.account?.password || item.account?.password
                 const service = item.profile?.account?.servicio || item.account?.servicio || 'Servicio'
-                const profile = item.profile?.nombre_perfil || (item.account ? 'Cuenta Completa' : 'Perfil')
-                const pin = item.profile?.pin || null
+                const isItemFullAccount = !item.perfilId || (item.descripcion && item.descripcion.toLowerCase().includes('cuenta completa'))
+                const email = isItemFullAccount ? item.account?.email : item.profile?.account?.email
+                const password = isItemFullAccount ? item.account?.password : item.profile?.account?.password
+                const profile = isItemFullAccount ? 'Cuenta Completa' : (item.profile?.nombre_perfil || 'Perfil')
+                const pin = isItemFullAccount ? null : (item.profile?.pin || null)
 
-                if (email && password) {
-                    items.push({ service, email, password, profile, pin })
+                if (!email || !password || password.trim() === '') {
+                    return {
+                        success: false,
+                        error: `No se puede generar el texto: la cuenta de ${service} no tiene contraseña en el inventario.`
+                    }
                 }
+
+                const isNetflix = service.toLowerCase().includes('netflix')
+                if (!isItemFullAccount && isNetflix && (!pin || pin.trim() === '')) {
+                    return {
+                        success: false,
+                        error: `No se puede generar el texto: el perfil ${profile} (${service}) no tiene PIN en el inventario.`
+                    }
+                }
+
+                items.push({ service, email, password, profile, pin })
             }
 
             if (items.length === 0) {
-                return { success: false, error: 'No se encontraron credenciales guardadas para los servicios de este combo.' }
+                return { success: false, error: 'No se encontraron servicios con credenciales válidas en este combo.' }
             }
 
             const message = MessageGenerator.generate('COMBO', {
@@ -801,13 +837,29 @@ export async function getSaleMessage(transactionId: number) {
         }
 
         // Simple sale or Full Account sale:
-        const email = tx.profile?.account?.email || tx.account?.email
-        const password = tx.profile?.account?.password || tx.account?.password
-        const pin = tx.profile?.pin || null
         const isFullAccount = !tx.perfilId || (tx.descripcion && tx.descripcion.toLowerCase().includes('cuenta completa'))
+        const service = isFullAccount
+            ? (tx.account?.servicio || tx.profile?.account?.servicio || tx.descripcion || 'Servicio')
+            : (tx.profile?.account?.servicio || tx.descripcion || 'Servicio')
 
-        if (!email || !password) {
-            return { success: false, error: 'Esta venta no tiene credenciales de cuenta asociadas en el sistema.' }
+        // Always directly from the assigned inventory account/profile of this transaction
+        const email = isFullAccount ? tx.account?.email : tx.profile?.account?.email
+        const password = isFullAccount ? tx.account?.password : tx.profile?.account?.password
+        const pin = isFullAccount ? null : tx.profile?.pin
+
+        if (!email || !password || password.trim() === '') {
+            return {
+                success: false,
+                error: `No se puede generar el texto: la cuenta de ${service} no tiene contraseña registrada en el inventario.`
+            }
+        }
+
+        const isNetflix = service.toLowerCase().includes('netflix')
+        if (!isFullAccount && isNetflix && (!pin || pin.trim() === '')) {
+            return {
+                success: false,
+                error: `No se puede generar el texto: el perfil asignado (${tx.profile?.nombre_perfil || 'Perfil'}) de Netflix no tiene PIN configurado en el inventario.`
+            }
         }
 
         const saleDate = tx.fecha_vencimiento
@@ -816,7 +868,6 @@ export async function getSaleMessage(transactionId: number) {
 
         let message = ''
         if (isFullAccount) {
-            const service = tx.account?.servicio || tx.profile?.account?.servicio || tx.descripcion || 'Servicio'
             message = MessageGenerator.generate('FULL_ACCOUNT_SALE', {
                 clientName: tx.client.nombre,
                 service,
@@ -825,7 +876,6 @@ export async function getSaleMessage(transactionId: number) {
                 date: saleDate
             })
         } else {
-            const service = tx.profile?.account?.servicio || tx.descripcion || 'Servicio'
             const profileName = tx.profile?.nombre_perfil || 'Perfil'
             message = MessageGenerator.generate('SALE', {
                 clientName: tx.client.nombre,
@@ -910,6 +960,9 @@ export async function createSale(clientId: string, clientName: string, profileId
             }
 
             // 2. Credentials Message (After Welcome)
+            let generatedMsg: string | null = null
+            let credWarning: string | null = null
+
             if (profileId) {
                 const profile = await prisma.salesProfile.findUnique({
                     where: { id: profileId },
@@ -917,18 +970,35 @@ export async function createSale(clientId: string, clientName: string, profileId
                 })
 
                 if (profile) {
-                    const msg = MessageGenerator.generate('SALE', {
-                        clientName: tx.client.nombre,
-                        service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
-                        email: profile.account.email,
-                        password: profile.account.password,
-                        pin: profile.pin,
-                        profileName: profile.nombre_perfil,
-                        date: now.toLocaleDateString('es-CO')
-                    })
-                    sendToBot(tx.client.celular, msg).catch(e => console.error('Auto Bot Error', e))
+                    const hasPassword = Boolean(profile.account?.password && profile.account.password.trim().length > 0)
+                    const isNetflix = profile.account?.servicio?.toLowerCase().includes('netflix')
+                    const hasPin = Boolean(profile.pin && profile.pin.trim().length > 0)
+
+                    if (!hasPassword) {
+                        credWarning = 'Venta registrada, pero NO se generó el texto: la cuenta no tiene contraseña en el inventario.'
+                    } else if (isNetflix && !hasPin) {
+                        credWarning = 'Venta registrada, pero NO se generó el texto: el perfil de Netflix no tiene PIN en el inventario.'
+                    } else {
+                        try {
+                            const msg = MessageGenerator.generate('SALE', {
+                                clientName: tx.client.nombre,
+                                service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
+                                email: profile.account.email,
+                                password: profile.account.password,
+                                pin: profile.pin,
+                                profileName: profile.nombre_perfil,
+                                date: now.toLocaleDateString('es-CO')
+                            })
+                            generatedMsg = msg
+                            sendToBot(tx.client.celular, msg).catch(e => console.error('Auto Bot Error', e))
+                        } catch (genErr: any) {
+                            credWarning = genErr?.message || 'Error al generar texto de venta.'
+                        }
+                    }
                 }
             }
+
+            return { success: true, transaction: tx, message: generatedMsg, warning: credWarning }
         }
 
         return { success: true, transaction: tx }
@@ -1061,23 +1131,50 @@ export async function createComboSale(
             }
 
             // 3. Send Unified Combo Message
+            let comboMsg: string | null = null
+            let comboWarning: string | null = null
+
             if (validationItems.length > 0) {
-                const msg = MessageGenerator.generate('COMBO', {
-                    clientName: clientName,
-                    items: validationItems,
-                    expirationDate: new Date(endTs).toLocaleDateString()
+                // Check that every item has password and required PIN
+                const invalidItem = validationItems.find(i => {
+                    if (!i.password || i.password.trim() === '') return true
+                    const isNetflix = i.service.toLowerCase().includes('netflix')
+                    if (isNetflix && i.profile !== 'Cuenta Completa' && (!i.pin || i.pin.trim() === '')) return true
+                    return false
                 })
 
-                // Wait a tiny bit (after welcome)
-                await new Promise(r => setTimeout(r, 1000))
-                sendToBot(clientId, msg).catch(e => console.error('Auto Bot Combo Error', e))
+                if (invalidItem) {
+                    comboWarning = `Venta registrada, pero no se generó el texto del combo: faltan contraseña o PIN para ${invalidItem.service} en el inventario.`
+                } else {
+                    try {
+                        const msg = MessageGenerator.generate('COMBO', {
+                            clientName: clientName,
+                            items: validationItems,
+                            expirationDate: new Date(endTs).toLocaleDateString()
+                        })
+                        comboMsg = msg
+                        // Wait a tiny bit (after welcome)
+                        await new Promise(r => setTimeout(r, 1000))
+                        sendToBot(clientId, msg).catch(e => console.error('Auto Bot Combo Error', e))
+                    } catch (genErr: any) {
+                        comboWarning = genErr?.message || 'Error al generar texto del combo.'
+                    }
+                }
+            }
+
+            return {
+                success: true,
+                transaction: transactions[0],
+                groupId,
+                message: comboMsg,
+                warning: comboWarning
             }
         }
 
-        return { success: true, transaction: transactions[0], groupId } // Return first tx or wrapper
-    } catch (e) {
+        return { success: true, transaction: transactions[0], groupId }
+    } catch (e: any) {
         console.error("Create Combo Sale Error", e)
-        return { success: false, error: String(e) }
+        return { success: false, error: e?.message || String(e) }
     }
 }
 

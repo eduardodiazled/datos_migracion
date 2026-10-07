@@ -450,67 +450,30 @@ export default function InventoryPage() {
           setShowSellModal(false)
           fetchInventory()
 
-          // Detailed Success Message for Combo
-          const validationItems = selectedItems.map((item, idx) => {
-            // Find the source profile/account in the state to get credentials
-            const sourceAccount = accounts.find(a => a.id === item.accountId)
-            if (!sourceAccount) return null
+          if (res.warning) {
+            toast.warning(res.warning)
+          }
 
-            const payloadItem = payloadItems[idx]
-            const finalPrice = payloadItem ? payloadItem.price : item.price
+          if (res.message) {
+            setSuccessData({
+              message: res.message,
+              clientName: saleData.name,
+              service: 'Combo / Selección',
+              price: parseInt(saleData.price),
+              date: new Date().toLocaleDateString(),
+              paymentMethod: saleData.paymentMethod,
+              months: saleData.months,
+              items: validationItems // Save items in successData too for reference
+            })
+            setShowSuccessModal(true)
 
-            if (item.type === 'FULL_ACCOUNT') {
-              return {
-                service: sourceAccount.servicio,
-                email: sourceAccount.email,
-                password: sourceAccount.password,
-                profile: 'Cuenta Completa',
-                pin: null,
-                price: finalPrice
-              }
-            } else {
-              const sourceProfile = sourceAccount.perfiles.find(p => p.id === item.profileId)
-              if (!sourceProfile) return null
-
-              return {
-                service: sourceAccount.servicio,
-                email: sourceAccount.email,
-                password: sourceAccount.password,
-                profile: sourceProfile.nombre_perfil,
-                pin: sourceProfile.pin,
-                price: finalPrice
-              }
-            }
-          }).filter(Boolean) as any[]
-
-          // Calculate Expiration Date correctly (Date + Months)
-          const startDate = new Date((saleData.date || getLocalDateISO()) + 'T12:00:00')
-          const monthsToAdd = saleData.months || 1
-          const expirationDate = new Date(startDate)
-          expirationDate.setMonth(expirationDate.getMonth() + monthsToAdd)
-
-          const msg = MessageGenerator.generate('COMBO', {
-            clientName: saleData.name,
-            items: validationItems,
-            expirationDate: expirationDate.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })
-          })
-
-          setSuccessData({
-            message: msg,
-            clientName: saleData.name,
-            service: 'Combo / Selección',
-            price: parseInt(saleData.price),
-            date: new Date().toLocaleDateString(),
-            paymentMethod: saleData.paymentMethod,
-            months: saleData.months,
-            items: validationItems // Save items in successData too for reference
-          })
-          setShowSuccessModal(true)
-
-          // AUTO-SEND TEXT TO BOT
-          sendToBot(saleData.phone, msg)
-            .then(() => setAutoSendStatus('SUCCESS'))
-            .catch(() => setAutoSendStatus('ERROR'))
+            // AUTO-SEND TEXT TO BOT
+            sendToBot(saleData.phone, res.message)
+              .then(() => setAutoSendStatus('SUCCESS'))
+              .catch(() => setAutoSendStatus('ERROR'))
+          } else {
+            toast.error(res.warning || 'Venta registrada, pero no se pudo generar el texto: faltan credenciales en el inventario.')
+          }
 
           // AUTOMATION: Generate & Send Receipt
           setInvoiceData({
@@ -549,27 +512,18 @@ export default function InventoryPage() {
       fetchInventory()
 
       const profileInfo = accounts.flatMap(a => a.perfiles.map(p => ({ ...p, account: a }))).find(p => p.id === selectedProfileId)
+      const serviceName = profileInfo?.account?.servicio || 'Servicio'
 
-      if (profileInfo) {
-        const msg = MessageGenerator.generate('SALE', {
-          clientName: saleData.name,
-          service: profileInfo.account.servicio,
-          email: profileInfo.account.email,
-          password: profileInfo.account.password,
-          profileName: profileInfo.nombre_perfil,
-          pin: profileInfo.pin,
-          date: (() => {
-            const d = new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00')
-            d.setMonth(d.getMonth() + (saleData.months || 1))
-            return d.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })
-          })(),
-          price: parseInt(saleData.price)
-        })
+      if (res.warning) {
+        toast.warning(res.warning)
+      }
+
+      if (res.message) {
         setSuccessData({
-          message: msg,
+          message: res.message,
           receiptId: res.transaction.id,
           clientName: saleData.name,
-          service: profileInfo.account.servicio,
+          service: serviceName,
           date: new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00').toLocaleDateString(),
           price: parseInt(saleData.price),
           paymentMethod: saleData.paymentMethod,
@@ -578,24 +532,23 @@ export default function InventoryPage() {
         setShowSuccessModal(true)
 
         // AUTO-SEND TEXT TO BOT
-        sendToBot(saleData.phone, msg)
+        sendToBot(saleData.phone, res.message)
           .then(() => setAutoSendStatus('SUCCESS'))
           .catch(() => setAutoSendStatus('ERROR'))
-
-        // AUTOMATION: Generate & Send Receipt
-        setInvoiceData({
-          amount: parseInt(saleData.price),
-          client: saleData.name,
-          category: profileInfo.account.servicio,
-          date: new Date().toISOString(),
-          paymentMethod: saleData.paymentMethod,
-          isCombo: false,
-          months: saleData.months
-        })
-
-
+      } else {
+        toast.error(res.warning || 'Venta registrada, pero no se pudo generar el texto de acceso: faltan contraseña o PIN en el inventario.')
       }
 
+      // AUTOMATION: Generate & Send Receipt
+      setInvoiceData({
+        amount: parseInt(saleData.price),
+        client: saleData.name,
+        category: serviceName,
+        date: new Date().toISOString(),
+        paymentMethod: saleData.paymentMethod,
+        isCombo: false,
+        months: saleData.months
+      })
     } else {
       toast.error(res?.error || 'Error en venta: no se pudo asegurar el perfil en estado OCUPADO.')
     }

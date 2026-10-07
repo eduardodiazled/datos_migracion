@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, Check, Pencil, Search, ShieldCheck, Key, Send, MoreHorizontal, ShieldAlert, RefreshCcw, ChevronDown, MoreVertical, LogOut, DollarSign, TrendingUp, Download, Copy, ExternalLink, Users, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
-import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction, mergeClients, getDuplicateClients, searchClients } from '../actions'
+import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction, mergeClients, getDuplicateClients, searchClients, getSaleMessage } from '../actions'
 import { sendToBot } from '@/services/whatsapp'
 import { signOut } from 'next-auth/react'
 import { getLocalDateTimeISO } from '@/lib/dateUtils'
@@ -840,33 +840,19 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
     const handleBotAction = async (type: MessageType) => {
         setIsProcessing(true)
         try {
-            let message = ''
-
-            // Intelligent Resend Selection
-            if (type === 'SALE' && client.items && client.items.length > 1) {
-                // IT IS A COMBO / MULTIPLE SERVICE
-                message = MessageGenerator.generate('COMBO', {
-                    clientName: client.name,
-                    items: client.items,
-                    expirationDate: new Date().toLocaleDateString() // Or meaningful max date
-                })
-            } else {
-                // SINGLE SERVICE
-                message = MessageGenerator.generate(type, {
-                    clientName: client.name,
-                    service: client.service,
-                    daysLeft: client.daysLeft,
-                    email: client.email,
-                    password: client.password,
-                    pin: client.pin,
-                    profileName: client.profileName,
-                    date: client.date || new Date().toLocaleDateString('es-CO')
-                })
+            // ALWAYS fetch fresh credentials from the database for this transaction!
+            // Never use cached client.password or client.pin!
+            const res = await getSaleMessage(client.lastTxId)
+            if (!res.success || !res.message) {
+                toast.error(res.error || 'No se puede generar el mensaje: faltan contraseña o PIN en el inventario.')
+                setIsProcessing(false)
+                return
             }
 
-            await sendToBot(client.phone, message)
+            await sendToBot(client.phone, res.message)
+            toast.success('Mensaje enviado al bot con credenciales actualizadas')
         } catch (e: any) {
-            alert(`Error enviando bot: ${e.message}`)
+            toast.error(`Error enviando bot: ${e.message}`)
         } finally {
             setIsProcessing(false)
         }
@@ -911,23 +897,19 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
             return
         }
 
-        // 3. Prepare Success Data (Using message generator logic mostly)
-        // We know renewService sent the text, but for the modal we want to show it too?
-        // Actually Sales page shows the message to Copy. Let's regenerate it locally or just show generic success.
-        // For consistency with Sales, let's generate the message locally to show 'Copy' button.
-        const message = MessageGenerator.generate('RENEWAL', {
-            clientName: client.name,
-            service: client.service,
-            daysLeft: renewalMonths * 30,
-            email: client.email,
-            password: client.password,
-            pin: client.pin,
-            profileName: client.profileName,
-            date: new Date(new Date().setDate(new Date().getDate() + (renewalMonths * 30))).toLocaleDateString('es-CO')
-        })
+        if (res.warning) {
+            toast.warning(res.warning)
+        }
 
-        setSuccessData({ message, phone: client.phone })
-        setShowSuccessModal(true)
+        // 3. Prepare Success Data
+        // Use res.message directly from the DB! Never use client.password or client.pin from local React state!
+        if (res.message) {
+            setSuccessData({ message: res.message, phone: client.phone })
+            setShowSuccessModal(true)
+        } else {
+            toast.error(res.warning || 'Renovación guardada, pero no se pudo generar el texto de acceso: faltan contraseña o PIN en el inventario.')
+        }
+
         setShowRenewModal(false)
         setIsProcessing(false)
     }
