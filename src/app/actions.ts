@@ -362,6 +362,23 @@ export async function renewService(clientId: string, previousTxId: number, custo
         const days = months * 30
         const endTs = startTs + (days * 24 * 60 * 60 * 1000)
 
+        // Validar que la cuenta no esté inactiva ni con fallas en garantía antes de renovar
+        if (prevTx.perfilId) {
+            const currentProfile = await prisma.salesProfile.findUnique({
+                where: { id: prevTx.perfilId },
+                include: { account: { include: { perfiles: true } } }
+            })
+            if (currentProfile?.account) {
+                if (currentProfile.account.status !== 'ACTIVE') {
+                    throw new Error(`La cuenta (${currentProfile.account.email}) está inactiva. No se puede renovar directamente; debes migrar al cliente a una cuenta activa.`)
+                }
+                const hasWarranty = currentProfile.account.perfiles.some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+                if (hasWarranty) {
+                    throw new Error(`La cuenta (${currentProfile.account.email}) tiene perfiles en garantía o caídos. No se puede renovar directamente; debes migrar al cliente a una cuenta disponible.`)
+                }
+            }
+        }
+
         // Atomic transaction: create renewal transaction and lock profile/account as OCUPADO
         const { newTx, profile, client } = await prisma.$transaction(async (txClient) => {
             const createdTx = await txClient.transaction.create({

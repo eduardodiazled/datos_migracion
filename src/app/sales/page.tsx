@@ -192,6 +192,9 @@ export default function SalesPage() {
 
     const handleCreateSale = async () => {
         if (!saleForm.clientName || !saleForm.price) return alert('Datos incompletos')
+        if (saleType === 'PRODUCT' && !selectedProduct) {
+            return toast.error('Debes seleccionar un producto válido con stock disponible.')
+        }
 
         const res = await createSale(
             saleForm.clientId || '0000000000',
@@ -688,7 +691,13 @@ export default function SalesPage() {
                                         <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
                                     </select>
                                 </div>
-                                <button onClick={handleCreateSale} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95">Confirmar Venta</button>
+                                <button
+                                    onClick={handleCreateSale}
+                                    disabled={saleType === 'PRODUCT' && (!selectedProduct || inventory.length === 0)}
+                                    className={`w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95 ${(saleType === 'PRODUCT' && (!selectedProduct || inventory.length === 0)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    Confirmar Venta
+                                </button>
                             </div>
                         </div>
                     )

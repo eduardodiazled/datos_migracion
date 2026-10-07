@@ -36,8 +36,12 @@ export function isAccountSellable(account: SellableAccountCheck, now: Date = new
         const endDate = new Date(activation)
         endDate.setMonth(endDate.getMonth() + months)
 
+        // Si la cuenta tiene reportes de falla/garantía y la fecha expiró, queda 100% vetada.
         if (endDate <= now) {
-            return { ok: false, reason: `La cuenta desechable (${account.email || account.id}) ya está vencida técnicamente.` }
+            const hasWarranty = account.perfiles && account.perfiles.some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+            if (hasWarranty) {
+                return { ok: false, reason: `La cuenta desechable (${account.email || account.id}) está vencida y tiene perfiles en garantía.` }
+            }
         }
     }
 
@@ -70,6 +74,22 @@ export async function validateProfileIsSellable(profileId: number, tx: any = pri
         return { ok: false, reason: accCheck.reason, profile }
     }
 
+    // Regla 4: No puede tener otra transacción activa vigente apuntando a este perfilId
+    const now = new Date()
+    const activeTx = await tx.transaction.findFirst({
+        where: {
+            perfilId: profileId,
+            fecha_vencimiento: { gt: now }
+        }
+    })
+    if (activeTx) {
+        return {
+            ok: false,
+            reason: `El perfil #${profileId} ya tiene una venta activa asignada (vence el ${new Date(activeTx.fecha_vencimiento).toLocaleDateString('es-CO')}).`,
+            profile
+        }
+    }
+
     return { ok: true, profile }
 }
 
@@ -100,12 +120,29 @@ export async function validateAccountIsSellable(accountId: number, tx: any = pri
         }
     }
 
+    // Comprobar que ningún perfil tenga transacciones activas
+    const now = new Date()
+    const profileIds = account.perfiles.map((p: any) => p.id)
+    const activeTx = await tx.transaction.findFirst({
+        where: {
+            perfilId: { in: profileIds },
+            fecha_vencimiento: { gt: now }
+        }
+    })
+    if (activeTx) {
+        return {
+            ok: false,
+            reason: `La cuenta tiene perfiles con ventas activas vigentes. No se puede vender completa.`,
+            account
+        }
+    }
+
     return { ok: true, account }
 }
 
 /**
  * Obtiene todos los perfiles que representan stock real vendible.
- * Excluye cuentas inactivas, en garantía, caídas o desechables vencidas.
+ * Excluye cuentas inactivas, en garantía, caídas o con transacciones activas vigentes.
  */
 export async function findSellableProfiles(
     options: {
@@ -122,6 +159,12 @@ export async function findSellableProfiles(
         where: {
             estado: 'LIBRE',
             ...(excludeProfileId ? { id: { not: excludeProfileId } } : {}),
+            // Regla 4: Sin transacciones activas vigentes
+            transactions: {
+                none: {
+                    fecha_vencimiento: { gt: now }
+                }
+            },
             account: {
                 status: 'ACTIVE',
                 ...(service ? { servicio: service } : {}),
@@ -139,17 +182,5 @@ export async function findSellableProfiles(
         orderBy: { id: 'asc' }
     })
 
-    return profiles.filter((p: any) => {
-        const acc = p.account
-        if (!acc || acc.status !== 'ACTIVE') return false
-        const isDisposable = acc.is_disposable || acc.tipo === 'DESECHABLE'
-        if (isDisposable) {
-            const activation = new Date(acc.fecha_activacion || acc.createdAt)
-            const months = acc.duracion_meses || 1
-            const endDate = new Date(activation)
-            endDate.setMonth(endDate.getMonth() + months)
-            if (endDate <= now) return false
-        }
-        return true
-    })
+    return profiles
 }

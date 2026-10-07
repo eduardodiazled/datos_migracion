@@ -320,6 +320,17 @@ export default function InventoryPage() {
 
 
   const handleOpenSell = (profileId: number, serviceName: string) => {
+    const parentAccount = accounts.find(a => a.perfiles?.some(p => p.id === profileId))
+    if (parentAccount) {
+      if (parentAccount.status !== 'ACTIVE') {
+        return toast.error('Esta cuenta está inactiva o archivada.')
+      }
+      const hasWarranty = (parentAccount.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+      if (hasWarranty) {
+        return toast.error('Esta cuenta tiene perfiles en garantía o caídos. No es stock vendible.')
+      }
+    }
+
     setSelectedProfileId(profileId)
     const price = getServicePrice(serviceName)
     setSaleData({ ...saleData, price: price.toString(), paymentMethod: 'NEQUI' })
@@ -337,6 +348,16 @@ export default function InventoryPage() {
   const [selectedItems, setSelectedItems] = useState<{ profileId: number, type: 'PROFILE' | 'FULL_ACCOUNT', accountId: number, serviceName: string, price: number }[]>([])
 
   const toggleSelection = (profile: Profile, serviceName: string, accountId: number, defaultPrice: number = 10000) => {
+    const parentAccount = accounts.find(a => a.id === accountId)
+    if (parentAccount) {
+      if (parentAccount.status !== 'ACTIVE') return toast.error('Esta cuenta está inactiva o archivada.')
+      const hasWarranty = (parentAccount.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+      if (hasWarranty) return toast.error('Esta cuenta tiene perfiles en garantía o caídos. No se puede vender en combo.')
+    }
+    if (profile.estado !== 'LIBRE') {
+      return toast.error('Solo se pueden seleccionar perfiles LIBRE para combos.')
+    }
+
     setSelectedItems(prev => {
       // Check if profile is already selected
       const exists = prev.find(i => i.profileId === profile.id && i.type === 'PROFILE')
@@ -385,9 +406,13 @@ export default function InventoryPage() {
       // Deselect All
       setSelectedItems(prev => prev.filter(i => !allProfileIds.includes(i.profileId)))
     } else {
-      // Select All (Prefer LIBRE, but for full account sale, selects ALL useful ones)
-      const validProfiles = (account.perfiles || []).filter(p => p.estado === 'LIBRE' || p.estado === 'OCUPADO' || p.estado === 'GARANTIA')
-      if (validProfiles.length === 0) return toast.error('No hay perfiles válidos')
+      if (account.status !== 'ACTIVE') return toast.error('Esta cuenta está inactiva o archivada.')
+      const hasWarranty = (account.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+      if (hasWarranty) return toast.error('Esta cuenta tiene perfiles en garantía o caídos. No se puede vender en combo.')
+
+      // Select All (ÚNICAMENTE perfiles LIBRE de cuentas sanas)
+      const validProfiles = (account.perfiles || []).filter(p => p.estado === 'LIBRE')
+      if (validProfiles.length === 0) return toast.error('No hay perfiles LIBRE disponibles en esta cuenta')
 
       const newItems = validProfiles.map(p => ({
         profileId: p.id,
@@ -1266,29 +1291,33 @@ export default function InventoryPage() {
 
                             {/* Profiles Grid - FORCED SINGLE COLUMN */}
                             <div className="grid grid-cols-1 gap-3 flex-1 content-start">
-                              {account.perfiles.map(profile => (
-                                <ProfileCard
-                                  key={profile.id}
-                                  profile={profile}
-                                  isSelected={selectedItems.some(i => i.profileId === profile.id)}
-                                  onToggle={() => toggleSelection(profile, account.servicio, account.id)}
-                                  onRotate={() => handleRotate(profile.id, profile.estado)}
-                                  // Individual Profile Actions
-                                  onReportWarranty={() => handleProfileStatus(profile.id, 'GARANTIA')}
-                                  onRevive={() => handleRevive(profile.id)}
-                                  onSell={() => handleOpenSell(profile.id, account.servicio)}
-                                  onAssign={() => handleOpenAssign(profile.id)}
-                                  onMigrate={() => {
-                                    setProfileToMigrate({
-                                      id: profile.id,
-                                      serviceName: account.servicio,
-                                      accountId: account.id,
-                                      profileName: profile.nombre_perfil
-                                    })
-                                    setShowMigrateModal(true)
-                                  }}
-                                />
-                              ))}
+                              {account.perfiles.map(profile => {
+                                const isAccountSellable = account.status === 'ACTIVE' && !(account.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+                                return (
+                                  <ProfileCard
+                                    key={profile.id}
+                                    profile={profile}
+                                    isSellableAccount={isAccountSellable}
+                                    isSelected={selectedItems.some(i => i.profileId === profile.id)}
+                                    onToggle={() => toggleSelection(profile, account.servicio, account.id)}
+                                    onRotate={() => handleRotate(profile.id, profile.estado)}
+                                    // Individual Profile Actions
+                                    onReportWarranty={() => handleProfileStatus(profile.id, 'GARANTIA')}
+                                    onRevive={() => handleRevive(profile.id)}
+                                    onSell={() => handleOpenSell(profile.id, account.servicio)}
+                                    onAssign={() => handleOpenAssign(profile.id)}
+                                    onMigrate={() => {
+                                      setProfileToMigrate({
+                                        id: profile.id,
+                                        serviceName: account.servicio,
+                                        accountId: account.id,
+                                        profileName: profile.nombre_perfil
+                                      })
+                                      setShowMigrateModal(true)
+                                    }}
+                                  />
+                                )
+                              })}
                             </div>
 
                             { /* Full Account Sale Button - NOW SELECTION */}
@@ -1944,8 +1973,8 @@ export default function InventoryPage() {
                 <button type="button" onClick={() => setShowSellModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">Cancelar</button>
                 <button
                   onClick={handleSell}
-                  disabled={isSubmitting}
-                  className={`flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold shadow-lg shadow-emerald-600/20 transition hover:scale-105 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isSubmitting || (selectedItems.length === 0 && !selectedProfileId)}
+                  className={`flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold shadow-lg shadow-emerald-600/20 transition hover:scale-105 flex items-center justify-center gap-2 ${(isSubmitting || (selectedItems.length === 0 && !selectedProfileId)) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isSubmitting ? <span className="animate-spin">⌛</span> : <DollarSign size={18} />}
                   {isSubmitting ? 'Procesando...' : 'Confirmar Venta'}
@@ -2368,9 +2397,9 @@ export default function InventoryPage() {
 }
 
 
-function ProfileCard({ profile, isSelected, onToggle, onRotate, onReportWarranty, onRevive, onSell, onAssign, onMigrate }: { profile: Profile, isSelected: boolean, onToggle: () => void, onRotate: () => void, onReportWarranty: () => void, onRevive: () => void, onSell: () => void, onAssign: () => void, onMigrate: () => void }) {
+function ProfileCard({ profile, isSellableAccount = true, isSelected, onToggle, onRotate, onReportWarranty, onRevive, onSell, onAssign, onMigrate }: { profile: Profile, isSellableAccount?: boolean, isSelected: boolean, onToggle: () => void, onRotate: () => void, onReportWarranty: () => void, onRevive: () => void, onSell: () => void, onAssign: () => void, onMigrate: () => void }) {
   const statusColors = {
-    LIBRE: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+    LIBRE: isSellableAccount ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/5 border-rose-500/20 text-rose-300',
     OCUPADO: 'bg-slate-800/50 border-white/5 text-slate-400',
     CUARENTENA_PIN: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
     GARANTIA: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
@@ -2381,7 +2410,7 @@ function ProfileCard({ profile, isSelected, onToggle, onRotate, onReportWarranty
     <div className={`p-3 rounded-xl border transition-all duration-200 ${statusColors[profile.estado as keyof typeof statusColors]}`}>
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center gap-2">
-          {profile.estado === 'LIBRE' && (
+          {profile.estado === 'LIBRE' && isSellableAccount && (
             <input
               type="checkbox"
               checked={isSelected}
@@ -2455,28 +2484,43 @@ function ProfileCard({ profile, isSelected, onToggle, onRotate, onReportWarranty
         )}
 
         {profile.estado === 'LIBRE' ? (
-          <div className="flex gap-1 flex-1">
-            <button
-              onClick={onSell}
-              className="flex-1 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-bold transition-colors flex items-center justify-center gap-1"
-            >
-              <Plus size={12} /> Vender
-            </button>
-            <button
-              onClick={onAssign}
-              title="Asignar a Cliente Existente (Migración)"
-              className="w-8 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors flex items-center justify-center"
-            >
-              <User size={12} />
-            </button>
-            <button
-              onClick={onRotate}
-              title="Reportar Caído/Rotar"
-              className="w-8 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 text-xs font-medium transition-colors flex items-center justify-center"
-            >
-              <RefreshCw size={12} />
-            </button>
-          </div>
+          isSellableAccount ? (
+            <div className="flex gap-1 flex-1">
+              <button
+                onClick={onSell}
+                className="flex-1 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-bold transition-colors flex items-center justify-center gap-1"
+              >
+                <Plus size={12} /> Vender
+              </button>
+              <button
+                onClick={onAssign}
+                title="Asignar a Cliente Existente (Migración)"
+                className="w-8 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors flex items-center justify-center"
+              >
+                <User size={12} />
+              </button>
+              <button
+                onClick={onRotate}
+                title="Reportar Caído/Rotar"
+                className="w-8 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 text-xs font-medium transition-colors flex items-center justify-center"
+              >
+                <RefreshCw size={12} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-1 flex-1">
+              <span className="text-[10px] text-rose-400 font-semibold py-1.5 px-2 rounded bg-rose-500/10 border border-rose-500/20 text-center flex-1 flex items-center justify-center">
+                En garantía / No vendible
+              </span>
+              <button
+                onClick={onRotate}
+                title="Reportar Caído/Rotar"
+                className="w-8 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 text-xs font-medium transition-colors flex items-center justify-center"
+              >
+                <RefreshCw size={12} />
+              </button>
+            </div>
+          )
         ) : (
           // Status other than LIBRE (OCUPADO, GARANTIA, etc) are handled above or here if needed (e.g. CUARENTENA)
           profile.estado === 'CUARENTENA_PIN' && (
