@@ -9,7 +9,7 @@ import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount,
 import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
-import { getWhatsAppUrl } from '@/lib/whatsappUtils'
+import { getWhatsAppUrl, cleanContactString } from '@/lib/whatsappUtils'
 
 // Types
 type Profile = {
@@ -177,8 +177,8 @@ export default function InventoryPage() {
   }, [])
 
   const handlePhoneChange = async (val: string) => {
-    // Allow numbers and usernames
-    const cleanVal = val.trim()
+    // Allow numbers and usernames (sanitizing unicode and trimming)
+    const cleanVal = cleanContactString(val)
     setSaleData(prev => ({ ...prev, phone: cleanVal }))
 
     // Search if length > 2

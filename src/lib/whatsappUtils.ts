@@ -1,7 +1,7 @@
 export function cleanContactString(input: string): string {
     if (!input) return ''
     // Strip zero-width, non-breaking, and directional formatting unicode characters
-    return input.replace(/[\u200B-\u200D\uFEFF\u2060-\u206F\u202A-\u202E]/g, '').trim()
+    return input.replace(/[\u200B-\u200F\uFEFF\u2060-\u206F\u202A-\u202E]/g, '').trim()
 }
 
 export function getWhatsAppUrl(phone: string, message: string): string {
@@ -21,7 +21,7 @@ export function getWhatsAppUrl(phone: string, message: string): string {
     }
 
     // Traditional numeric phone number logic
-    const cleanPhone = trimPhone.replace(/\D/g, '')
+    const cleanPhone = cleanInput.replace(/\D/g, '')
 
     // Check if running in browser and is mobile
     const isMobile = typeof window !== 'undefined' && 
