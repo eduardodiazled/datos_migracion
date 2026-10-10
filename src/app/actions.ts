@@ -6,40 +6,22 @@ import { MessageGenerator } from '@/lib/messageGenerator'
 import { sendToBot } from '@/services/whatsapp'
 import { cleanContactString } from '@/lib/whatsappUtils'
 import { findSellableProfiles, validateProfileIsSellable, validateAccountIsSellable } from '@/lib/inventoryValidation'
+import {
+    calculateBogotaCutoff,
+    getDaysDiffBogota,
+    parseBogotaDateParts,
+    toBogotaStartOfDay,
+    toBogotaEndOfDay,
+    formatBogotaDateISO,
+    BOGOTA_TZ
+} from '@/lib/dateUtils'
 
 
-// Helper: Normalize Date to prevent Timezone shifts
-// Forces Noon (12:00) UTC which typically falls on the same day in Americas (UTC-5)
+// Helper: Normalize Date to prevent Timezone shifts using America/Bogota calendar
+// Forces Noon (12:00 COT = 17:00 UTC) which preserves the exact date without shifts
 function normalizeDate(dateStr?: string | Date): Date {
-    if (!dateStr) {
-        // If "Now", default to today Noon
-        const now = new Date()
-        // Check if it's late night (e.g. after 7pm in Colombia = next day UTC)
-        // Simple fix: Use local date string components to build noon date
-        // But running on server (UTC).
-        // Let's rely on subtraction: UTC-5.
-        // If it's 02:00 UTC (Dec 19), it's 21:00 EST (Dec 18).
-        // We want Dec 18 T12:00:00.
-        const colombiaTime = new Date(now.getTime() - (5 * 60 * 60 * 1000))
-        const yyyy = colombiaTime.getUTCFullYear()
-        const mm = colombiaTime.getUTCMonth()
-        const dd = colombiaTime.getUTCDate()
-        return new Date(Date.UTC(yyyy, mm, dd, 12, 0, 0))
-    }
-
-    if (dateStr instanceof Date) return dateStr
-
-    // If YYYY-MM-DD
-    if (dateStr.length === 10 && dateStr.includes('-')) {
-        return new Date(dateStr + 'T12:00:00.000Z')
-    }
-
-    // If ISO with time, maybe trust it or force?
-    // User complaint: "after certain hour it goes to next day".
-    // This implies the input string might be just a date, or the default `new Date()` is used.
-    // If provided date is "2023-12-18", using T12:00:00Z fixes it.
-
-    return new Date(dateStr)
+    const { year, month, day } = parseBogotaDateParts(dateStr)
+    return toBogotaStartOfDay(year, month, day)
 }
 
 export async function getDashboardStats(year?: number, month?: number) {
@@ -107,8 +89,8 @@ export async function getDashboardStats(year?: number, month?: number) {
 
             const now = new Date()
 
-            // Gather ALL active transactions for this client (for Combos)
-            const activeItems = c.transactions.filter(t => new Date(t.fecha_vencimiento) > now).map(t => {
+            // Gather ALL active transactions for this client (for Combos) - active if cut day is today or future
+            const activeItems = c.transactions.filter(t => getDaysDiffBogota(t.fecha_vencimiento) >= 0).map(t => {
                 let sName = 'Servicio'
                 let email = ''
                 let password = ''
@@ -154,7 +136,7 @@ export async function getDashboardStats(year?: number, month?: number) {
             }
 
             const expiry = new Date(lastTx.fecha_vencimiento)
-            const daysLeft = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+            const daysLeft = getDaysDiffBogota(expiry)
             const isRenewed = c.transactions.some(t => t.fecha_inicio > now)
             const isDisposable = lastTx.profile?.account?.is_disposable || lastTx.account?.is_disposable || false
 
@@ -165,10 +147,10 @@ export async function getDashboardStats(year?: number, month?: number) {
                 else if (daysLeft === 3) urgency = 'MEDIUM'
             }
 
-            // Derived cycle status based purely on fecha_vencimiento (not estado_pago)
-            // VENCIDO: expired and no active renewal
-            // POR_VENCER: <=3 days left (includes today)
-            // VIGENTE: more than 3 days remaining
+            // Derived cycle status based purely on fecha_vencimiento in America/Bogota
+            // VENCIDO: expired and no active renewal (daysLeft < 0)
+            // POR_VENCER: <=3 days left (includes today: daysLeft === 0)
+            // VIGENTE: more than 3 days remaining (daysLeft > 3)
             let cycleStatus: 'VENCIDO' | 'POR_VENCER' | 'VIGENTE'
             if (daysLeft < 0) {
                 cycleStatus = 'VENCIDO'
@@ -356,11 +338,7 @@ export async function renewService(clientId: string, previousTxId: number, custo
 
         if (!prevTx) throw new Error("Transacción original no encontrada")
 
-        const startDate = normalizeDate(customDate)
-
-        const startTs = startDate.getTime()
-        const days = months * 30
-        const endTs = startTs + (days * 24 * 60 * 60 * 1000)
+        const { startDate, dueDate: endDueDate } = calculateBogotaCutoff(customDate, months)
 
         // Validar que la cuenta no esté inactiva ni con fallas en garantía antes de renovar
         if (prevTx.perfilId) {
@@ -389,7 +367,7 @@ export async function renewService(clientId: string, previousTxId: number, custo
                     estado_pago: 'PAGADO',
                     metodo_pago: paymentMethod,
                     fecha_inicio: startDate,
-                    fecha_vencimiento: new Date(endTs),
+                    fecha_vencimiento: endDueDate,
                     monto: prevTx.monto
                 }
             })
@@ -500,8 +478,8 @@ export async function releaseService(profileId: number, newPin?: string) {
 
 export async function updateDueDate(transactionId: number, newDate: string) {
     try {
-        const dateObj = new Date(newDate)
-        dateObj.setHours(23, 59, 59)
+        const { year, month, day } = parseBogotaDateParts(newDate)
+        const dateObj = toBogotaEndOfDay(year, month, day)
 
         await prisma.transaction.update({
             where: { id: transactionId },
@@ -930,19 +908,7 @@ export async function createSale(clientId: string, clientName: string, profileId
         }
 
         const cleanId = cleanContactString(clientId)
-        const now = normalizeDate(date) // Use 'now' as the variable name to match existing code logic
-
-        // Logic: Number to Number with Safe Clamping
-        // Jan 31 + 1 Mo -> Feb 28 (not Mar 3)
-        const end = new Date(now)
-        const originalDay = end.getDate()
-        end.setMonth(end.getMonth() + months)
-        if (end.getDate() !== originalDay) {
-            end.setDate(0) // Set to last day of previous month (the target month)
-        }
-
-        // Ensure End Date is End of Day
-        end.setHours(23, 59, 59)
+        const { startDate: now, dueDate: end } = calculateBogotaCutoff(date, months)
 
         // Atomic transaction: client upsert + transaction creation + profile lock as OCUPADO
         const tx = await prisma.$transaction(async (txClient) => {
@@ -1070,9 +1036,7 @@ export async function createComboSale(
 
         const cleanId = cleanContactString(clientId)
         const groupId = globalThis.crypto.randomUUID()
-        const now = normalizeDate(date)
-        const days = months * 30
-        const endTs = now.getTime() + (days * 24 * 60 * 60 * 1000)
+        const { startDate: now, dueDate: end } = calculateBogotaCutoff(date, months)
 
         // Atomic transaction: client upsert + all combo transactions + all profile locks
         const transactions = await prisma.$transaction(async (txClient) => {
@@ -1128,7 +1092,7 @@ export async function createComboSale(
                         estado_pago: 'PAGADO',
                         metodo_pago: paymentMethod,
                         fecha_inicio: now,
-                        fecha_vencimiento: new Date(endTs),
+                        fecha_vencimiento: end,
                         groupId: groupId
                     }
                 })
@@ -1794,21 +1758,18 @@ export async function updateTransaction(id: number, data: {
         const currentTx = await prisma.transaction.findUnique({ where: { id } })
         if (!currentTx) throw new Error("Transaction not found")
 
-        // Date Logic
+        // Date Logic (America/Bogota)
         let newStart = currentTx.fecha_inicio
-        if (data.date) {
-            newStart = normalizeDate(data.date)
+        let newEnd = currentTx.fecha_vencimiento
+        if (data.date || data.months) {
+            const startDate = data.date || currentTx.fecha_inicio
+            const months = data.months || 1
+            const cutoff = calculateBogotaCutoff(startDate, months)
+            if (data.date) newStart = cutoff.startDate
+            newEnd = cutoff.dueDate
+            updateData.fecha_vencimiento = newEnd
         }
-
-        let newDurationMs = currentTx.fecha_vencimiento.getTime() - currentTx.fecha_inicio.getTime()
-        if (data.months) {
-            newDurationMs = data.months * 30 * 24 * 60 * 60 * 1000
-        }
-
-        const newEnd = new Date(newStart.getTime() + newDurationMs)
-
         if (data.date) updateData.fecha_inicio = newStart
-        if (data.date || data.months) updateData.fecha_vencimiento = newEnd
 
         if (data.price !== undefined) updateData.monto = data.price
         if (data.paymentMethod) updateData.metodo_pago = data.paymentMethod
@@ -1941,18 +1902,16 @@ export async function updateComboGroup(groupId: string, data: {
 
         const baseTx = existingTxs[0]
 
-        // Calculate Date changes if provided
+        // Calculate Date changes if provided (America/Bogota)
         let newStart = baseTx.fecha_inicio
-        if (data.date) {
-            newStart = normalizeDate(data.date)
+        let newEnd = baseTx.fecha_vencimiento
+        if (data.date || data.months) {
+            const startDate = data.date || baseTx.fecha_inicio
+            const months = data.months || 1
+            const cutoff = calculateBogotaCutoff(startDate, months)
+            if (data.date) newStart = cutoff.startDate
+            newEnd = cutoff.dueDate
         }
-
-        let newDurationMs = baseTx.fecha_vencimiento.getTime() - baseTx.fecha_inicio.getTime()
-        if (data.months) {
-            newDurationMs = data.months * 30 * 24 * 60 * 60 * 1000
-        }
-
-        const newEnd = new Date(newStart.getTime() + newDurationMs)
 
         // Handle Client update if provided
         let cleanId = baseTx.clienteId
@@ -2552,13 +2511,7 @@ export async function sellFullAccount(
 ) {
     try {
         const cleanId = cleanContactString(clientPhone)
-        const now = normalizeDate(date)
-
-        const end = new Date(now)
-        const originalDay = end.getDate()
-        end.setMonth(end.getMonth() + months)
-        if (end.getDate() !== originalDay) end.setDate(0)
-        end.setHours(23, 59, 59)
+        const { startDate: now, dueDate: end } = calculateBogotaCutoff(date, months)
 
         const transaction = await prisma.$transaction(async (txClient) => {
             const accCheck = await validateAccountIsSellable(accountId, txClient)
@@ -3018,7 +2971,7 @@ export async function getClientPortalData(phone: string) {
                 })),
                 pin: isGrouped ? null : (mainFn.profile?.pin || ''),
                 expirationDate: mainFn.fecha_vencimiento.toISOString(),
-                daysLeft: Math.ceil((new Date(mainFn.fecha_vencimiento).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+                daysLeft: getDaysDiffBogota(mainFn.fecha_vencimiento),
                 renewed: false
             }
         })
