@@ -1736,75 +1736,101 @@ export async function updateTransaction(id: number, data: {
         if (data.price !== undefined) updateData.monto = data.price
         if (data.paymentMethod) updateData.metodo_pago = data.paymentMethod
         if (data.description) updateData.descripcion = data.description
-        if (data.clientId) {
-            const cleanId = cleanContactString(data.clientId)
-            updateData.clienteId = cleanId
-            if (data.clientName) {
-                await prisma.client.upsert({
-                    where: { celular: cleanId },
-                    update: { nombre: data.clientName },
-                    create: { celular: cleanId, nombre: data.clientName }
-                })
+        const updatedTx = await prisma.$transaction(async (prismaTx) => {
+            if (data.clientId) {
+                const cleanId = cleanContactString(data.clientId)
+                updateData.clienteId = cleanId
+                if (data.clientName) {
+                    await prismaTx.client.upsert({
+                        where: { celular: cleanId },
+                        update: { nombre: data.clientName },
+                        create: { celular: cleanId, nombre: data.clientName }
+                    })
+                }
             }
-        }
 
-        if (data.profileId !== undefined) {
-            if (data.profileId) {
-                // Validate new profile is sellable if changing profile
-                if (currentTx.perfilId !== data.profileId) {
-                    const check = await validateProfileIsSellable(data.profileId)
-                    if (!check.ok) {
-                        throw new Error(`El nuevo perfil seleccionado (#${data.profileId}) no es válido: ${check.reason}`)
+            if (data.profileId !== undefined) {
+                if (data.profileId) {
+                    // Validate new profile is sellable if changing profile
+                    if (currentTx.perfilId !== data.profileId) {
+                        const check = await validateProfileIsSellable(data.profileId)
+                        if (!check.ok) {
+                            throw new Error(`El nuevo perfil seleccionado (#${data.profileId}) no es válido: ${check.reason}`)
+                        }
                     }
-                }
 
-                // Free previous profile if it changed
-                if (currentTx.perfilId && currentTx.perfilId !== data.profileId) {
-                    await prisma.salesProfile.update({
-                        where: { id: currentTx.perfilId },
-                        data: { estado: 'LIBRE' }
+                    // Free previous profile ONLY if not used by another active transaction
+                    if (currentTx.perfilId && currentTx.perfilId !== data.profileId) {
+                        const activeCount = await prismaTx.transaction.count({
+                            where: {
+                                perfilId: currentTx.perfilId,
+                                id: { not: currentTx.id },
+                                fecha_vencimiento: { gt: new Date() },
+                                supersededAt: null
+                            }
+                        })
+                        if (activeCount === 0) {
+                            await prismaTx.salesProfile.update({
+                                where: { id: currentTx.perfilId },
+                                data: { estado: 'LIBRE' }
+                            })
+                        }
+                    }
+                    updateData.perfilId = data.profileId
+                    await prismaTx.salesProfile.update({
+                        where: { id: data.profileId },
+                        data: { estado: 'OCUPADO' }
                     })
+                } else {
+                    // Profile set to null / Venta Libre: free previous profile ONLY if count === 0
+                    if (currentTx.perfilId) {
+                        const activeCount = await prismaTx.transaction.count({
+                            where: {
+                                perfilId: currentTx.perfilId,
+                                id: { not: currentTx.id },
+                                fecha_vencimiento: { gt: new Date() },
+                                supersededAt: null
+                            }
+                        })
+                        if (activeCount === 0) {
+                            await prismaTx.salesProfile.update({
+                                where: { id: currentTx.perfilId },
+                                data: { estado: 'LIBRE' }
+                            })
+                        }
+                    }
+                    updateData.perfilId = null
                 }
-                updateData.perfilId = data.profileId
-                await prisma.salesProfile.update({
-                    where: { id: data.profileId },
-                    data: { estado: 'OCUPADO' }
-                })
-            } else {
-                // Profile set to null / Venta Libre: free previous profile
-                if (currentTx.perfilId) {
-                    await prisma.salesProfile.update({
-                        where: { id: currentTx.perfilId },
-                        data: { estado: 'LIBRE' }
-                    })
-                }
-                updateData.perfilId = null
             }
-        }
 
-        const updatedTx = await prisma.transaction.update({
-            where: { id },
-            data: updateData,
-            include: { profile: { include: { account: true } } }
+            const resTx = await prismaTx.transaction.update({
+                where: { id },
+                data: updateData,
+                include: { profile: { include: { account: true } } }
+            })
+
+            if (currentTx.groupId && (data.date || data.months)) {
+                // Sync Date Changes to other items in Combo
+                await prismaTx.transaction.updateMany({
+                    where: {
+                        groupId: currentTx.groupId,
+                        id: { not: id }
+                    },
+                    data: {
+                        fecha_inicio: updateData.fecha_inicio || undefined,
+                        fecha_vencimiento: updateData.fecha_vencimiento || undefined
+                    }
+                })
+            }
+
+            return resTx
         })
 
-        if (currentTx.groupId && (data.date || data.months)) {
-            // Sync Date Changes to other items in Combo
-            await prisma.transaction.updateMany({
-                where: {
-                    groupId: currentTx.groupId,
-                    id: { not: id }
-                },
-                data: {
-                    fecha_inicio: updateData.fecha_inicio || undefined,
-                    fecha_vencimiento: updateData.fecha_vencimiento || undefined
-                }
-            })
-        }
-
-        revalidatePath('/sales')
-        revalidatePath('/clients')
-        revalidatePath('/inventory')
+        try {
+            revalidatePath('/sales')
+            revalidatePath('/clients')
+            revalidatePath('/inventory')
+        } catch (_) {}
         return { success: true, transaction: updatedTx }
     } catch (e) {
         console.error("Update Transaction Error", e)
@@ -1900,7 +1926,7 @@ export async function updateComboGroup(groupId: string, data: {
 
                             // Free old profile if not used by another active transaction
                             if (currentItemTx.perfilId) {
-                                const otherActive = await tx.transaction.findFirst({
+                                const otherActive = await tx.transaction.count({
                                     where: {
                                         perfilId: currentItemTx.perfilId,
                                         id: { not: currentItemTx.id },
@@ -1908,7 +1934,7 @@ export async function updateComboGroup(groupId: string, data: {
                                         supersededAt: null
                                     }
                                 })
-                                if (!otherActive) {
+                                if (otherActive === 0) {
                                     await tx.salesProfile.update({
                                         where: { id: currentItemTx.perfilId },
                                         data: { estado: 'LIBRE' }
@@ -1934,7 +1960,7 @@ export async function updateComboGroup(groupId: string, data: {
                         } else {
                             // Profile set to null (Venta Libre)
                             if (currentItemTx.perfilId) {
-                                const otherActive = await tx.transaction.findFirst({
+                                const otherActive = await tx.transaction.count({
                                     where: {
                                         perfilId: currentItemTx.perfilId,
                                         id: { not: currentItemTx.id },
@@ -1942,7 +1968,7 @@ export async function updateComboGroup(groupId: string, data: {
                                         supersededAt: null
                                     }
                                 })
-                                if (!otherActive) {
+                                if (otherActive === 0) {
                                     await tx.salesProfile.update({
                                         where: { id: currentItemTx.perfilId },
                                         data: { estado: 'LIBRE' }
@@ -1962,6 +1988,7 @@ export async function updateComboGroup(groupId: string, data: {
 
             // 3. Handle removed items if any
             if (data.removedTxIds && data.removedTxIds.length > 0) {
+                const now = new Date()
                 for (const removedId of data.removedTxIds) {
                     const rTx = existingTxs.find(t => t.id === removedId)
                     if (!rTx) continue
@@ -1970,26 +1997,56 @@ export async function updateComboGroup(groupId: string, data: {
                     await tx.transaction.update({
                         where: { id: removedId },
                         data: {
-                            supersededAt: new Date(),
+                            supersededAt: now,
                             supersededReason: 'LINEA_COMBO_REMOVIDA'
                         }
                     })
 
                     // Free profile if not used by another active transaction
                     if (rTx.perfilId) {
-                        const otherActive = await tx.transaction.findFirst({
+                        const otherActive = await tx.transaction.count({
                             where: {
                                 perfilId: rTx.perfilId,
                                 id: { not: removedId },
-                                fecha_vencimiento: { gt: new Date() },
+                                fecha_vencimiento: { gt: now },
                                 supersededAt: null
                             }
                         })
-                        if (!otherActive) {
+                        if (otherActive === 0) {
                             await tx.salesProfile.update({
                                 where: { id: rTx.perfilId },
                                 data: { estado: 'LIBRE' }
                             })
+                        }
+                    } else if (rTx.accountId) {
+                        const profilesInAccount = await tx.salesProfile.findMany({
+                            where: { accountId: rTx.accountId },
+                            select: { id: true }
+                        })
+                        for (const p of profilesInAccount) {
+                            const otherActiveProfile = await tx.transaction.count({
+                                where: {
+                                    perfilId: p.id,
+                                    id: { not: removedId },
+                                    fecha_vencimiento: { gt: now },
+                                    supersededAt: null
+                                }
+                            })
+                            const otherActiveAccount = await tx.transaction.count({
+                                where: {
+                                    accountId: rTx.accountId,
+                                    perfilId: null,
+                                    id: { not: removedId },
+                                    fecha_vencimiento: { gt: now },
+                                    supersededAt: null
+                                }
+                            })
+                            if (otherActiveProfile === 0 && otherActiveAccount === 0) {
+                                await tx.salesProfile.update({
+                                    where: { id: p.id },
+                                    data: { estado: 'LIBRE' }
+                                })
+                            }
                         }
                     }
                 }
@@ -2030,53 +2087,132 @@ export async function deleteTransaction(id: number, type: string = 'INGRESO') {
 
         // Execute in an ATOMIC transaction with rollback if anything fails
         await prisma.$transaction(async (prismaTx) => {
+            const now = new Date()
+
             if (tx.groupId) {
                 const groupTxs = await prismaTx.transaction.findMany({
                     where: { groupId: tx.groupId }
                 })
 
-                // Release all profiles/accounts in group
-                for (const gTx of groupTxs) {
-                    if (gTx.perfilId) {
+                // Collect unique perfilIds and accountIds in group
+                const perfilIds = Array.from(new Set(groupTxs.map(t => t.perfilId).filter((p): p is number => p !== null)))
+                const accountIds = Array.from(new Set(groupTxs.map(t => t.accountId).filter((a): a is number => a !== null)))
+
+                // Delete all transactions in group first
+                await prismaTx.transaction.deleteMany({
+                    where: { groupId: tx.groupId }
+                })
+
+                // Safe Profile Liberation: only if NO other active transaction references the profile
+                for (const perfilId of perfilIds) {
+                    const activeCount = await prismaTx.transaction.count({
+                        where: {
+                            perfilId,
+                            fecha_vencimiento: { gt: now },
+                            supersededAt: null
+                        }
+                    })
+
+                    if (activeCount === 0) {
                         await prismaTx.salesProfile.update({
-                            where: { id: gTx.perfilId },
-                            data: { estado: 'LIBRE' }
-                        })
-                    } else if (gTx.accountId) {
-                        await prismaTx.salesProfile.updateMany({
-                            where: { accountId: gTx.accountId },
+                            where: { id: perfilId },
                             data: { estado: 'LIBRE' }
                         })
                     }
                 }
 
-                // Delete all transactions in group
-                await prismaTx.transaction.deleteMany({
-                    where: { groupId: tx.groupId }
-                })
-            } else {
-                // SINGLE TRANSACTION: Release profile or account
-                if (tx.perfilId) {
-                    await prismaTx.salesProfile.update({
-                        where: { id: tx.perfilId },
-                        data: { estado: 'LIBRE' }
+                // Safe Account Liberation (for full account sales without individual perfilId)
+                for (const accountId of accountIds) {
+                    const profilesInAccount = await prismaTx.salesProfile.findMany({
+                        where: { accountId },
+                        select: { id: true }
                     })
-                } else if (tx.accountId) {
-                    await prismaTx.salesProfile.updateMany({
-                        where: { accountId: tx.accountId },
-                        data: { estado: 'LIBRE' }
-                    })
+                    for (const p of profilesInAccount) {
+                        const activeCount = await prismaTx.transaction.count({
+                            where: {
+                                perfilId: p.id,
+                                fecha_vencimiento: { gt: now },
+                                supersededAt: null
+                            }
+                        })
+                        const activeAccountCount = await prismaTx.transaction.count({
+                            where: {
+                                accountId,
+                                perfilId: null,
+                                fecha_vencimiento: { gt: now },
+                                supersededAt: null
+                            }
+                        })
+                        if (activeCount === 0 && activeAccountCount === 0) {
+                            await prismaTx.salesProfile.update({
+                                where: { id: p.id },
+                                data: { estado: 'LIBRE' }
+                            })
+                        }
+                    }
                 }
+            } else {
+                // SINGLE TRANSACTION:
+                const perfilId = tx.perfilId
+                const accountId = tx.accountId
 
+                // Delete transaction first
                 await prismaTx.transaction.delete({
                     where: { id }
                 })
+
+                if (perfilId) {
+                    const activeCount = await prismaTx.transaction.count({
+                        where: {
+                            perfilId,
+                            fecha_vencimiento: { gt: now },
+                            supersededAt: null
+                        }
+                    })
+
+                    if (activeCount === 0) {
+                        await prismaTx.salesProfile.update({
+                            where: { id: perfilId },
+                            data: { estado: 'LIBRE' }
+                        })
+                    }
+                } else if (accountId) {
+                    const profilesInAccount = await prismaTx.salesProfile.findMany({
+                        where: { accountId },
+                        select: { id: true }
+                    })
+                    for (const p of profilesInAccount) {
+                        const activeCount = await prismaTx.transaction.count({
+                            where: {
+                                perfilId: p.id,
+                                fecha_vencimiento: { gt: now },
+                                supersededAt: null
+                            }
+                        })
+                        const activeAccountCount = await prismaTx.transaction.count({
+                            where: {
+                                accountId,
+                                perfilId: null,
+                                fecha_vencimiento: { gt: now },
+                                supersededAt: null
+                            }
+                        })
+                        if (activeCount === 0 && activeAccountCount === 0) {
+                            await prismaTx.salesProfile.update({
+                                where: { id: p.id },
+                                data: { estado: 'LIBRE' }
+                            })
+                        }
+                    }
+                }
             }
         })
 
-        revalidatePath('/sales')
-        revalidatePath('/clients')
-        revalidatePath('/inventory')
+        try {
+            revalidatePath('/sales')
+            revalidatePath('/clients')
+            revalidatePath('/inventory')
+        } catch (_) {}
         return { success: true }
     } catch (e) {
         console.error("Delete Transaction Error", e)

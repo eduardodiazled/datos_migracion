@@ -78,7 +78,9 @@ LIMIT 100;
 
 -- ============================================================================
 -- AUDITORÍA: PERFILES EN 'LIBRE' CON TRANSACCIONES ACTIVAS NO SUPERSEDIDAS
--- Ancla: Perfil #2400 / Tx #11786 (Fontecha - Prime Video)
+-- Anclas: 
+--   1. Perfil 3 / Tx 12086 y Tx 12122 (Riesgo de reventa de slot ocupado)
+--   2. Perfil 2400 / Tx 11786 (Fontecha - Prime Video)
 -- ============================================================================
 SELECT 
     sp.id AS perfil_id,
@@ -94,7 +96,14 @@ SELECT
     t.fecha_vencimiento,
     t.monto,
     t."supersededAt",
-    t."supersededReason"
+    t."supersededReason",
+    CASE
+        WHEN t.id IN (12086, 12122) OR sp.id = 3
+            THEN 'CASO ANCLA: Perfil 3 / Txs 12086, 12122 (Inconsistencia histórica de liberación indebida)'
+        WHEN t.id = 11786 OR sp.id = 2400
+            THEN 'CASO ANCLA: Perfil 2400 / Tx 11786 (Fontecha - Prime Video)'
+        ELSE 'PERFIL LIBRE CON TRANSACCIÓN ACTIVA VIGENTE'
+    END AS motivo_auditoria
 FROM "SalesProfile" sp
 INNER JOIN "InventoryAccount" ia ON ia.id = sp."accountId"
 INNER JOIN "Transaction" t ON t."perfilId" = sp.id
@@ -103,4 +112,26 @@ WHERE sp.estado = 'LIBRE'
   AND t.fecha_vencimiento > NOW()
   AND t."supersededAt" IS NULL
 ORDER BY sp.id ASC;
+
+-- ============================================================================
+-- AUDITORÍA COMPLEMENTARIA: DETECCIÓN DE SOLAPAMIENTO DE TRANSACCIONES ACTIVAS
+-- Detecta slots con >=2 transacciones activas concurrentes (ej. Perfiles 1725, 2288)
+-- ============================================================================
+SELECT 
+    sp.id AS perfil_id,
+    sp.nombre_perfil,
+    sp.estado AS perfil_estado,
+    ia.email AS account_email,
+    ia.servicio,
+    COUNT(t.id) AS txs_activas_count,
+    STRING_AGG(t.id::text, ', ' ORDER BY t.id ASC) AS tx_ids_concurrentes
+FROM "SalesProfile" sp
+INNER JOIN "InventoryAccount" ia ON ia.id = sp."accountId"
+INNER JOIN "Transaction" t ON t."perfilId" = sp.id
+WHERE t.fecha_vencimiento > NOW()
+  AND t."supersededAt" IS NULL
+GROUP BY sp.id, sp.nombre_perfil, sp.estado, ia.email, ia.servicio
+HAVING COUNT(t.id) > 1
+ORDER BY COUNT(t.id) DESC;
+
 
