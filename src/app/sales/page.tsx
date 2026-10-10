@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical, EyeOff, Copy } from 'lucide-react'
 import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateComboGroup, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders, getSaleMessage } from '../actions'
+import { getSuggestedPrice } from '@/lib/pricing/suggestedPrice'
 import html2canvas from 'html2canvas'
 import { MessageGenerator } from '@/lib/messageGenerator'
 
@@ -26,6 +27,8 @@ export default function SalesPage() {
     const [saleType, setSaleType] = useState<'PRODUCT' | 'FREE'>('PRODUCT')
     const [saleForm, setSaleForm] = useState({ clientId: '', clientName: '', price: '', paymentMethod: 'NEQUI', description: '' })
     const [selectedProduct, setSelectedProduct] = useState<any>(null)
+    const [isPriceCustomized, setIsPriceCustomized] = useState(false)
+    const [lastSuggestedPrice, setLastSuggestedPrice] = useState('')
 
     const [expenseForm, setExpenseForm] = useState({ category: 'PROVEEDOR', description: '', amount: '', paymentMethod: 'NEQUI', supplier: '', date: new Date().toISOString().split('T')[0] })
 
@@ -190,6 +193,49 @@ export default function SalesPage() {
 
     // --- HANDLERS ---
 
+    // --- MOTOR DE PRECIOS SUGERIDOS: CONTROLADORES DE INTERFAZ ---
+    const handleSelectProduct = (inv: any) => {
+        setSelectedProduct(inv)
+        if (inv?.service) {
+            const quote = getSuggestedPrice(inv.service, 1)
+            const suggestedStr = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+            setLastSuggestedPrice(suggestedStr)
+            if (!isPriceCustomized || saleForm.price === '' || saleForm.price === lastSuggestedPrice) {
+                setSaleForm(prev => ({ ...prev, price: suggestedStr }))
+                setIsPriceCustomized(false)
+            }
+        }
+    }
+
+    const handlePriceChange = (val: string) => {
+        const cleaned = val.replace(/\D/g, '')
+        setSaleForm(prev => ({ ...prev, price: cleaned }))
+        const service = selectedProduct?.service
+        if (service) {
+            const quote = getSuggestedPrice(service, 1)
+            const currentSuggested = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+            if (cleaned !== currentSuggested) {
+                setIsPriceCustomized(true)
+            } else {
+                setIsPriceCustomized(false)
+            }
+        } else {
+            setIsPriceCustomized(true)
+        }
+    }
+
+    const handleResetPrice = () => {
+        const service = selectedProduct?.service
+        if (service) {
+            const quote = getSuggestedPrice(service, 1)
+            if (quote.currentSuggested !== null) {
+                setSaleForm(prev => ({ ...prev, price: quote.currentSuggested!.toString() }))
+                setLastSuggestedPrice(quote.currentSuggested.toString())
+                setIsPriceCustomized(false)
+            }
+        }
+    }
+
     // [INSERT] handleCreateSale: Registra una nueva venta exigiendo monto > 0
     const handleCreateSale = async () => {
         if (!saleForm.clientName || !saleForm.price || Number(saleForm.price) <= 0) {
@@ -211,6 +257,8 @@ export default function SalesPage() {
             setShowSaleModal(false)
             setSaleForm({ clientId: '', clientName: '', price: '', paymentMethod: 'NEQUI', description: '' })
             setSelectedProduct(null)
+            setIsPriceCustomized(false)
+            setLastSuggestedPrice('')
             loadData()
         } else {
             toast.error('Error al registrar la venta: ' + (res.error || 'no se pudo marcar el perfil como OCUPADO'))
@@ -690,7 +738,7 @@ export default function SalesPage() {
                                                 </div>
                                             ) : (
                                                 inventory.map(inv => (
-                                                    <button key={inv.id} onClick={() => setSelectedProduct(inv)} className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}>
+                                                    <button key={inv.id} onClick={() => handleSelectProduct(inv)} className={`p-3 rounded-xl border text-left transition flex justify-between items-center ${selectedProduct?.id === inv.id ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/5 bg-slate-950 hover:bg-slate-900'}`}>
                                                         <div><div className="text-sm font-bold text-white">{inv.service}</div><div className="text-xs text-slate-500">{inv.name}</div></div>
                                                         {selectedProduct?.id === inv.id && <Check size={16} className="text-emerald-500" />}
                                                     </button>
@@ -702,21 +750,52 @@ export default function SalesPage() {
                                     <textarea className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none h-20 resize-none" placeholder="Descripción..." value={saleForm.description} onChange={e => setSaleForm({ ...saleForm, description: e.target.value })} />
                                 )}
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-3 text-slate-500">$</span>
-                                        <input
-                                            type="text"
-                                            inputMode="numeric"
-                                            pattern="[0-9]*"
-                                            className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition"
-                                            value={saleForm.price}
-                                            onChange={e => setSaleForm({ ...saleForm, price: e.target.value.replace(/\D/g, '') })}
-                                        />
+                                <div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-3 text-slate-500 font-bold">$</span>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                placeholder="0"
+                                                className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white outline-none font-mono focus:border-emerald-500 transition"
+                                                value={saleForm.price}
+                                                onChange={e => handlePriceChange(e.target.value)}
+                                            />
+                                        </div>
+                                        <select className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={saleForm.paymentMethod} onChange={e => setSaleForm({ ...saleForm, paymentMethod: e.target.value })}>
+                                            <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
+                                        </select>
                                     </div>
-                                    <select className="bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={saleForm.paymentMethod} onChange={e => setSaleForm({ ...saleForm, paymentMethod: e.target.value })}>
-                                        <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
-                                    </select>
+
+                                    {/* Etiqueta de Sugerido y Restablecer */}
+                                    {saleType === 'PRODUCT' && selectedProduct?.service && (() => {
+                                        const quote = getSuggestedPrice(selectedProduct.service, 1)
+                                        return (
+                                            <div className="flex items-center justify-between text-xs mt-1.5 px-1">
+                                                {quote.currentSuggested !== null ? (
+                                                    <span className="text-slate-400 text-[11px]">
+                                                        Sugerido (1m): <strong className="text-emerald-400 font-mono">${quote.currentSuggested.toLocaleString('es-CO')}</strong> (editable)
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-amber-400/90 text-[11px]">
+                                                        ⚠️ Sin tarifa sugerida configurada
+                                                    </span>
+                                                )}
+                                                {isPriceCustomized && quote.currentSuggested !== null && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleResetPrice}
+                                                        className="text-emerald-400 hover:text-emerald-300 font-bold text-[11px] underline transition ml-2"
+                                                        title="Restablecer al precio sugerido por el sistema"
+                                                    >
+                                                        Restablecer
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )
+                                    })()}
                                 </div>
                                 <button
                                     onClick={handleCreateSale}

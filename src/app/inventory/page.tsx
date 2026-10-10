@@ -41,33 +41,11 @@ type Account = {
   duracion_meses?: number
 }
 
-const DEFAULT_PRICES: Record<string, number> = {
-  'netflix': 17000,
-  'disney': 15000,
-  'max': 11000,
-  'hbo': 11000,
-  'prime': 11000,
-  'amazon': 11000,
-  'paramount': 15000,
-  'youtube': 13000,
-  'spotify': 13000,
-  'crunchyroll': 11000,
-  'vix': 10000,
-  'plex': 12000,
-  'iptv': 15000,
-  'apple': 25000,
-  'jellyfin': 12000,
-  'Chat GPT': 25000,
-  'capcut': 10000,
-  'canva': 10000
-}
+import { getSuggestedPrice, getMonthlyUnitPrice } from '@/lib/pricing/suggestedPrice'
 
 const getServicePrice = (serviceName: string): number => {
-  const lower = serviceName.toLowerCase()
-  for (const [key, price] of Object.entries(DEFAULT_PRICES)) {
-    if (lower.includes(key)) return price
-  }
-  return 10000 // Fallback
+  const price = getMonthlyUnitPrice(serviceName)
+  return price !== null ? price : 10000 // Fallback seguro si es desconocido
 }
 
 export default function InventoryPage() {
@@ -98,6 +76,9 @@ export default function InventoryPage() {
   const [profileDetails, setProfileDetails] = useState<{ name: string, pin?: string }[]>([])
   const [usePin, setUsePin] = useState(false)
   const [saleData, setSaleData] = useState({ phone: '', name: '', price: '', paymentMethod: 'NEQUI' as 'NEQUI' | 'BANCOLOMBIA' | 'EFECTIVO' | 'DAVIPLATA' | 'USDT', date: getLocalDateISO(), months: 1 })
+  const [singleSellServiceName, setSingleSellServiceName] = useState<string>('')
+  const [lastSuggestedPrice, setLastSuggestedPrice] = useState<string>('')
+  const [isPriceCustomized, setIsPriceCustomized] = useState<boolean>(false)
   // Assign Modal
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [assignData, setAssignData] = useState({ phone: '', name: '', startDate: getLocalDateISO(), months: 1 })
@@ -332,8 +313,18 @@ export default function InventoryPage() {
     }
 
     setSelectedProfileId(profileId)
-    const price = getServicePrice(serviceName)
-    setSaleData({ ...saleData, price: price.toString(), paymentMethod: 'NEQUI' })
+    setSingleSellServiceName(serviceName)
+    const quote = getSuggestedPrice(serviceName, 1)
+    const suggestedStr = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+
+    setSaleData(prev => ({
+      ...prev,
+      price: suggestedStr,
+      months: 1,
+      paymentMethod: 'NEQUI'
+    }))
+    setLastSuggestedPrice(suggestedStr)
+    setIsPriceCustomized(false)
     setShowSellModal(true)
   }
 
@@ -426,6 +417,63 @@ export default function InventoryPage() {
         return [...others, ...newItems]
       })
       toast.success(`${validProfiles.length} perfiles seleccionados`)
+    }
+  }
+
+  // --- MOTOR DE PRECIOS SUGERIDOS: CONTROLADORES DE INTERFAZ ---
+  const getActiveSaleServices = () => {
+    if (selectedItems.length > 1) {
+      return selectedItems.map(i => i.serviceName)
+    }
+    return singleSellServiceName ? [singleSellServiceName] : []
+  }
+
+  const handleDurationChange = (newMonths: number) => {
+    const services = getActiveSaleServices()
+    const quote = getSuggestedPrice(services, newMonths)
+    const newSuggested = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+
+    setSaleData(prev => {
+      // Si el monto no fue editado a mano, o está vacío, o coincide con el último sugerido: recalcular
+      const shouldUpdatePrice = !isPriceCustomized || prev.price === '' || prev.price === lastSuggestedPrice
+      return {
+        ...prev,
+        months: newMonths,
+        price: shouldUpdatePrice ? newSuggested : prev.price
+      }
+    })
+
+    if (!isPriceCustomized || saleData.price === '' || saleData.price === lastSuggestedPrice) {
+      setLastSuggestedPrice(newSuggested)
+      setIsPriceCustomized(false)
+    }
+  }
+
+  const handlePriceChange = (newVal: string) => {
+    const cleaned = newVal.replace(/\D/g, '')
+    const services = getActiveSaleServices()
+    const quote = getSuggestedPrice(services, saleData.months)
+    const currentSuggested = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+
+    setSaleData(prev => ({ ...prev, price: cleaned }))
+
+    // Si el valor ingresado difiere del sugerido actual, se marca como editado a mano
+    if (cleaned !== currentSuggested) {
+      setIsPriceCustomized(true)
+    } else {
+      setIsPriceCustomized(false)
+    }
+  }
+
+  const handleResetPrice = () => {
+    const services = getActiveSaleServices()
+    const quote = getSuggestedPrice(services, saleData.months)
+    const currentSuggested = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+    setSaleData(prev => ({ ...prev, price: currentSuggested }))
+    setLastSuggestedPrice(currentSuggested)
+    setIsPriceCustomized(false)
+    if (currentSuggested) {
+      toast.info(`Monto restablecido al precio sugerido: $${Number(currentSuggested).toLocaleString('es-CO')}`)
     }
   }
 
@@ -828,7 +876,13 @@ export default function InventoryPage() {
             <button
               onClick={() => {
                 setSelectedProfileId(null) // Indicate combo sale
-                setSaleData({ ...saleData, price: selectedItems.reduce((sum, item) => sum + item.price, 0).toString(), paymentMethod: 'NEQUI' })
+                setSingleSellServiceName('')
+                const services = selectedItems.map(i => i.serviceName)
+                const quote = getSuggestedPrice(services, 1)
+                const suggestedStr = quote.currentSuggested !== null ? quote.currentSuggested.toString() : ''
+                setSaleData(prev => ({ ...prev, price: suggestedStr, months: 1, paymentMethod: 'NEQUI' }))
+                setLastSuggestedPrice(suggestedStr)
+                setIsPriceCustomized(false)
                 setShowSellModal(true)
               }}
               className="bg-violet-600 hover:bg-violet-500 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-violet-600/30 transition hover:scale-105 flex items-center gap-2"
@@ -1922,12 +1976,44 @@ export default function InventoryPage() {
                       <select
                         className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
                         value={saleData.months}
-                        onChange={e => setSaleData({ ...saleData, months: parseInt(e.target.value) })}
+                        onChange={e => handleDurationChange(parseInt(e.target.value))}
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
                           <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
                         ))}
                       </select>
+                    </div>
+                  </div>
+
+                  {/* Botones rápidos de cotización multi-mes (1m / 3m / 6m) */}
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-400 block mb-1.5">Cotización rápida:</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[1, 3, 6].map(m => {
+                        const quoteM = getSuggestedPrice(getActiveSaleServices(), m)
+                        const isSelected = saleData.months === m
+                        return (
+                          <button
+                            key={m}
+                            type="button"
+                            onClick={() => handleDurationChange(m)}
+                            className={`py-2 px-2 rounded-xl text-xs font-bold transition flex flex-col items-center justify-center border ${
+                              isSelected
+                                ? 'bg-violet-600/30 text-violet-300 border-violet-500 shadow-md shadow-violet-600/20'
+                                : 'bg-slate-950 text-slate-400 border-white/5 hover:border-white/20 hover:text-white'
+                            }`}
+                          >
+                            <span>{m} Mes{m > 1 ? 'es' : ''}</span>
+                            {quoteM.currentSuggested !== null ? (
+                              <span className="text-[10px] font-mono text-emerald-400 mt-0.5">
+                                ${(quoteM.currentSuggested / 1000).toFixed(0)}k
+                              </span>
+                            ) : (
+                              <span className="text-[10px] opacity-40 mt-0.5">—</span>
+                            )}
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
@@ -1957,7 +2043,6 @@ export default function InventoryPage() {
                         {(selectedItems.length > 0 ? selectedItems : [{ profileId: selectedProfileId, serviceName: '(Individual)', price: 0 }]).map((item, idx) => (
                           <div key={idx} className="flex justify-between items-center text-sm">
                             <span className="text-slate-300 truncate max-w-[150px]">{item.serviceName}</span>
-                            {/* Proportional Price Input (Optional Advanced) - For now just text or auto-calc display */}
                           </div>
                         ))}
                       </div>
@@ -1965,16 +2050,44 @@ export default function InventoryPage() {
                       <div>
                         <label className="text-xs text-violet-400 font-bold block mb-1">PRECIO TOTAL DEL COMBO</label>
                         <div className="relative">
-                          <span className="absolute left-3 top-3 text-slate-500">$</span>
+                          <span className="absolute left-3 top-3 text-slate-500 font-bold">$</span>
                           <input
-                            className="w-full bg-slate-900 border border-violet-500/30 rounded-xl p-3 pl-6 text-white font-bold text-lg focus:border-violet-500 outline-none"
+                            className="w-full bg-slate-900 border border-violet-500/30 rounded-xl p-3 pl-7 text-white font-bold text-lg focus:border-violet-500 outline-none font-mono"
                             type="text"
                             inputMode="numeric"
                             pattern="[0-9]*"
+                            placeholder="0"
                             value={saleData.price}
-                            onChange={e => setSaleData({ ...saleData, price: e.target.value.replace(/\D/g, '') })}
+                            onChange={e => handlePriceChange(e.target.value)}
                           />
                         </div>
+                        {/* Etiqueta de Sugerido y Restablecer */}
+                        {(() => {
+                          const quote = getSuggestedPrice(getActiveSaleServices(), saleData.months)
+                          return (
+                            <div className="flex items-center justify-between text-xs mt-1.5">
+                              {quote.currentSuggested !== null ? (
+                                <span className="text-slate-400 text-[11px]">
+                                  Sugerido ({saleData.months}m): <strong className="text-emerald-400 font-mono">${quote.currentSuggested.toLocaleString('es-CO')}</strong> (editable)
+                                </span>
+                              ) : (
+                                <span className="text-amber-400/90 text-[11px]">
+                                  ⚠️ Sin tarifa sugerida configurada
+                                </span>
+                              )}
+                              {isPriceCustomized && quote.currentSuggested !== null && (
+                                <button
+                                  type="button"
+                                  onClick={handleResetPrice}
+                                  className="text-violet-400 hover:text-violet-300 font-bold text-[11px] underline transition ml-2"
+                                  title="Restablecer al precio sugerido por el sistema"
+                                >
+                                  Restablecer
+                                </button>
+                              )}
+                            </div>
+                          )
+                        })()}
                         <p className="text-[10px] text-slate-500 mt-1">El valor se dividirá proporcionalmente en los reportes.</p>
                       </div>
                     </div>
@@ -1983,14 +2096,44 @@ export default function InventoryPage() {
                     <div>
                       <label className="text-xs text-slate-400 block mb-1">Precio Venta</label>
                       <div className="relative">
-                        <span className="absolute left-3 top-3 text-slate-500">$</span>
-                        <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-6 text-white focus:border-violet-500 outline-none font-bold text-lg"
+                        <span className="absolute left-3 top-3 text-slate-500 font-bold">$</span>
+                        <input
+                          className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 pl-7 text-white focus:border-violet-500 outline-none font-bold text-lg font-mono"
                           type="text"
                           inputMode="numeric"
                           pattern="[0-9]*"
+                          placeholder="0"
                           value={saleData.price}
-                          onChange={e => setSaleData({ ...saleData, price: e.target.value.replace(/\D/g, '') })} />
+                          onChange={e => handlePriceChange(e.target.value)}
+                        />
                       </div>
+                      {/* Etiqueta de Sugerido y Restablecer */}
+                      {(() => {
+                        const quote = getSuggestedPrice(getActiveSaleServices(), saleData.months)
+                        return (
+                          <div className="flex items-center justify-between text-xs mt-1.5">
+                            {quote.currentSuggested !== null ? (
+                              <span className="text-slate-400 text-[11px]">
+                                Sugerido ({saleData.months}m): <strong className="text-emerald-400 font-mono">${quote.currentSuggested.toLocaleString('es-CO')}</strong> (editable)
+                              </span>
+                            ) : (
+                              <span className="text-amber-400/90 text-[11px]">
+                                ⚠️ Sin tarifa sugerida configurada
+                              </span>
+                            )}
+                            {isPriceCustomized && quote.currentSuggested !== null && (
+                              <button
+                                type="button"
+                                onClick={handleResetPrice}
+                                className="text-violet-400 hover:text-violet-300 font-bold text-[11px] underline transition ml-2"
+                                title="Restablecer al precio sugerido por el sistema"
+                              >
+                                Restablecer
+                              </button>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </div>
                   )}
                 </div>
