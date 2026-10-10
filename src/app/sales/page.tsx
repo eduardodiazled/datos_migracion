@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Search, Plus, Filter, Download, Trash2, Edit2, X, Check, DollarSign, Calendar, User, ArrowUpRight, ArrowDownRight, CreditCard, Box, LogOut, ShieldAlert, ChevronLeft, ChevronRight, MoreVertical, EyeOff, Copy } from 'lucide-react'
-import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders, getSaleMessage } from '../actions'
+import { getFullHistory, getAvailableInventory, createSale, createExpense, searchClients, updateTransaction, updateComboGroup, updateExpense, deleteTransaction, searchProviders, getDueAccounts, getAllProviders, getSaleMessage } from '../actions'
 import html2canvas from 'html2canvas'
 import { MessageGenerator } from '@/lib/messageGenerator'
 
@@ -260,6 +260,21 @@ export default function SalesPage() {
                     supplier: editingTx.client,
                     date: safeDate(editingTx.date)
                 })
+            } else if (editingTx.isCombo && editingTx.groupId) {
+                res = await updateComboGroup(editingTx.groupId, {
+                    clientName: editingTx.client,
+                    clientId: editingTx.clientId,
+                    paymentMethod: editingTx.paymentMethod,
+                    date: safeDate(editingTx.date),
+                    months: editingTx.months,
+                    items: (editingTx.comboItems || []).map((ci: any) => ({
+                        txId: ci.txId,
+                        price: Number(ci.price) || 0,
+                        profileId: ci.profileId !== undefined ? ci.profileId : null,
+                        accountId: ci.accountId !== undefined ? ci.accountId : null
+                    })),
+                    removedTxIds: editingTx.removedTxIds || []
+                })
             } else {
                 res = await updateTransaction(editingTx.id, {
                     price: Number(editingTx.amount),
@@ -303,6 +318,16 @@ export default function SalesPage() {
         } else {
             alert('Error eliminando: ' + res.error)
         }
+    }
+
+    const openEditModal = (item: any) => {
+        setEditingTx({
+            ...item,
+            newProfileId: item.profileId || null,
+            comboItems: item.isCombo && item.items ? item.items.map((it: any) => ({ ...it })) : [],
+            removedTxIds: []
+        })
+        setShowEditModal(true)
     }
 
     const generateInvoice = (tx: any) => {
@@ -526,7 +551,7 @@ export default function SalesPage() {
                         filteredByTab.map((item, idx) => (
                             <div
                                 key={`${item.type}-${item.id}-${idx}`}
-                                onClick={() => { setEditingTx({ ...item, newProfileId: item.profileId || null }); setShowEditModal(true) }}
+                                onClick={() => openEditModal(item)}
                                 className="group flex items-center justify-between p-3 md:p-4 rounded-xl bg-slate-900/50 border border-white/5 hover:border-white/10 hover:bg-slate-900/80 transition backdrop-blur-sm gap-3 cursor-pointer"
                             >
                                 <div className="flex items-center gap-4 min-w-0">
@@ -581,8 +606,7 @@ export default function SalesPage() {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                setEditingTx({ ...item, newProfileId: item.profileId || null })
-                                                setShowEditModal(true)
+                                                openEditModal(item)
                                             }}
                                             className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition"
                                             title="Editar / Ver Detalle"
@@ -841,6 +865,155 @@ export default function SalesPage() {
                                                 <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.description} onChange={e => setEditingTx({ ...editingTx, description: e.target.value })} />
                                             </div>
                                         </>
+                                    ) : editingTx.isCombo ? (
+                                        <>
+                                            {/* COMBO ITEMS EDITOR */}
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                                    <span className="text-xs font-bold uppercase tracking-wider text-violet-400">
+                                                        Líneas del Combo ({editingTx.comboItems?.length || 0} servicios)
+                                                    </span>
+                                                    <span className="text-xs text-slate-300 font-mono">
+                                                        Total: <strong className="text-emerald-400 font-bold">${(Number(editingTx.amount) || 0).toLocaleString()}</strong>
+                                                    </span>
+                                                </div>
+
+                                                <div className="space-y-2.5 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+                                                    {editingTx.comboItems?.map((cItem: any, idx: number) => {
+                                                        const serviceInventory = inventory.filter(inv =>
+                                                            inv.service && cItem.service && inv.service.toLowerCase().trim() === cItem.service.toLowerCase().trim()
+                                                        )
+
+                                                        return (
+                                                            <div key={cItem.txId || idx} className="p-3 rounded-xl bg-slate-950/80 border border-white/10 space-y-2">
+                                                                <div className="flex items-start justify-between gap-2">
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <span className="font-bold text-white text-xs block truncate">{cItem.service}</span>
+                                                                        <span className="text-[11px] text-slate-400 block truncate">{cItem.name}</span>
+                                                                    </div>
+                                                                    <div className="w-28 shrink-0 flex items-center gap-1.5">
+                                                                        <div className="flex-1">
+                                                                            <label className="text-[10px] text-slate-500 block mb-0.5">Precio ($)</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                inputMode="numeric"
+                                                                                className="w-full bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-xs text-white text-right font-mono outline-none focus:border-violet-500"
+                                                                                value={cItem.price !== undefined ? cItem.price : ''}
+                                                                                onChange={e => {
+                                                                                    const rawVal = e.target.value.replace(/\D/g, '')
+                                                                                    const newPrice = Number(rawVal) || 0
+                                                                                    const updated = editingTx.comboItems.map((ci: any, i: number) =>
+                                                                                        i === idx ? { ...ci, price: newPrice } : ci
+                                                                                    )
+                                                                                    const newTotal = updated.reduce((sum: number, ci: any) => sum + (Number(ci.price) || 0), 0)
+                                                                                    setEditingTx({
+                                                                                        ...editingTx,
+                                                                                        comboItems: updated,
+                                                                                        amount: String(newTotal)
+                                                                                    })
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        {editingTx.comboItems?.length > 1 && (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    if (!confirm(`¿Remover ${cItem.service} (${cItem.name}) de este combo?`)) return
+                                                                                    const updated = editingTx.comboItems.filter((_: any, i: number) => i !== idx)
+                                                                                    const removed = [...(editingTx.removedTxIds || []), cItem.txId].filter(Boolean)
+                                                                                    const newTotal = updated.reduce((sum: number, ci: any) => sum + (Number(ci.price) || 0), 0)
+                                                                                    setEditingTx({
+                                                                                        ...editingTx,
+                                                                                        comboItems: updated,
+                                                                                        removedTxIds: removed,
+                                                                                        amount: String(newTotal)
+                                                                                    })
+                                                                                }}
+                                                                                className="mt-3.5 p-1 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-md transition"
+                                                                                title="Quitar línea del combo"
+                                                                            >
+                                                                                <Trash2 size={13} />
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Profile Selector for this combo line */}
+                                                                <div className="space-y-0.5 pt-1.5 border-t border-white/5">
+                                                                    <label className="text-[10px] text-slate-500">Perfil asignado</label>
+                                                                    <select
+                                                                        className="w-full bg-slate-900 border border-white/10 rounded-lg p-1.5 text-xs text-white outline-none"
+                                                                        value={cItem.profileId || ''}
+                                                                        onChange={e => {
+                                                                            const newPId = Number(e.target.value) || null
+                                                                            const selectedInv = inventory.find(inv => inv.id === newPId)
+                                                                            const updated = editingTx.comboItems.map((ci: any, i: number) =>
+                                                                                i === idx ? {
+                                                                                    ...ci,
+                                                                                    profileId: newPId,
+                                                                                    name: selectedInv ? selectedInv.name : (newPId ? ci.name : 'Venta Libre')
+                                                                                } : ci
+                                                                            )
+                                                                            setEditingTx({ ...editingTx, comboItems: updated })
+                                                                        }}
+                                                                    >
+                                                                        {cItem.profileId && (
+                                                                            <option value={cItem.profileId}>{cItem.name} (Actual)</option>
+                                                                        )}
+                                                                        <option value="">Venta Libre (Sin perfil)</option>
+                                                                        {serviceInventory.length > 0 && (
+                                                                            <optgroup label="Disponibles">
+                                                                                {serviceInventory.map(inv => (
+                                                                                    <option key={inv.id} value={inv.id}>
+                                                                                        {inv.service} - {inv.name}
+                                                                                    </option>
+                                                                                ))}
+                                                                            </optgroup>
+                                                                        )}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-xs text-slate-500">Fecha Venta</label>
+                                                    <input
+                                                        type="date"
+                                                        className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                                        value={editingTx.date ? new Date(editingTx.date).toISOString().split('T')[0] : ''}
+                                                        onChange={e => setEditingTx({ ...editingTx, date: e.target.value })}
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-xs text-slate-500">Duración (Meses)</label>
+                                                    <select
+                                                        className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
+                                                        value={editingTx.months || ''}
+                                                        onChange={e => setEditingTx({ ...editingTx, months: Number(e.target.value) })}
+                                                    >
+                                                        <option value="">Mantener Actual</option>
+                                                        <option value={1}>1 Mes</option>
+                                                        <option value={2}>2 Meses</option>
+                                                        <option value={3}>3 Meses</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-xs text-slate-500">Celular / Usuario WhatsApp</label>
+                                                    <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.clientId || ''} onChange={e => setEditingTx({ ...editingTx, clientId: e.target.value })} />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-xs text-slate-500">Nombre Cliente</label>
+                                                    <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.client || ''} onChange={e => setEditingTx({ ...editingTx, client: e.target.value })} />
+                                                </div>
+                                            </div>
+                                        </>
                                     ) : (
                                         <>
                                             {/* INVENTORY / CLIENT FIELDS FOR SALES */}
@@ -865,7 +1038,7 @@ export default function SalesPage() {
                                                         ))}
                                                     </optgroup>
                                                 </select>
-                                                <p className="text-[10px] text-slate-500">* Seleccionar otro perfil liberarÃ¡ el actual.</p>
+                                                <p className="text-[10px] text-slate-500">* Seleccionar otro perfil liberará el actual.</p>
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-4">
@@ -880,7 +1053,7 @@ export default function SalesPage() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-xs text-slate-500">DuraciÃ³n (Meses)</label>
+                                                    <label className="text-xs text-slate-500">Duración (Meses)</label>
                                                     <select
                                                         className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
                                                         value={editingTx.months || ''}
@@ -907,21 +1080,56 @@ export default function SalesPage() {
                                             </div>
 
                                             <div className="space-y-1">
-                                                <label className="text-xs text-slate-500">DescripciÃ³n</label>
+                                                <label className="text-xs text-slate-500">Descripción</label>
                                                 <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none" value={editingTx.description} onChange={e => setEditingTx({ ...editingTx, description: e.target.value })} />
                                             </div>
                                         </>
                                     )}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <label className="text-xs text-slate-500">Monto</label>
+                                            <label className="text-xs text-slate-500">
+                                                {editingTx.isCombo ? 'Monto Total Combo' : 'Monto'}
+                                            </label>
                                             <input
                                                 type="text"
                                                 inputMode="numeric"
                                                 pattern="[0-9]*"
                                                 className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
                                                 value={editingTx.amount}
-                                                onChange={e => setEditingTx({ ...editingTx, amount: e.target.value.replace(/\D/g, '') })}
+                                                onChange={e => {
+                                                    const rawVal = e.target.value.replace(/\D/g, '')
+                                                    const newTotal = Number(rawVal) || 0
+                                                    if (editingTx.isCombo && editingTx.comboItems?.length > 0) {
+                                                        const items = editingTx.comboItems
+                                                        const currentTotal = items.reduce((sum: number, ci: any) => sum + (Number(ci.price) || 0), 0)
+                                                        let distributed: any[] = []
+                                                        if (currentTotal > 0) {
+                                                            let allocated = 0
+                                                            distributed = items.map((ci: any, idx: number) => {
+                                                                if (idx === items.length - 1) {
+                                                                    return { ...ci, price: Math.max(0, newTotal - allocated) }
+                                                                }
+                                                                const ratio = (Number(ci.price) || 0) / currentTotal
+                                                                const linePrice = Math.round(newTotal * ratio)
+                                                                allocated += linePrice
+                                                                return { ...ci, price: linePrice }
+                                                            })
+                                                        } else {
+                                                            const perItem = Math.floor(newTotal / items.length)
+                                                            let allocated = 0
+                                                            distributed = items.map((ci: any, idx: number) => {
+                                                                if (idx === items.length - 1) {
+                                                                    return { ...ci, price: Math.max(0, newTotal - allocated) }
+                                                                }
+                                                                allocated += perItem
+                                                                return { ...ci, price: perItem }
+                                                            })
+                                                        }
+                                                        setEditingTx({ ...editingTx, amount: rawVal, comboItems: distributed })
+                                                    } else {
+                                                        setEditingTx({ ...editingTx, amount: rawVal })
+                                                    }
+                                                }}
                                             />
                                         </div>
                                         <div className="space-y-1">

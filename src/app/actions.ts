@@ -732,9 +732,12 @@ export async function getFullHistory(year?: number, month?: number) {
                     groupId: tx.groupId,
                     endDate: tx.fecha_vencimiento,
                     items: groupItems.map(i => ({
+                        txId: i.id,
                         service: i.profile?.account?.servicio || i.account?.servicio || 'Venta Libre',
                         name: i.profile?.nombre_perfil || (i.account ? 'Cuenta Completa' : '-'),
                         price: i.monto,
+                        profileId: i.perfilId,
+                        accountId: i.accountId,
                         // Credential fields for message regeneration
                         email: i.profile?.account?.email || i.account?.email || null,
                         password: i.profile?.account?.password || i.account?.password || null,
@@ -1779,18 +1782,6 @@ export async function updateTransaction(id: number, data: {
             }
         }
 
-        // --- COMBO LOGIC: If updating price of a group, set others to 0 to avoid inflation ---
-        if (currentTx.groupId && data.price !== undefined) {
-            // Update other members of the group to 0 so the total equals the new price (assigned to this tx)
-            await prisma.transaction.updateMany({
-                where: {
-                    groupId: currentTx.groupId,
-                    id: { not: id } // Don't touch the current one, it will be updated below
-                },
-                data: { monto: 0 }
-            })
-        }
-
         const updatedTx = await prisma.transaction.update({
             where: { id },
             data: updateData,
@@ -1818,6 +1809,202 @@ export async function updateTransaction(id: number, data: {
     } catch (e) {
         console.error("Update Transaction Error", e)
         return { success: false, error: String(e) }
+    }
+}
+
+export async function updateComboGroup(groupId: string, data: {
+    clientName?: string,
+    clientId?: string,
+    paymentMethod?: string,
+    date?: string,
+    months?: number,
+    items?: {
+        txId: number,
+        price: number,
+        profileId?: number | null,
+        accountId?: number | null
+    }[],
+    removedTxIds?: number[]
+}) {
+    try {
+        if (!groupId) throw new Error("groupId es requerido")
+
+        const existingTxs = await prisma.transaction.findMany({
+            where: { groupId },
+            include: { profile: { include: { account: true } }, account: true }
+        })
+
+        if (!existingTxs.length) throw new Error("No se encontraron transacciones para este combo")
+
+        const baseTx = existingTxs[0]
+
+        // Calculate Date changes if provided
+        let newStart = baseTx.fecha_inicio
+        if (data.date) {
+            newStart = normalizeDate(data.date)
+        }
+
+        let newDurationMs = baseTx.fecha_vencimiento.getTime() - baseTx.fecha_inicio.getTime()
+        if (data.months) {
+            newDurationMs = data.months * 30 * 24 * 60 * 60 * 1000
+        }
+
+        const newEnd = new Date(newStart.getTime() + newDurationMs)
+
+        // Handle Client update if provided
+        let cleanId = baseTx.clienteId
+        if (data.clientId) {
+            cleanId = cleanContactString(data.clientId)
+            if (data.clientName) {
+                await prisma.client.upsert({
+                    where: { celular: cleanId },
+                    update: { nombre: data.clientName },
+                    create: { celular: cleanId, nombre: data.clientName }
+                })
+            }
+        }
+
+        await prisma.$transaction(async (tx) => {
+            // 1. Sync global fields across all active group transactions
+            const globalUpdateData: any = {}
+            if (data.date) globalUpdateData.fecha_inicio = newStart
+            if (data.date || data.months) globalUpdateData.fecha_vencimiento = newEnd
+            if (data.paymentMethod) globalUpdateData.metodo_pago = data.paymentMethod
+            if (data.clientId) globalUpdateData.clienteId = cleanId
+
+            if (Object.keys(globalUpdateData).length > 0) {
+                await tx.transaction.updateMany({
+                    where: { groupId },
+                    data: globalUpdateData
+                })
+            }
+
+            // 2. Update specific items (price, profile changes)
+            if (data.items && data.items.length > 0) {
+                for (const item of data.items) {
+                    const currentItemTx = existingTxs.find(t => t.id === item.txId)
+                    if (!currentItemTx) continue
+
+                    const itemUpdateData: any = {
+                        monto: item.price
+                    }
+
+                    // If profile was changed
+                    if (item.profileId !== undefined && item.profileId !== currentItemTx.perfilId) {
+                        if (item.profileId) {
+                            // Validate new profile is sellable
+                            const check = await validateProfileIsSellable(item.profileId, tx)
+                            if (!check.ok) {
+                                throw new Error(`El nuevo perfil #${item.profileId} no es válido: ${check.reason}`)
+                            }
+
+                            // Free old profile if not used by another active transaction
+                            if (currentItemTx.perfilId) {
+                                const otherActive = await tx.transaction.findFirst({
+                                    where: {
+                                        perfilId: currentItemTx.perfilId,
+                                        id: { not: currentItemTx.id },
+                                        fecha_vencimiento: { gt: new Date() },
+                                        supersededAt: null
+                                    }
+                                })
+                                if (!otherActive) {
+                                    await tx.salesProfile.update({
+                                        where: { id: currentItemTx.perfilId },
+                                        data: { estado: 'LIBRE' }
+                                    })
+                                }
+                            }
+
+                            // Occupy new profile
+                            await tx.salesProfile.update({
+                                where: { id: item.profileId },
+                                data: { estado: 'OCUPADO' }
+                            })
+
+                            itemUpdateData.perfilId = item.profileId
+                            // Update accountId if profile has account
+                            const newProfileObj = await tx.salesProfile.findUnique({
+                                where: { id: item.profileId },
+                                select: { accountId: true }
+                            })
+                            if (newProfileObj) {
+                                itemUpdateData.accountId = newProfileObj.accountId
+                            }
+                        } else {
+                            // Profile set to null (Venta Libre)
+                            if (currentItemTx.perfilId) {
+                                const otherActive = await tx.transaction.findFirst({
+                                    where: {
+                                        perfilId: currentItemTx.perfilId,
+                                        id: { not: currentItemTx.id },
+                                        fecha_vencimiento: { gt: new Date() },
+                                        supersededAt: null
+                                    }
+                                })
+                                if (!otherActive) {
+                                    await tx.salesProfile.update({
+                                        where: { id: currentItemTx.perfilId },
+                                        data: { estado: 'LIBRE' }
+                                    })
+                                }
+                            }
+                            itemUpdateData.perfilId = null
+                        }
+                    }
+
+                    await tx.transaction.update({
+                        where: { id: item.txId },
+                        data: itemUpdateData
+                    })
+                }
+            }
+
+            // 3. Handle removed items if any
+            if (data.removedTxIds && data.removedTxIds.length > 0) {
+                for (const removedId of data.removedTxIds) {
+                    const rTx = existingTxs.find(t => t.id === removedId)
+                    if (!rTx) continue
+
+                    // Mark as superseded so accounting is preserved
+                    await tx.transaction.update({
+                        where: { id: removedId },
+                        data: {
+                            supersededAt: new Date(),
+                            supersededReason: 'LINEA_COMBO_REMOVIDA'
+                        }
+                    })
+
+                    // Free profile if not used by another active transaction
+                    if (rTx.perfilId) {
+                        const otherActive = await tx.transaction.findFirst({
+                            where: {
+                                perfilId: rTx.perfilId,
+                                id: { not: removedId },
+                                fecha_vencimiento: { gt: new Date() },
+                                supersededAt: null
+                            }
+                        })
+                        if (!otherActive) {
+                            await tx.salesProfile.update({
+                                where: { id: rTx.perfilId },
+                                data: { estado: 'LIBRE' }
+                            })
+                        }
+                    }
+                }
+            }
+        })
+
+        try {
+            revalidatePath('/sales')
+            revalidatePath('/clients')
+            revalidatePath('/inventory')
+        } catch (_) {}
+        return { success: true }
+    } catch (e: any) {
+        console.error("Critical Combo Update Error:", e)
+        return { success: false, error: e.message || String(e) }
     }
 }
 
