@@ -919,8 +919,16 @@ export async function getSaleMessage(transactionId: number) {
     }
 }
 
+// [INSERT] createSale: Registra una NUEVA venta. Exige obligatoriamente monto > 0 y método de pago.
 export async function createSale(clientId: string, clientName: string, profileId: number | undefined, price: number, paymentMethod: string = 'EFECTIVO', date?: string, months: number = 1) {
     try {
+        if (!price || isNaN(price) || price <= 0) {
+            return { success: false, error: 'El precio de la venta debe ser mayor a 0.' }
+        }
+        if (!paymentMethod || paymentMethod.trim().length === 0) {
+            return { success: false, error: 'Debes seleccionar un método de pago válido.' }
+        }
+
         const cleanId = cleanContactString(clientId)
         const now = normalizeDate(date) // Use 'now' as the variable name to match existing code logic
 
@@ -1039,8 +1047,7 @@ export async function createSale(clientId: string, clientName: string, profileId
     }
 }
 
-// --- COMBO SALES ---
-// --- COMBO SALES ---
+// [INSERT] createComboSale: Registra una NUEVA venta Combo. Exige monto total > 0 y método de pago.
 export async function createComboSale(
     clientId: string,
     clientName: string,
@@ -1050,6 +1057,17 @@ export async function createComboSale(
     months: number = 1
 ) {
     try {
+        if (!items || items.length === 0) {
+            return { success: false, error: 'El combo debe tener al menos un ítem.' }
+        }
+        const totalComboPrice = items.reduce((sum, i) => sum + (Number(i.price) || 0), 0)
+        if (totalComboPrice <= 0) {
+            return { success: false, error: 'El monto total del combo debe ser mayor a 0.' }
+        }
+        if (!paymentMethod || paymentMethod.trim().length === 0) {
+            return { success: false, error: 'Debes seleccionar un método de pago válido.' }
+        }
+
         const cleanId = cleanContactString(clientId)
         const groupId = globalThis.crypto.randomUUID()
         const now = normalizeDate(date)
@@ -1211,47 +1229,106 @@ export async function createComboSale(
     }
 }
 
-export async function assignProfile(clientId: string, clientName: string, profileId: number, dueDate: string, startDate?: string) {
+/**
+ * [UPDATE] reassignProfileClient:
+ * Vincula o corrige el cliente titular en una venta activa existente de un perfil.
+ * NO crea ninguna fila nueva en Transaction ni altera balances de caja ni fechas.
+ */
+export async function reassignProfileClient(profileId: number, clientId: string, clientName: string) {
     try {
         const cleanId = cleanContactString(clientId)
-        const endObj = new Date(dueDate)
-        endObj.setHours(23, 59, 59)
+        if (!cleanId || cleanId.trim().length < 3) {
+            return { success: false, error: 'Número de contacto o celular inválido.' }
+        }
+        if (!clientName || clientName.trim().length === 0) {
+            return { success: false, error: 'El nombre del cliente es obligatorio.' }
+        }
 
-        const startObj = startDate ? new Date(startDate) : new Date()
+        return await prisma.$transaction(async (txClient) => {
+            // 1. Buscar la transacción activa asociada a este perfil
+            const now = new Date()
+            const activeTx = await txClient.transaction.findFirst({
+                where: {
+                    perfilId: profileId,
+                    supersededAt: null,
+                    fecha_vencimiento: { gt: now }
+                },
+                orderBy: { fecha_vencimiento: 'desc' }
+            })
 
-        await prisma.$transaction(async (txClient) => {
-            const check = await validateProfileIsSellable(profileId, txClient)
-            if (!check.ok) {
-                throw new Error(`No se puede asignar el perfil #${profileId}: ${check.reason}`)
+            const targetTx = activeTx || await txClient.transaction.findFirst({
+                where: {
+                    perfilId: profileId,
+                    supersededAt: null
+                },
+                orderBy: { id: 'desc' }
+            })
+
+            if (!targetTx) {
+                return { 
+                    success: false, 
+                    error: `No se encontró ninguna venta activa en el perfil #${profileId} para actualizar. Para perfiles libres utiliza Nueva Venta (+ Vender).` 
+                }
             }
 
+            // 2. Upsert del nuevo cliente
             await txClient.client.upsert({
                 where: { celular: cleanId },
-                update: { nombre: clientName },
-                create: { celular: cleanId, nombre: clientName }
+                update: { nombre: clientName.trim() },
+                create: { celular: cleanId, nombre: clientName.trim() }
             })
 
-            await txClient.transaction.create({
-                data: {
-                    clienteId: cleanId,
-                    perfilId: profileId,
-                    monto: 0,
-                    estado_pago: 'PAGADO',
-                    fecha_inicio: startObj,
-                    fecha_vencimiento: endObj
-                }
+            // 3. UPDATE de la transacción activa existente (preserva monto, fechas y contabilidad intactas)
+            const updatedTx = await txClient.transaction.update({
+                where: { id: targetTx.id },
+                data: { clienteId: cleanId },
+                include: { client: true, profile: { include: { account: true } } }
             })
 
-            const updatedProfile = await txClient.salesProfile.update({
+            // 4. Asegurar que el perfil permanezca en OCUPADO
+            await txClient.salesProfile.update({
                 where: { id: profileId },
                 data: { estado: 'OCUPADO' }
             })
-            if (!updatedProfile || updatedProfile.estado !== 'OCUPADO') {
-                throw new Error(`El perfil #${profileId} no pudo ser marcado como OCUPADO al asignar.`)
+
+            return { success: true, transaction: updatedTx }
+        })
+    } catch (e: any) {
+        console.error("Reassign Profile Client Error:", e)
+        return { success: false, error: e?.message || String(e) }
+    }
+}
+
+/**
+ * [LEGACY / SAFE REDIRECT] assignProfile:
+ * Redirige a reassignProfileClient si el perfil ya está ocupado (UPDATE puro).
+ * Si el perfil está LIBRE, bloquea la creación en $0 y exige Nueva Venta (createSale).
+ */
+export async function assignProfile(clientId: string, clientName: string, profileId: number, dueDate?: string, startDate?: string) {
+    try {
+        const profile = await prisma.salesProfile.findUnique({
+            where: { id: profileId },
+            include: {
+                transactions: {
+                    where: { supersededAt: null },
+                    orderBy: { id: 'desc' },
+                    take: 1
+                }
             }
         })
 
-        return { success: true }
+        if (!profile) return { success: false, error: 'Perfil no encontrado' }
+
+        // Si ya está ocupado o tiene venta activa previa, actualizar titular sin crear fila en $0
+        if (profile.estado === 'OCUPADO' || profile.transactions.length > 0) {
+            return await reassignProfileClient(profileId, clientId, clientName)
+        }
+
+        // Si está LIBRE, rechazar creación en $0: exige Nueva Venta con precio y método de pago
+        return {
+            success: false,
+            error: 'No se puede asignar un perfil LIBRE con monto $0. Utiliza el formulario de "Nueva Venta" indicando precio y método de pago.'
+        }
     } catch (e: any) {
         console.error("Assign Error", e)
         return { success: false, error: e?.message || String(e) }

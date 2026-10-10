@@ -5,7 +5,7 @@ import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, Shie
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
-import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
+import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
 import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
@@ -429,16 +429,18 @@ export default function InventoryPage() {
     }
   }
 
+  // [INSERT] handleSell: Confirma una nueva venta (Combo o Simple). Exige monto > 0.
   const handleSell = async () => {
     // COMBO / SELECTION MODE
     if (selectedItems.length > 0) {
       if (!saleData.phone || !saleData.name) return toast.error('Faltan datos del cliente')
+      const customPrice = parseInt(saleData.price) || 0
+      if (customPrice <= 0) return toast.error('El monto total del combo debe ser mayor a 0.')
 
       setIsSubmitting(true)
       try {
         // Distribute custom combo price proportionally
         const totalOriginalPrice = selectedItems.reduce((sum, item) => sum + item.price, 0)
-        const customPrice = parseInt(saleData.price) || 0
 
         let runningSum = 0
         const payloadItems = selectedItems.map((i, idx) => {
@@ -512,8 +514,6 @@ export default function InventoryPage() {
             months: saleData.months
           })
 
-
-
           setSelectedItems([])
         } else {
           toast.error('Error: ' + res.error)
@@ -528,9 +528,12 @@ export default function InventoryPage() {
     }
 
     // SINGLE SALE (Legacy / Direct)
-    if (!selectedProfileId || !saleData.phone || !saleData.name || !saleData.price || !saleData.paymentMethod) return toast.error('Faltan datos del cliente o venta')
+    const priceNum = parseInt(saleData.price) || 0
+    if (!selectedProfileId || !saleData.phone || !saleData.name || !saleData.price || priceNum <= 0 || !saleData.paymentMethod) {
+      return toast.error('Faltan datos del cliente o el monto debe ser mayor a 0.')
+    }
 
-    const res = await createSale(saleData.phone, saleData.name, selectedProfileId, parseInt(saleData.price), saleData.paymentMethod, saleData.date, saleData.months)
+    const res = await createSale(saleData.phone, saleData.name, selectedProfileId, priceNum, saleData.paymentMethod, saleData.date, saleData.months)
     if (res.success && res.transaction) {
       toast.success('Venta realizada!')
       setShowSellModal(false)
@@ -585,18 +588,17 @@ export default function InventoryPage() {
     setShowAssignModal(true)
   }
 
+  // [UPDATE] handleAssign: Vincula o corrige el titular en la venta activa existente sin crear transacciones nuevas
   const handleAssign = async () => {
-    if (!selectedProfileId || !assignData.phone || !assignData.name) return toast.error('Faltan datos')
+    if (!selectedProfileId || !assignData.phone || !assignData.name) return toast.error('Faltan datos del cliente (nombre o celular)')
 
-    const calculatedEndDate = calculateSafeEndDate(assignData.startDate, assignData.months)
-
-    const res = await assignProfile(assignData.phone, assignData.name, selectedProfileId, calculatedEndDate.toISOString(), assignData.startDate)
+    const res = await reassignProfileClient(selectedProfileId, assignData.phone, assignData.name)
     if (res.success) {
-      toast.success('Cliente asignado correctamente!')
+      toast.success('Cliente titular actualizado correctamente (sin crear ventas en $0)')
       setShowAssignModal(false)
       fetchInventory()
     } else {
-      toast.error(res?.error || 'Error al asignar: no se pudo marcar el perfil como OCUPADO.')
+      toast.error(res?.error || 'Error al actualizar titular de la venta.')
     }
   }
 
@@ -1973,8 +1975,8 @@ export default function InventoryPage() {
                 <button type="button" onClick={() => setShowSellModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">Cancelar</button>
                 <button
                   onClick={handleSell}
-                  disabled={isSubmitting || (selectedItems.length === 0 && !selectedProfileId)}
-                  className={`flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold shadow-lg shadow-emerald-600/20 transition hover:scale-105 flex items-center justify-center gap-2 ${(isSubmitting || (selectedItems.length === 0 && !selectedProfileId)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isSubmitting || (selectedItems.length === 0 && !selectedProfileId) || !saleData.price || parseInt(saleData.price) <= 0}
+                  className={`flex-1 p-3 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold shadow-lg shadow-emerald-600/20 transition hover:scale-105 flex items-center justify-center gap-2 ${(isSubmitting || (selectedItems.length === 0 && !selectedProfileId) || !saleData.price || parseInt(saleData.price) <= 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isSubmitting ? <span className="animate-spin">⌛</span> : <DollarSign size={18} />}
                   {isSubmitting ? 'Procesando...' : 'Confirmar Venta'}
@@ -1984,15 +1986,17 @@ export default function InventoryPage() {
           </div>
         )}
 
-      {/* ASSIGN MODAL */}
+      {/* REASSIGN CLIENT MODAL (UPDATE ONLY - NO $0 TRANSACTIONS) */}
       {showAssignModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 text-left">
           <div
             className="glass-panel p-6 rounded-2xl w-full max-w-sm border border-white/10 shadow-2xl bg-slate-900 max-h-[85dvh] overflow-y-auto custom-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-white mb-2">Asignar Manualmente</h3>
-            <p className="text-xs text-slate-400 mb-4">Vincula este perfil a un cliente existente con su fecha de vencimiento actual.</p>
+            <h3 className="text-lg font-bold text-white mb-2">Vincular / Corregir Cliente Titular</h3>
+            <p className="text-xs text-slate-400 mb-4">
+              Actualiza el cliente titular asociado a la venta activa existente en este perfil. Mantiene el precio original, fechas y balance contable sin crear ventas fantasmas en $0.
+            </p>
 
             <div className="space-y-3">
               <div>
@@ -2022,30 +2026,13 @@ export default function InventoryPage() {
                 <input className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
                   value={assignData.phone} onChange={e => setAssignData({ ...assignData, phone: e.target.value })} placeholder="3001234567 o @usuario" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Inicio (Venta)</label>
-                  <input type="date" className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-violet-500 outline-none"
-                    value={assignData.startDate} onChange={e => setAssignData({ ...assignData, startDate: e.target.value })} />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400 block mb-1">Duración (Meses)</label>
-                  <select
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white outline-none"
-                    value={assignData.months}
-                    onChange={e => setAssignData({ ...assignData, months: parseInt(e.target.value) })}
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
-                      <option key={m} value={m}>{m} Mes{m > 1 ? 'es' : ''}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
             </div>
 
             <div className="flex gap-3 mt-6 pt-4 border-t border-white/5">
               <button type="button" onClick={() => setShowAssignModal(false)} className="flex-1 p-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium">Cancelar</button>
-              <button onClick={handleAssign} className="flex-1 p-3 rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-bold shadow-lg shadow-blue-600/20">Asignar Cliente</button>
+              <button onClick={handleAssign} className="flex-1 p-3 rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-bold shadow-lg shadow-blue-600/20">
+                Guardar Titular (Sin Venta $0)
+              </button>
             </div>
           </div>
         </div>
@@ -2473,9 +2460,10 @@ function ProfileCard({ profile, isSellableAccount = true, isSelected, onToggle, 
               </div>
             )}
 
+            {/* [UPDATE] Vincular/Corregir cliente titular en la venta activa existente */}
             <button
-              onClick={onAssign} // Opens Assign Modal
-              title="Reasignar a Cliente"
+              onClick={onAssign} // Opens Reassign Modal (UPDATE only)
+              title="Vincular / Corregir Cliente Titular (Venta Existente)"
               className="w-8 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors flex items-center justify-center"
             >
               <User size={12} />
@@ -2486,6 +2474,7 @@ function ProfileCard({ profile, isSellableAccount = true, isSelected, onToggle, 
         {profile.estado === 'LIBRE' ? (
           isSellableAccount ? (
             <div className="flex gap-1 flex-1">
+              {/* [INSERT] Nueva Venta: exige precio > 0 y método de pago */}
               <button
                 onClick={onSell}
                 className="flex-1 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-bold transition-colors flex items-center justify-center gap-1"
@@ -2493,8 +2482,8 @@ function ProfileCard({ profile, isSellableAccount = true, isSelected, onToggle, 
                 <Plus size={12} /> Vender
               </button>
               <button
-                onClick={onAssign}
-                title="Asignar a Cliente Existente (Migración)"
+                onClick={onSell}
+                title="Nueva Venta (Cliente Existente o Nuevo)"
                 className="w-8 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors flex items-center justify-center"
               >
                 <User size={12} />

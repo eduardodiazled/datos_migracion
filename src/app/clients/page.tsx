@@ -806,7 +806,7 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
                 }
 
                 // 2. Create Sale (New)
-                if (!assignPrice) return alert('Ingresa el precio')
+                if (!assignPrice || Number(assignPrice) <= 0) return alert('Ingresa un precio mayor a 0')
                 await createSale(client.id, client.name, selectedProduct.id, Number(assignPrice), paymentMethod, assignDate, assignMonths)
 
                 alert('✅ Cambio de Plan Exitoso!')
@@ -816,7 +816,7 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
                 setIsProcessing(false)
             }
         } else {
-            if (!assignPrice) return alert('Ingresa el precio')
+            if (!assignPrice || Number(assignPrice) <= 0) return alert('Ingresa un precio mayor a 0')
             // Create Sale handles the assignment as a new transaction
             await createSale(client.id, client.name, selectedProduct.id, Number(assignPrice), paymentMethod, assignDate, assignMonths)
             window.location.reload()
@@ -1170,7 +1170,7 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
                                     </>
                                 )}
 
-                                <button onClick={confirmAssign} disabled={!selectedProduct || ((assignMode === 'NEW' || assignMode === 'UPGRADE') && !assignPrice) || isProcessing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50">
+                                <button onClick={confirmAssign} disabled={!selectedProduct || ((assignMode === 'NEW' || assignMode === 'UPGRADE') && (!assignPrice || Number(assignPrice) <= 0)) || isProcessing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl mt-4 disabled:opacity-50">
                                     {isProcessing ? 'Procesando...' : (assignMode === 'MIGRATE' ? 'Confirmar Migración' : assignMode === 'UPGRADE' ? 'Confirmar Cambio' : 'Confirmar Asignación')}
                                 </button>
                                 <button onClick={() => setShowAssignModal(false)} className="w-full text-slate-500 py-2 text-sm">Cancelar</button>

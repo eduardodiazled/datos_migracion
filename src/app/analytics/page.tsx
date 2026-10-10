@@ -99,8 +99,11 @@ export default function AnalyticsPage() {
         } else toast.error('Error')
     }
 
+    // [INSERT] handleCreateSale: Registra una nueva venta exigiendo monto > 0
     const handleCreateSale = async () => {
-        if (!saleForm.clientId || !saleForm.price) return toast.error('Faltan datos')
+        if (!saleForm.clientId || !saleForm.price || Number(saleForm.price) <= 0) {
+            return toast.error('Debes ingresar los datos del cliente y un precio mayor a 0')
+        }
         const profileId = saleType === 'PRODUCT' ? selectedProduct?.id : undefined
         const res = await createSale(saleForm.clientId, saleForm.clientName || 'Cliente Nuevo', profileId, Number(saleForm.price), saleForm.paymentMethod)
 
@@ -411,7 +414,13 @@ export default function AnalyticsPage() {
                                 <option value="NEQUI">Nequi</option><option value="BANCOLOMBIA">Bancolombia</option><option value="EFECTIVO">Efectivo</option>
                             </select>
                         </div>
-                        <button onClick={handleCreateSale} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95">Confirmar Venta</button>
+                        <button
+                            onClick={handleCreateSale}
+                            disabled={!saleForm.price || Number(saleForm.price) <= 0}
+                            className={`w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95 ${(!saleForm.price || Number(saleForm.price) <= 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            Confirmar Venta
+                        </button>
                     </div>
                 </div>
             )}

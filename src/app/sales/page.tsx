@@ -190,8 +190,11 @@ export default function SalesPage() {
 
     // --- HANDLERS ---
 
+    // [INSERT] handleCreateSale: Registra una nueva venta exigiendo monto > 0
     const handleCreateSale = async () => {
-        if (!saleForm.clientName || !saleForm.price) return alert('Datos incompletos')
+        if (!saleForm.clientName || !saleForm.price || Number(saleForm.price) <= 0) {
+            return toast.error('Debes ingresar el nombre del cliente y un monto mayor a 0.')
+        }
         if (saleType === 'PRODUCT' && !selectedProduct) {
             return toast.error('Debes seleccionar un producto válido con stock disponible.')
         }
@@ -717,8 +720,8 @@ export default function SalesPage() {
                                 </div>
                                 <button
                                     onClick={handleCreateSale}
-                                    disabled={saleType === 'PRODUCT' && (!selectedProduct || inventory.length === 0)}
-                                    className={`w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95 ${(saleType === 'PRODUCT' && (!selectedProduct || inventory.length === 0)) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    disabled={(saleType === 'PRODUCT' && (!selectedProduct || inventory.length === 0)) || !saleForm.price || Number(saleForm.price) <= 0}
+                                    className={`w-full bg-emerald-600 hover:bg-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-emerald-500/20 text-lg transition active:scale-95 ${((saleType === 'PRODUCT' && (!selectedProduct || inventory.length === 0)) || !saleForm.price || Number(saleForm.price) <= 0) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     Confirmar Venta
                                 </button>
