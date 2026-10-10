@@ -5,7 +5,7 @@ import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, Shie
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
-import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
+import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, releaseService, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
 import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
@@ -737,21 +737,34 @@ export default function InventoryPage() {
   }
 
   const handleProfileStatus = async (profileId: number, status: 'LIBRE' | 'GARANTIA') => {
-    // If setting to WARRANTY, we should probably check stock too? 
-    // The user requirement specifically mentioned "si yo meto una cuenta desechable... no, es que si debe ser asi la garantia es con la cuenta completaa"
-    // But later "cada perfil individual... mensaje a traves del bot".
-    // Let's allow individual toggle. Ideally strict stock check should be on backend for this too, but setAccountWarranty has the gate.
-    // For individual profile:
     if (status === 'GARANTIA') {
-      if (!confirm('¿Reportar este perfil específico a Garantía?')) return
+      if (!confirm('🛡️ ENVIAR A GARANTÍA DE PERFIL\n\n¿Estás seguro de enviar este perfil a Garantía?\n\n⚠️ NOTA IMPORTANTE (Manual §3.6):\nEste botón NO libera el slot para reventa.\nEl perfil quedará en estado GARANTÍA (bloqueado y NO disponible para venta) hasta que sea atendido o revivido.\n\n👉 Para desocupar un perfil cuando el cliente no renueva, usa el botón "Liberar (LIBRE)".')) return
     }
 
     const res = await updateProfileStatus(profileId, status)
     if (res.success) {
-      toast.success(`Perfil actualizado a ${status}`)
+      toast.success(status === 'GARANTIA' ? 'Perfil enviado a GARANTÍA (NO vendible)' : `Perfil actualizado a ${status}`)
       fetchInventory()
     } else {
       toast.error('Error actualizando perfil')
+    }
+  }
+
+  const handleReleaseProfile = async (profileId: number, profileName: string, serviceName: string) => {
+    if (!confirm(`🔓 LIBERAR PERFIL (${serviceName} - ${profileName})\n\n¿Confirmas que el cliente ya no renueva y deseas LIBERAR este perfil para que quede disponible para nueva venta?`)) return
+
+    const newPin = prompt(`⚠️ CAMBIO DE PIN OBLIGATORIO (Manual §3.6 / §3.7)\n\nPara liberar el perfil y que pase a LIBRE (vendible), ingresa el NUEVO PIN para ${profileName}:`)
+    if (!newPin || !newPin.trim()) {
+      toast.error('Operación cancelada: el cambio de PIN es obligatorio para liberar un perfil.')
+      return
+    }
+
+    const res = await releaseService(profileId, newPin.trim())
+    if (res.success) {
+      toast.success(`Perfil ${profileName} liberado con nuevo PIN. Ahora está LIBRE y disponible para venta.`)
+      fetchInventory()
+    } else {
+      toast.error(`Error al liberar perfil: ${(res as any).error || 'Error desconocido'}`)
     }
   }
 
@@ -1305,6 +1318,7 @@ export default function InventoryPage() {
                                     onRotate={() => handleRotate(profile.id, profile.estado)}
                                     // Individual Profile Actions
                                     onReportWarranty={() => handleProfileStatus(profile.id, 'GARANTIA')}
+                                    onRelease={() => handleReleaseProfile(profile.id, profile.nombre_perfil, account.servicio)}
                                     onRevive={() => handleRevive(profile.id)}
                                     onSell={() => handleOpenSell(profile.id, account.servicio)}
                                     onAssign={() => handleOpenAssign(profile.id)}
@@ -1322,29 +1336,40 @@ export default function InventoryPage() {
                               })}
                             </div>
 
-                            { /* Full Account Sale Button - NOW SELECTION */}
-                            <div className="mt-4 pt-4 border-t border-white/5 flex justify-end">
+                            { /* Full Account Actions */}
+                            <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-2">
+                              {/* Botón Garantía Cuenta Madre (Bloquea toda la cuenta) */}
                               <button
-                                onClick={() => toggleFullAccountSelection(account)}
-                                className={`text-xs font-bold flex items-center gap-1 transition-colors ${selectedItems.some(i => i.accountId === account.id && i.type === 'FULL_ACCOUNT')
-                                  ? 'text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-lg'
-                                  : 'text-violet-400 hover:text-white'
-                                  }`}
+                                onClick={() => handleAccountWarranty(account.id, account.servicio)}
+                                title="Garantía de Cuenta Madre: marca TODA la cuenta en Garantía (NO queda disponible para venta)"
+                                className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1.5 transition-colors bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1.5 rounded-lg border border-rose-500/20"
                               >
-                                {selectedItems.some(i => i.accountId === account.id && i.type === 'FULL_ACCOUNT') ? (
-                                  <><Check size={14} /> Seleccionada (Completa)</>
-                                ) : (
-                                  <><DollarSign size={14} /> Seleccionar Cuenta Completa</>
-                                )}
+                                <ShieldAlert size={14} /> Garantía Cuenta Madre
                               </button>
 
-                              {/* Replace Button (Only if has warranties or occupied? - User said "cuenta caida la dejo ahi... hasta que me den garantia... uso boton reponer") */}
-                              <button
-                                onClick={() => handleOpenReplace(account)}
-                                className="text-xs font-bold text-emerald-400 hover:text-white flex items-center gap-1 transition-colors ml-4"
-                              >
-                                <RefreshCw size={14} /> Reponer Cuenta
-                              </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => toggleFullAccountSelection(account)}
+                                  className={`text-xs font-bold flex items-center gap-1 transition-colors ${selectedItems.some(i => i.accountId === account.id && i.type === 'FULL_ACCOUNT')
+                                    ? 'text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-lg'
+                                    : 'text-violet-400 hover:text-white'
+                                    }`}
+                                >
+                                  {selectedItems.some(i => i.accountId === account.id && i.type === 'FULL_ACCOUNT') ? (
+                                    <><Check size={14} /> Seleccionada (Completa)</>
+                                  ) : (
+                                    <><DollarSign size={14} /> Seleccionar Cuenta Completa</>
+                                  )}
+                                </button>
+
+                                {/* Replace Button */}
+                                <button
+                                  onClick={() => handleOpenReplace(account)}
+                                  className="text-xs font-bold text-emerald-400 hover:text-white flex items-center gap-1 transition-colors bg-emerald-500/10 hover:bg-emerald-500/20 px-2.5 py-1.5 rounded-lg border border-emerald-500/20"
+                                >
+                                  <RefreshCw size={14} /> Reponer Cuenta
+                                </button>
+                              </div>
                             </div>
 
                           </div>
@@ -2384,7 +2409,31 @@ export default function InventoryPage() {
 }
 
 
-function ProfileCard({ profile, isSellableAccount = true, isSelected, onToggle, onRotate, onReportWarranty, onRevive, onSell, onAssign, onMigrate }: { profile: Profile, isSellableAccount?: boolean, isSelected: boolean, onToggle: () => void, onRotate: () => void, onReportWarranty: () => void, onRevive: () => void, onSell: () => void, onAssign: () => void, onMigrate: () => void }) {
+function ProfileCard({
+  profile,
+  isSellableAccount = true,
+  isSelected,
+  onToggle,
+  onRotate,
+  onReportWarranty,
+  onRelease,
+  onRevive,
+  onSell,
+  onAssign,
+  onMigrate
+}: {
+  profile: Profile,
+  isSellableAccount?: boolean,
+  isSelected: boolean,
+  onToggle: () => void,
+  onRotate: () => void,
+  onReportWarranty: () => void,
+  onRelease: () => void,
+  onRevive: () => void,
+  onSell: () => void,
+  onAssign: () => void,
+  onMigrate: () => void
+}) {
   const statusColors = {
     LIBRE: isSellableAccount ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/5 border-rose-500/20 text-rose-300',
     OCUPADO: 'bg-slate-800/50 border-white/5 text-slate-400',
@@ -2431,28 +2480,50 @@ function ProfileCard({ profile, isSellableAccount = true, isSelected, onToggle, 
         {(profile.estado === 'OCUPADO' || profile.estado === 'GARANTIA' || profile.estado === 'CAIDO') && (
           <div className="flex gap-1 flex-1">
             {profile.estado === 'GARANTIA' ? (
-              <button
-                onClick={onRevive}
-                className="flex-1 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors flex items-center justify-center gap-1"
-                title="Revivir Perfil (Liberar)"
-              >
-                <Activity size={12} /> Revivir
-              </button>
-            ) : (
               <div className="flex flex-1 gap-1">
                 <button
+                  onClick={onRevive}
+                  className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 transition-colors flex items-center justify-center gap-1"
+                  title="Revivir Perfil (Pasa a LIBRE para nueva venta)"
+                >
+                  <Activity size={12} /> Revivir (LIBRE)
+                </button>
+                <button
+                  onClick={onMigrate}
+                  title="Migrar/Reubicar cliente afectado por garantía"
+                  className="px-2 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 hover:text-indigo-300 text-xs font-bold transition-colors flex items-center justify-center gap-1"
+                >
+                  <RefreshCw size={12} /> Migrar
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-1 gap-1">
+                {/* 1. BOTÓN GARANTÍA DE PERFIL: Tooltip y label explícitos (NO libera) */}
+                <button
                   onClick={onReportWarranty}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1 ${'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
-                    }`}
+                  title="Enviar a garantía (NO queda disponible para venta / NO libera)"
+                  className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-colors flex items-center justify-center gap-1"
                 >
                   <ShieldAlert size={12} />
+                  <span>Garantía</span>
                 </button>
-                {/* MIGRATE BUTTON (Unique for OCUPADO/GARANTIA) */}
+
+                {/* 2. BOTÓN LIBERAR PERFIL: Flujo seguro con cambio de PIN para pasar a LIBRE */}
+                <button
+                  onClick={onRelease}
+                  title="Liberar Perfil (Exige nuevo PIN y pasa a LIBRE para revender)"
+                  className="flex-1 py-1.5 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition-colors flex items-center justify-center gap-1"
+                >
+                  <LogOut size={12} />
+                  <span>Liberar</span>
+                </button>
+
+                {/* 3. BOTÓN MIGRAR */}
                 {profile.estado === 'OCUPADO' && (
                   <button
                     onClick={onMigrate}
                     title="Migrar/Intercambiar Cliente"
-                    className="flex-1 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 hover:text-indigo-300 text-xs font-bold transition-colors flex items-center justify-center gap-1"
+                    className="px-2 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 hover:text-indigo-300 text-xs font-bold transition-colors flex items-center justify-center gap-1"
                   >
                     <RefreshCw size={12} /> Migrar
                   </button>

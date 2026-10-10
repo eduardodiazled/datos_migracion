@@ -442,37 +442,38 @@ export async function releaseService(profileId: number, newPin?: string) {
     try {
         if (!profileId) return { success: true }
 
-        // 1. Release Profile (Set to LIBRE and Update PIN if provided)
-        await prisma.salesProfile.update({
-            where: { id: profileId },
-            data: {
-                estado: 'LIBRE',
-                ...(newPin ? { pin: newPin } : {})
-            }
-        })
-
-        // 2. Expire the Transaction (So client shows as "Vencido" instead of disappearing or staying active)
-        // We set expiration to Yesterday
         const now = new Date()
         const yesterday = new Date()
         yesterday.setDate(yesterday.getDate() - 1)
 
-        await prisma.transaction.updateMany({
-            where: {
-                perfilId: profileId,
-                fecha_vencimiento: { gt: now }
-            },
-            data: {
-                fecha_vencimiento: yesterday,
-                supersededAt: now,
-                supersededReason: 'LIBERADA'
-            }
+        await prisma.$transaction(async (txClient) => {
+            // 1. Expire all active transactions for this profile (mark superseded as LIBERADA)
+            await txClient.transaction.updateMany({
+                where: {
+                    perfilId: profileId,
+                    fecha_vencimiento: { gt: now }
+                },
+                data: {
+                    fecha_vencimiento: yesterday,
+                    supersededAt: now,
+                    supersededReason: 'LIBERADA'
+                }
+            })
+
+            // 2. Set profile status to LIBRE and update PIN if provided
+            await txClient.salesProfile.update({
+                where: { id: profileId },
+                data: {
+                    estado: 'LIBRE',
+                    ...(newPin ? { pin: newPin } : {})
+                }
+            })
         })
 
         return { success: true }
-    } catch (e) {
+    } catch (e: any) {
         console.error("Release Error", e)
-        return { success: false }
+        return { success: false, error: e?.message || String(e) }
     }
 }
 
