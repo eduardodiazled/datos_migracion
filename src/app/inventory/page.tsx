@@ -5,7 +5,7 @@ import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, Shie
 import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
-import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, releaseService, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, getArchivedInventory, sendTestReminder } from '../actions'
+import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, releaseService, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, archiveAllExpiredDisposables, convertDisposableToRenewable, getArchivedInventory, sendTestReminder } from '../actions'
 import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
@@ -28,6 +28,7 @@ type Account = {
   servicio: string
   email: string
   password: string
+  status?: string
   perfiles: Profile[]
   provider?: {
     id: number
@@ -86,7 +87,7 @@ export default function InventoryPage() {
   const [isSearchingClient, setIsSearchingClient] = useState(false)
 
   // Edit Account State
-  const [showEditAccountModal, setShowEditAccountModal] = useState(false)
+  const [showEditAccountModal, setShowEditAccountModal] =useState(false)
   const [editingAccount, setEditingAccount] = useState<any>(null)
   const [editingProfiles, setEditingProfiles] = useState<{ id?: number, name: string, pin?: string }[]>([])
 
@@ -103,7 +104,9 @@ export default function InventoryPage() {
 
   // Lifecycle State
   const [expiredAccounts, setExpiredAccounts] = useState<Account[]>([])
+  const [expiredWithClients, setExpiredWithClients] = useState<any[]>([])
   const [showExpiredList, setShowExpiredList] = useState(false)
+  const [showExpiredWithClientsList, setShowExpiredWithClientsList] = useState(false)
   const [replaceData, setReplaceData] = useState({
     email: '',
     password: '',
@@ -123,8 +126,18 @@ export default function InventoryPage() {
   const [showMenu, setShowMenu] = useState(false)
   const [autoSendStatus, setAutoSendStatus] = useState<'IDLE' | 'SUCCESS' | 'ERROR'>('IDLE')
 
+  const loadExpiredDisposables = () => {
+    getExpiredDisposables().then(res => {
+      if (res.success) {
+        setExpiredAccounts((res.accounts || []) as any)
+        setExpiredWithClients((res.expiredWithClients || []) as any)
+      }
+    })
+  }
+
   const fetchInventory = () => {
     setLoading(true)
+    loadExpiredDisposables()
 
     if (activeTab === 'ARCHIVED') {
       getArchivedInventory().then(res => {
@@ -306,9 +319,14 @@ export default function InventoryPage() {
       if (parentAccount.status !== 'ACTIVE') {
         return toast.error('Esta cuenta está inactiva o archivada.')
       }
-      const hasWarranty = (parentAccount.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
-      if (hasWarranty) {
-        return toast.error('Esta cuenta tiene perfiles en garantía o caídos. No es stock vendible.')
+      const allProfiles = parentAccount.perfiles || []
+      const targetProfile = allProfiles.find(p => p.id === profileId)
+      if (targetProfile && targetProfile.estado !== 'LIBRE') {
+        return toast.error('Este perfil no está LIBRE para la venta.')
+      }
+      const allInWarranty = allProfiles.length > 0 && allProfiles.every(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+      if (allInWarranty) {
+        return toast.error('Toda la cuenta madre está en garantía o caída. No es stock vendible.')
       }
     }
 
@@ -342,8 +360,9 @@ export default function InventoryPage() {
     const parentAccount = accounts.find(a => a.id === accountId)
     if (parentAccount) {
       if (parentAccount.status !== 'ACTIVE') return toast.error('Esta cuenta está inactiva o archivada.')
-      const hasWarranty = (parentAccount.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
-      if (hasWarranty) return toast.error('Esta cuenta tiene perfiles en garantía o caídos. No se puede vender en combo.')
+      const allProfiles = parentAccount.perfiles || []
+      const allInWarranty = allProfiles.length > 0 && allProfiles.every(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+      if (allInWarranty) return toast.error('Toda la cuenta madre está en garantía o caída. No se puede vender en combo.')
     }
     if (profile.estado !== 'LIBRE') {
       return toast.error('Solo se pueden seleccionar perfiles LIBRE para combos.')
@@ -398,8 +417,9 @@ export default function InventoryPage() {
       setSelectedItems(prev => prev.filter(i => !allProfileIds.includes(i.profileId)))
     } else {
       if (account.status !== 'ACTIVE') return toast.error('Esta cuenta está inactiva o archivada.')
-      const hasWarranty = (account.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
-      if (hasWarranty) return toast.error('Esta cuenta tiene perfiles en garantía o caídos. No se puede vender en combo.')
+      const allProfiles = account.perfiles || []
+      const allInWarranty = allProfiles.length > 0 && allProfiles.every(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+      if (allInWarranty) return toast.error('Toda la cuenta madre está en garantía o caída. No se puede vender en combo.')
 
       // Select All (ÚNICAMENTE perfiles LIBRE de cuentas sanas)
       const validProfiles = (account.perfiles || []).filter(p => p.estado === 'LIBRE')
@@ -669,25 +689,55 @@ export default function InventoryPage() {
 
   // --- LIFECYCLE HANDLERS ---
   useEffect(() => {
-    // Check for expired disposables on load
-    getExpiredDisposables().then(res => {
-      if (res.success && res.accounts) {
-        setExpiredAccounts(res.accounts as any)
-      }
-    })
+    loadExpiredDisposables()
   }, [])
 
   const handleArchive = async (accountId: number) => {
-    if (!confirm('¿Archivar esta cuenta completada?\n\nDesaparecerá de la lista activa y se eliminará automáticamente en 30 días.')) return
+    if (!confirm('¿Archivar esta cuenta desechable vencida (sin clientes vigentes)?\n\nDesaparecerá de la lista activa y se eliminará automáticamente en 30 días.')) return
 
     const res = await archiveAccount(accountId)
     if (res.success) {
       toast.success('Cuenta Archivada')
-      // Remove locally
       setExpiredAccounts(prev => prev.filter(a => a.id !== accountId))
       fetchInventory()
     } else {
-      toast.error('Error al archivar')
+      toast.error((res as any).error || 'Error al archivar')
+    }
+  }
+
+  const handleArchiveAll = async () => {
+    if (expiredAccounts.length === 0) return
+    if (!confirm(`¿Archivar las ${expiredAccounts.length} cuentas desechables vencidas (todas verificadas con 0 clientes activos)?\n\nLas cuentas que aún tienen clientes vigentes NO serán archivadas.`)) return
+
+    const res = await archiveAllExpiredDisposables()
+    if (res.success) {
+      toast.success(`Se archivaron ${(res as any).archivedCount || 0} cuentas vencidas sin clientes vigentes.`)
+      setExpiredAccounts([])
+      fetchInventory()
+    } else {
+      toast.error((res as any).error || 'Error al archivar todas')
+    }
+  }
+
+  const handleConvertToRenewable = async (acc: Account) => {
+    const defaultDay = new Date().getDate().toString()
+    const dayInput = prompt(
+      `🔄 CONVERTIR A RENOVABLE (${acc.servicio} - ${acc.email})\n\nEsta cuenta dejará de ser desechable y pasará a gestionarse como Renovable.\n\nIngresa el DÍA DE CORTE mensual con el proveedor (1 al 31):`,
+      defaultDay
+    )
+    if (dayInput === null) return
+    const parsedDay = parseInt(dayInput.trim(), 10)
+    if (isNaN(parsedDay) || parsedDay < 1 || parsedDay > 31) {
+      return toast.error('Día de corte inválido (debe ser entre 1 y 31).')
+    }
+
+    const res = await convertDisposableToRenewable(acc.id, parsedDay)
+    if (res.success) {
+      toast.success(`Cuenta ${acc.email} convertida a Renovable (Corte día ${parsedDay})`)
+      setExpiredWithClients(prev => prev.filter(a => a.id !== acc.id))
+      fetchInventory()
+    } else {
+      toast.error((res as any).error || 'Error al convertir cuenta')
     }
   }
 
@@ -920,44 +970,153 @@ export default function InventoryPage() {
         </div>
 
 
-        {/* --- EXPIRED ACCOUNTS WARNING --- */}
+        {/* --- 1. EXPIRED DISPOSABLE ACCOUNTS (ARCHIVABLES: 0 ACTIVE CLIENTS) --- */}
         {expiredAccounts.length > 0 && (
           <div 
             onClick={() => setShowExpiredList(!showExpiredList)}
-            className="bg-rose-500/10 border border-rose-500/50 p-4 rounded-xl flex items-center justify-between mb-6 animate-in slide-in-from-top-4 cursor-pointer hover:bg-rose-500/20 transition-colors"
+            className="bg-rose-500/10 border border-rose-500/50 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 animate-in slide-in-from-top-4 cursor-pointer hover:bg-rose-500/20 transition-colors"
           >
             <div className="flex items-center gap-3">
               <div className="bg-rose-500/20 p-2 rounded-full">
                 <ShieldAlert className="text-rose-500" size={24} />
               </div>
               <div>
-                <h3 className="text-white font-bold text-lg">Atención: {expiredAccounts.length} {expiredAccounts.length === 1 ? 'Cuenta Desechable Vencida' : 'Cuentas Desechables Vencidas'}</h3>
-                <p className="text-rose-300 text-sm">Estas cuentas terminaron hace más de 5 días. Revísalas y archívalas.</p>
+                <h3 className="text-white font-bold text-lg">
+                  Atención: {expiredAccounts.length} {expiredAccounts.length === 1 ? 'Cuenta Desechable Vencida (Archivable)' : 'Cuentas Desechables Vencidas (Archivables)'}
+                </h3>
+                <p className="text-rose-300 text-sm">Terminaron su ciclo con proveedor y NO tienen clientes vigentes.</p>
               </div>
             </div>
-            <div className="text-slate-400 hover:text-white p-2 transition">
-              {showExpiredList ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleArchiveAll()
+                }}
+                className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-xs md:text-sm font-bold flex items-center gap-2 shadow-lg shadow-rose-600/20 transition"
+              >
+                <Trash2 size={16} /> Archivar Todas ({expiredAccounts.length})
+              </button>
+              <div className="text-slate-400 hover:text-white p-2 transition">
+                {showExpiredList ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+              </div>
             </div>
           </div>
         )}
 
         {expiredAccounts.length > 0 && showExpiredList && (
-          <div className="space-y-2 mb-8 animate-in fade-in duration-200">
+          <div className="space-y-2 mb-6 animate-in fade-in duration-200">
             {expiredAccounts.map(acc => (
-              <div key={acc.id} className="bg-slate-900 border border-rose-500/30 p-3 rounded-xl flex justify-between items-center animate-in slide-in-from-top-2 duration-200">
-                <div className="flex items-center gap-3">
+              <div key={acc.id} className="bg-slate-900 border border-rose-500/30 p-3 rounded-xl flex flex-col sm:flex-row justify-between sm:items-center gap-2 animate-in slide-in-from-top-2 duration-200">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-xs font-mono text-slate-500">#{acc.id}</span>
                   <div className="text-rose-400 font-bold">{acc.servicio}</div>
-                  <div className="text-slate-500 text-xs">{acc.email}</div>
-                  <div className="text-xs bg-rose-500/20 text-rose-300 px-2 py-1 rounded">Venció: {new Date(new Date(acc.fecha_activacion || new Date().toISOString()).setMonth(new Date(acc.fecha_activacion || new Date().toISOString()).getMonth() + ((acc as any).duracion_meses || 1))).toLocaleDateString()}</div>
+                  <div className="text-slate-400 text-xs">{acc.email}</div>
+                  <div className="text-xs bg-rose-500/20 text-rose-300 px-2 py-1 rounded">
+                    Venció proveedor: {new Date(new Date(acc.fecha_activacion || new Date().toISOString()).setMonth(new Date(acc.fecha_activacion || new Date().toISOString()).getMonth() + ((acc as any).duracion_meses || 1))).toLocaleDateString()}
+                  </div>
+                  <div className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">
+                    0 clientes vigentes
+                  </div>
                 </div>
                 <button
                   onClick={() => handleArchive(acc.id)}
-                  className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
+                  className="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 self-end sm:self-auto"
                 >
                   <Trash2 size={16} /> Archivar
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* --- 2. EXPIRED DISPOSABLE ACCOUNTS WITH ACTIVE CLIENTS (PROTECTED FROM ARCHIVING) --- */}
+        {expiredWithClients.length > 0 && (
+          <div 
+            onClick={() => setShowExpiredWithClientsList(!showExpiredWithClientsList)}
+            className="bg-amber-500/10 border border-amber-500/50 p-4 rounded-xl flex items-center justify-between mb-4 animate-in slide-in-from-top-4 cursor-pointer hover:bg-amber-500/20 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="bg-amber-500/20 p-2 rounded-full">
+                <Shield className="text-amber-400" size={24} />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-lg">
+                  Vencidas con clientes activos ({expiredWithClients.length})
+                </h3>
+                <p className="text-amber-300 text-sm">
+                  Protegidas contra archivado: tienen ventas vigentes (hoy o futuro en hora Bogotá). Migra a los clientes o conviértelas a renovables.
+                </p>
+              </div>
+            </div>
+            <div className="text-slate-400 hover:text-white p-2 transition">
+              {showExpiredWithClientsList ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+            </div>
+          </div>
+        )}
+
+        {expiredWithClients.length > 0 && showExpiredWithClientsList && (
+          <div className="space-y-2 mb-8 animate-in fade-in duration-200">
+            {expiredWithClients.map(acc => {
+              const maxDateStr = acc.maxDueDate
+                ? new Date(acc.maxDueDate).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit' })
+                : 'N/A'
+              const clientNames = (acc.activeClients || []).map(c => `${c.clientName} (${c.profileName})`).join(', ')
+
+              return (
+                <div key={acc.id} className="bg-slate-900 border border-amber-500/40 p-3.5 rounded-xl flex flex-col md:flex-row justify-between md:items-center gap-3 animate-in slide-in-from-top-2 duration-200">
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="text-xs font-mono text-amber-400/80 font-bold">#{acc.id}</span>
+                      <span className="text-amber-400 font-bold">{acc.servicio}</span>
+                      <span className="text-slate-300 text-xs font-mono">{acc.email}</span>
+                      <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded-full font-bold">
+                        {acc.activeClientsCount} {acc.activeClientsCount === 1 ? 'cliente activo' : 'clientes activos'}
+                      </span>
+                      <span className="text-xs bg-violet-500/20 text-violet-300 border border-violet-500/30 px-2.5 py-0.5 rounded-full font-semibold">
+                        Corte más lejano: {maxDateStr}
+                      </span>
+                    </div>
+                    {clientNames && (
+                      <div className="text-xs text-slate-400">
+                        Clientes vigentes: <span className="text-slate-300 font-medium">{clientNames}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 self-end md:self-auto">
+                    <button
+                      onClick={() => {
+                        setActiveTab('ALL')
+                        setSearchTerm(acc.email)
+                        const firstClient = acc.activeClients?.[0]
+                        if (firstClient && firstClient.profileId) {
+                          setProfileToMigrate({
+                            id: firstClient.profileId,
+                            serviceName: acc.servicio,
+                            accountId: acc.id,
+                            profileName: firstClient.profileName
+                          })
+                          setTargetProfileId(null)
+                          setShowMigrateModal(true)
+                        } else {
+                          toast.info(`Filtrando cuenta ${acc.email} para migrar sus perfiles`)
+                        }
+                      }}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                    >
+                      <RefreshCw size={14} /> Migrar clientes
+                    </button>
+                    <button
+                      onClick={() => handleConvertToRenewable(acc)}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                    >
+                      <Check size={14} /> Convertir a renovable
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
 
@@ -1361,7 +1520,8 @@ export default function InventoryPage() {
                             {/* Profiles Grid - FORCED SINGLE COLUMN */}
                             <div className="grid grid-cols-1 gap-3 flex-1 content-start">
                               {account.perfiles.map(profile => {
-                                const isAccountSellable = account.status === 'ACTIVE' && !(account.perfiles || []).some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
+                                const allProfiles = account.perfiles || []
+                                const isAccountSellable = account.status === 'ACTIVE' && !(allProfiles.length > 0 && allProfiles.every(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO'))
                                 return (
                                   <ProfileCard
                                     key={profile.id}
@@ -2622,7 +2782,7 @@ function ProfileCard({
       <div className="flex gap-2 mt-auto">
         {(profile.estado === 'OCUPADO' || profile.estado === 'GARANTIA' || profile.estado === 'CAIDO') && (
           <div className="flex gap-1 flex-1">
-            {profile.estado === 'GARANTIA' ? (
+            {(profile.estado === 'GARANTIA' || profile.estado === 'CAIDO') ? (
               <div className="flex flex-1 gap-1">
                 <button
                   onClick={onRevive}
@@ -2728,10 +2888,11 @@ function ProfileCard({
           // Status other than LIBRE (OCUPADO, GARANTIA, etc) are handled above or here if needed (e.g. CUARENTENA)
           profile.estado === 'CUARENTENA_PIN' && (
             <button
-              onClick={onRotate}
-              className="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs font-medium transition-colors flex items-center justify-center gap-1"
+              onClick={onRevive}
+              className="flex-1 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-bold transition-colors flex items-center justify-center gap-1"
+              title="Revivir Perfil (Pasa a LIBRE para nueva venta)"
             >
-              <RefreshCw size={12} /> Revivir
+              <Activity size={12} /> Revivir (LIBRE)
             </button>
           )
         )}

@@ -350,9 +350,8 @@ export async function renewService(clientId: string, previousTxId: number, custo
                 if (currentProfile.account.status !== 'ACTIVE') {
                     throw new Error(`La cuenta (${currentProfile.account.email}) está inactiva. No se puede renovar directamente; debes migrar al cliente a una cuenta activa.`)
                 }
-                const hasWarranty = currentProfile.account.perfiles.some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
-                if (hasWarranty) {
-                    throw new Error(`La cuenta (${currentProfile.account.email}) tiene perfiles en garantía o caídos. No se puede renovar directamente; debes migrar al cliente a una cuenta disponible.`)
+                if (currentProfile.estado === 'GARANTIA' || currentProfile.estado === 'CAIDO') {
+                    throw new Error(`El perfil (${currentProfile.nombre_perfil} en ${currentProfile.account.email}) está en garantía o caído. Revívelo o migra al cliente a otro perfil disponible antes de renovar.`)
                 }
             }
         }
@@ -3574,40 +3573,139 @@ export async function sendReceiptAction(phone: string, imageBase64: string, capt
 
 // --- DISPOSABLE ACCOUNT LIFECYCLE ---
 
+/**
+ * Evalúa si una cuenta tiene transacciones vigentes (vencimiento >= hoy en America/Bogota y no supersedidas)
+ * tanto en sus perfiles individuales como en ventas de cuenta completa.
+ */
+function extractActiveClientTransactions(acc: any, now: Date = new Date()) {
+    const activeClients: {
+        profileId: number | null
+        profileName: string
+        txId: number
+        clientName: string
+        clientPhone: string
+        dueDate: Date
+        dueDateISO: string
+        daysLeft: number
+    }[] = []
+
+    for (const p of acc.perfiles || []) {
+        for (const tx of p.transactions || []) {
+            if (tx.supersededAt) continue
+            const daysLeft = getDaysDiffBogota(tx.fecha_vencimiento, now)
+            if (daysLeft >= 0) {
+                activeClients.push({
+                    profileId: p.id,
+                    profileName: p.nombre_perfil,
+                    txId: tx.id,
+                    clientName: tx.client?.nombre || 'Cliente',
+                    clientPhone: tx.clienteId,
+                    dueDate: new Date(tx.fecha_vencimiento),
+                    dueDateISO: formatBogotaDateISO(tx.fecha_vencimiento),
+                    daysLeft
+                })
+            }
+        }
+    }
+
+    for (const tx of acc.transactions || []) {
+        if (tx.perfilId || tx.supersededAt) continue
+        const daysLeft = getDaysDiffBogota(tx.fecha_vencimiento, now)
+        if (daysLeft >= 0) {
+            activeClients.push({
+                profileId: null,
+                profileName: 'Cuenta Completa',
+                txId: tx.id,
+                clientName: tx.client?.nombre || 'Cliente',
+                clientPhone: tx.clienteId,
+                dueDate: new Date(tx.fecha_vencimiento),
+                dueDateISO: formatBogotaDateISO(tx.fecha_vencimiento),
+                daysLeft
+            })
+        }
+    }
+
+    return activeClients
+}
+
 export async function getExpiredDisposables() {
     try {
         await cleanupArchivedAccounts() // Piggyback auto-cleanup
 
-        // Find active disposable accounts
+        // Find active disposable accounts with their profiles and non-superseded transactions
         const disposables = await prisma.inventoryAccount.findMany({
             where: {
                 is_disposable: true,
-                status: 'ACTIVE' // Only active ones
+                status: 'ACTIVE'
             },
-            include: { perfiles: true }
+            include: {
+                perfiles: {
+                    include: {
+                        transactions: {
+                            where: { supersededAt: null },
+                            orderBy: { fecha_vencimiento: 'desc' },
+                            include: { client: true }
+                        }
+                    }
+                },
+                transactions: {
+                    where: { supersededAt: null },
+                    orderBy: { fecha_vencimiento: 'desc' },
+                    include: { client: true }
+                }
+            }
         })
 
         const now = new Date()
-        const expired = disposables.filter(acc => {
+        const fiveDaysAgo = new Date(now)
+        fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5)
+
+        // 1. Filtrar cuentas cuya fecha técnica con el proveedor ya venció (> 5 días)
+        const technicallyExpired = disposables.filter(acc => {
             const activation = new Date(acc.fecha_activacion || acc.createdAt)
             const months = (acc as any).duracion_meses || 1
             const endDate = new Date(activation)
             endDate.setMonth(endDate.getMonth() + months)
-
-            // Calculate days PAST expiration.
-            // If now is Dec 20, and endDate was Dec 10, then diff is 10 days.
-            // We want accounts where (Now - endDate) > 5 days.
-            // i.e. endDate < (Now - 5 days) 
-            // BUT ensure we don't catch future ones (endDate > 5 days ago).
-            // Logic: EndDate must be strictly LESS than (Now - 5 days).
-
-            const fiveDaysAgo = new Date(now)
-            fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5)
-
             return endDate < fiveDaysAgo
         })
 
-        return { success: true, count: expired.length, accounts: expired }
+        const archivableAccounts: any[] = []
+        const expiredWithClients: any[] = []
+
+        // 2. Separar estrictamente:
+        // - archivableAccounts: 0 clientes vigentes (< hoy Bogotá)
+        // - expiredWithClients: >= 1 cliente con fecha_vencimiento >= hoy Bogotá
+        for (const acc of technicallyExpired) {
+            const activeClients = extractActiveClientTransactions(acc, now)
+            const cleanAcc = {
+                ...acc,
+                transactions: undefined,
+                perfiles: acc.perfiles.map(p => ({ ...p, transactions: undefined }))
+            }
+
+            if (activeClients.length > 0) {
+                const maxDue = activeClients.reduce(
+                    (max, cur) => (cur.dueDate > max ? cur.dueDate : max),
+                    activeClients[0].dueDate
+                )
+                expiredWithClients.push({
+                    ...cleanAcc,
+                    activeClientsCount: activeClients.length,
+                    maxDueDate: formatBogotaDateISO(maxDue),
+                    activeClients
+                })
+            } else {
+                archivableAccounts.push(cleanAcc)
+            }
+        }
+
+        return {
+            success: true,
+            count: archivableAccounts.length,
+            accounts: archivableAccounts,
+            expiredWithClientsCount: expiredWithClients.length,
+            expiredWithClients
+        }
     } catch (e) {
         console.error("Get Expired Error", e)
         return { success: false, error: String(e) }
@@ -3616,6 +3714,41 @@ export async function getExpiredDisposables() {
 
 export async function archiveAccount(accountId: number) {
     try {
+        const acc = await prisma.inventoryAccount.findUnique({
+            where: { id: accountId },
+            include: {
+                perfiles: {
+                    include: {
+                        transactions: {
+                            where: { supersededAt: null },
+                            include: { client: true }
+                        }
+                    }
+                },
+                transactions: {
+                    where: { supersededAt: null },
+                    include: { client: true }
+                }
+            }
+        })
+
+        if (!acc) {
+            return { success: false, error: 'Cuenta no encontrada' }
+        }
+
+        // Validación dura en Backend: prohibido archivar si tiene clientes con vencimiento >= hoy (America/Bogota)
+        const activeClients = extractActiveClientTransactions(acc, new Date())
+        if (activeClients.length > 0) {
+            const maxDue = activeClients.reduce(
+                (max, cur) => (cur.dueDate > max ? cur.dueDate : max),
+                activeClients[0].dueDate
+            )
+            return {
+                success: false,
+                error: `BLOQUEADO: La cuenta ${acc.email} aún tiene ${activeClients.length} cliente(s) vigente(s) (corte hasta ${formatBogotaDateISO(maxDue)}). Migra sus perfiles o conviértela a renovable.`
+            }
+        }
+
         await prisma.inventoryAccount.update({
             where: { id: accountId },
             data: {
@@ -3631,9 +3764,64 @@ export async function archiveAccount(accountId: number) {
     }
 }
 
+export async function archiveAllExpiredDisposables() {
+    try {
+        const res = await getExpiredDisposables()
+        if (!res.success || !res.accounts) {
+            return { success: false, error: res.error || 'No se pudieron obtener las cuentas vencidas' }
+        }
+
+        const safeIds = res.accounts.map((a: any) => a.id)
+        if (safeIds.length === 0) {
+            return { success: true, archivedCount: 0, skippedCount: res.expiredWithClientsCount || 0 }
+        }
+
+        await prisma.inventoryAccount.updateMany({
+            where: {
+                id: { in: safeIds },
+                is_disposable: true,
+                status: 'ACTIVE'
+            },
+            data: {
+                status: 'ARCHIVED',
+                archivedAt: new Date()
+            }
+        })
+
+        revalidatePath('/inventory')
+        return {
+            success: true,
+            archivedCount: safeIds.length,
+            skippedCount: res.expiredWithClientsCount || 0
+        }
+    } catch (e) {
+        console.error("Archive All Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
+export async function convertDisposableToRenewable(accountId: number, diaCorte?: number) {
+    try {
+        const todayBogotaDay = Number(formatBogotaDateISO(new Date()).split('-')[2]) || 15
+        await prisma.inventoryAccount.update({
+            where: { id: accountId },
+            data: {
+                is_disposable: false,
+                tipo: 'ESTATICO',
+                dia_corte: diaCorte || todayBogotaDay
+            }
+        })
+        revalidatePath('/inventory')
+        return { success: true }
+    } catch (e) {
+        console.error("Convert Disposable Error", e)
+        return { success: false, error: String(e) }
+    }
+}
+
 export async function cleanupArchivedAccounts() {
     try {
-        // Delete accounts archived > 30 days ago
+        // Delete accounts archived > 30 days ago ONLY if they have no active transactions
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -3641,13 +3829,26 @@ export async function cleanupArchivedAccounts() {
             where: {
                 status: 'ARCHIVED',
                 archivedAt: { lt: thirtyDaysAgo }
+            },
+            include: {
+                perfiles: {
+                    include: {
+                        transactions: { where: { supersededAt: null } }
+                    }
+                },
+                transactions: { where: { supersededAt: null } }
             }
         })
 
         if (oldArchived.length > 0) {
-            console.log(`Cleaning up ${oldArchived.length} old archived accounts...`)
+            const now = new Date()
             for (const acc of oldArchived) {
-                // Delete profiles first (Cascade usually handles this but safety first)
+                const activeClients = extractActiveClientTransactions(acc, now)
+                if (activeClients.length > 0) {
+                    // Never delete an archived account that still has active client transactions
+                    continue
+                }
+                // Delete profiles first
                 await prisma.salesProfile.deleteMany({ where: { accountId: acc.id } })
                 // Nullify transaction links
                 await prisma.transaction.updateMany({

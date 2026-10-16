@@ -25,24 +25,10 @@ export function isAccountSellable(account: SellableAccountCheck, now: Date = new
         return { ok: false, reason: `La cuenta (${account.email || account.id}) no está activa (estado: ${account.status || 'INACTIVA'}).` }
     }
 
-    if (account.perfiles && account.perfiles.some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')) {
-        return { ok: false, reason: `La cuenta (${account.email || account.id}) tiene perfiles en garantía o caídos. No es stock vendible.` }
-    }
-
-    const isDisposable = Boolean(account.is_disposable || account.tipo === 'DESECHABLE')
-    if (isDisposable) {
-        const activation = new Date(account.fecha_activacion || account.createdAt || now)
-        const months = account.duracion_meses || 1
-        const endDate = new Date(activation)
-        endDate.setMonth(endDate.getMonth() + months)
-
-        // Si la cuenta tiene reportes de falla/garantía y la fecha expiró, queda 100% vetada.
-        if (endDate <= now) {
-            const hasWarranty = account.perfiles && account.perfiles.some(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')
-            if (hasWarranty) {
-                return { ok: false, reason: `La cuenta desechable (${account.email || account.id}) está vencida y tiene perfiles en garantía.` }
-            }
-        }
+    // Solo bloquear a nivel de cuenta madre si TODOS los perfiles están en GARANTIA o CAIDO (Garantía de Cuenta Madre).
+    // Si un perfil individual está en GARANTIA por migración/falla de PIN, los demás perfiles LIBRE (o recién revividos) siguen operativos.
+    if (account.perfiles && account.perfiles.length > 0 && account.perfiles.every(p => p.estado === 'GARANTIA' || p.estado === 'CAIDO')) {
+        return { ok: false, reason: `La cuenta completa (${account.email || account.id}) está en garantía o caída. Revive al menos un perfil para habilitarla.` }
     }
 
     return { ok: true }
@@ -171,12 +157,7 @@ export async function findSellableProfiles(
             account: {
                 status: 'ACTIVE',
                 ...(service ? { servicio: service } : {}),
-                ...(excludeAccountId ? { id: { not: excludeAccountId } } : {}),
-                perfiles: {
-                    none: {
-                        estado: { in: ['GARANTIA', 'CAIDO'] }
-                    }
-                }
+                ...(excludeAccountId ? { id: { not: excludeAccountId } } : {})
             }
         },
         include: {
