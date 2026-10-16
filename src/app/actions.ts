@@ -2437,7 +2437,10 @@ export async function updateInventoryAccount(id: number, data: { service?: strin
         if (data.password) updateData.password = data.password
         if (data.providerId !== undefined) updateData.providerId = data.providerId
         if (data.dia_corte !== undefined) updateData.dia_corte = data.dia_corte
-        if (data.is_disposable !== undefined) updateData.is_disposable = data.is_disposable
+        if (data.is_disposable !== undefined) {
+            updateData.is_disposable = data.is_disposable
+            updateData.tipo = data.is_disposable ? 'DESECHABLE' : 'ESTATICO'
+        }
         if (data.activationDate) updateData.fecha_activacion = new Date(data.activationDate)
         if (data.months_duration) updateData.duracion_meses = data.months_duration
 
@@ -3800,23 +3803,161 @@ export async function archiveAllExpiredDisposables() {
     }
 }
 
-export async function convertDisposableToRenewable(accountId: number, diaCorte?: number) {
+async function ensureAccountConversionLogTable() {
+    await prisma.$executeRawUnsafe(`
+        CREATE TABLE IF NOT EXISTS "AccountConversionLog" (
+            "id" SERIAL PRIMARY KEY,
+            "accountId" INTEGER NOT NULL,
+            "servicio" TEXT NOT NULL,
+            "email" TEXT NOT NULL,
+            "previousType" TEXT NOT NULL,
+            "newType" TEXT NOT NULL,
+            "previousCutoff" TEXT,
+            "newCutoff" TEXT NOT NULL,
+            "monthsDuration" INTEGER NOT NULL DEFAULT 1,
+            "performedBy" TEXT NOT NULL,
+            "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    `)
+}
+
+export async function convertAccountType(params: {
+    accountId: number
+    targetDisposable: boolean
+    cutoffDate: string
+    monthsDuration?: number
+    performedBy?: string
+}) {
     try {
-        const todayBogotaDay = Number(formatBogotaDateISO(new Date()).split('-')[2]) || 15
-        await prisma.inventoryAccount.update({
-            where: { id: accountId },
+        await ensureAccountConversionLogTable()
+
+        const acc = await prisma.inventoryAccount.findUnique({
+            where: { id: params.accountId }
+        })
+        if (!acc) {
+            return { success: false, error: `Cuenta #${params.accountId} no encontrada` }
+        }
+
+        let actor = params.performedBy?.trim() || ''
+        if (!actor) {
+            try {
+                const { getServerSession } = await import('next-auth')
+                const { authOptions } = await import('@/lib/auth')
+                const session = await getServerSession(authOptions)
+                actor = session?.user?.name || session?.user?.email || 'Admin'
+            } catch {
+                actor = 'Admin'
+            }
+        }
+
+        const { year, month, day } = parseBogotaDateParts(params.cutoffDate)
+        const normalizedCutoffDate = toBogotaStartOfDay(year, month, day)
+        const cutoffIso = formatBogotaDateISO(normalizedCutoffDate)
+        const validMonths = [1, 2, 3, 6, 12].includes(Number(params.monthsDuration))
+            ? Number(params.monthsDuration)
+            : 1
+
+        const prevActIso = acc.fecha_activacion ? formatBogotaDateISO(acc.fecha_activacion) : 'N/A'
+        let prevEndIso = 'N/A'
+        if (acc.fecha_activacion) {
+            const d = new Date(acc.fecha_activacion)
+            d.setMonth(d.getMonth() + (acc.duracion_meses || 1))
+            prevEndIso = formatBogotaDateISO(d)
+        }
+        const previousTypeLabel = acc.is_disposable ? 'DESECHABLE' : 'RENOVABLE'
+        const newTypeLabel = params.targetDisposable ? 'DESECHABLE' : 'RENOVABLE'
+
+        const previousCutoffStr = acc.is_disposable
+            ? `Activación: ${prevActIso} (${acc.duracion_meses || 1}m) | Corte prov: ${prevEndIso}`
+            : `Día corte: ${acc.dia_corte ?? 'S/D'} | Ref: ${prevActIso} (${acc.duracion_meses || 1}m)`
+
+        const newCutoffStr = params.targetDisposable
+            ? `Activación/Corte: ${cutoffIso} (${validMonths}m)`
+            : `Fecha corte: ${cutoffIso} (Día ${day}) | Duración: ${validMonths}m`
+
+        // EXCLUSIVAMENTE actualiza tipo y fecha de corte de InventoryAccount.
+        // NO toca SalesProfile.estado, PINs, Transaction ni Client.
+        const updatedAccount = await prisma.inventoryAccount.update({
+            where: { id: params.accountId },
             data: {
-                is_disposable: false,
-                tipo: 'ESTATICO',
-                dia_corte: diaCorte || todayBogotaDay
+                is_disposable: params.targetDisposable,
+                tipo: params.targetDisposable ? 'DESECHABLE' : 'ESTATICO',
+                dia_corte: params.targetDisposable ? null : day,
+                fecha_activacion: normalizedCutoffDate,
+                duracion_meses: validMonths
             }
         })
+
+        await prisma.$executeRaw`
+            INSERT INTO "AccountConversionLog"
+            ("accountId", "servicio", "email", "previousType", "newType", "previousCutoff", "newCutoff", "monthsDuration", "performedBy", "createdAt")
+            VALUES
+            (${acc.id}, ${acc.servicio}, ${acc.email}, ${previousTypeLabel}, ${newTypeLabel}, ${previousCutoffStr}, ${newCutoffStr}, ${validMonths}, ${actor}, NOW())
+        `
+
+        console.log(`[ACCOUNT_CONVERSION_LOG] Account #${acc.id} (${acc.servicio} - ${acc.email}): ${previousTypeLabel} -> ${newTypeLabel} | Prev: [${previousCutoffStr}] -> New: [${newCutoffStr}] | By: ${actor}`)
+
         revalidatePath('/inventory')
-        return { success: true }
+        return {
+            success: true,
+            account: updatedAccount,
+            logEntry: {
+                accountId: acc.id,
+                servicio: acc.servicio,
+                email: acc.email,
+                previousType: previousTypeLabel,
+                newType: newTypeLabel,
+                previousCutoff: previousCutoffStr,
+                newCutoff: newCutoffStr,
+                monthsDuration: validMonths,
+                performedBy: actor,
+                createdAt: new Date().toISOString()
+            }
+        }
     } catch (e) {
-        console.error("Convert Disposable Error", e)
+        console.error("Convert Account Type Error", e)
         return { success: false, error: String(e) }
     }
+}
+
+export async function getAccountConversionLogs(accountId?: number, limit: number = 25) {
+    try {
+        await ensureAccountConversionLogTable()
+        const rows = accountId
+            ? await prisma.$queryRaw<any[]>`
+                SELECT * FROM "AccountConversionLog"
+                WHERE "accountId" = ${accountId}
+                ORDER BY "createdAt" DESC
+                LIMIT ${limit}
+              `
+            : await prisma.$queryRaw<any[]>`
+                SELECT * FROM "AccountConversionLog"
+                ORDER BY "createdAt" DESC
+                LIMIT ${limit}
+              `
+        return { success: true, logs: rows }
+    } catch (e) {
+        console.error("Get Conversion Logs Error", e)
+        return { success: false, logs: [], error: String(e) }
+    }
+}
+
+export async function convertDisposableToRenewable(accountId: number, diaCorte?: number, cutoffDate?: string, monthsDuration: number = 1, performedBy?: string) {
+    const todayIso = formatBogotaDateISO(new Date())
+    let targetDateIso = cutoffDate || todayIso
+    if (!cutoffDate && diaCorte && diaCorte >= 1 && diaCorte <= 31) {
+        const [y, m] = todayIso.split('-')
+        const maxDay = new Date(Number(y), Number(m), 0).getDate()
+        const clampedDay = String(Math.min(diaCorte, maxDay)).padStart(2, '0')
+        targetDateIso = `${y}-${m}-${clampedDay}`
+    }
+    return convertAccountType({
+        accountId,
+        targetDisposable: false,
+        cutoffDate: targetDateIso,
+        monthsDuration,
+        performedBy
+    })
 }
 
 export async function cleanupArchivedAccounts() {

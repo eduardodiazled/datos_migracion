@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send, ImageIcon, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Search, Filter, MoreVertical, Copy, RefreshCw, Trash2, User, Shield, ShieldAlert, Check, DollarSign, Calendar, Activity, Monitor, LogOut, Edit2, X, Clock, FileText, Download, CheckCircle, Send, ImageIcon, ChevronDown, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
-import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, releaseService, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, archiveAllExpiredDisposables, convertDisposableToRenewable, getArchivedInventory, sendTestReminder } from '../actions'
+import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, releaseService, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, archiveAllExpiredDisposables, convertDisposableToRenewable, convertAccountType, getAccountConversionLogs, getArchivedInventory, sendTestReminder } from '../actions'
 import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
 import { sendToBot } from '@/services/whatsapp'
@@ -102,11 +102,27 @@ export default function InventoryPage() {
 
   const [replacingAccount, setReplacingAccount] = useState<{ id: number, serviceName: string } | null>(null)
 
-  // Lifecycle State
+  // Lifecycle & Conversion State
+  const { data: session } = useSession()
   const [expiredAccounts, setExpiredAccounts] = useState<Account[]>([])
   const [expiredWithClients, setExpiredWithClients] = useState<any[]>([])
   const [showExpiredList, setShowExpiredList] = useState(false)
   const [showExpiredWithClientsList, setShowExpiredWithClientsList] = useState(false)
+  const [showConvertModal, setShowConvertModal] = useState(false)
+  const [convertingAccount, setConvertingAccount] = useState<Account | null>(null)
+  const [convertForm, setConvertForm] = useState<{
+    targetDisposable: boolean
+    cutoffDate: string
+    monthsDuration: number
+    performedBy: string
+  }>({
+    targetDisposable: false,
+    cutoffDate: getLocalDateISO(),
+    monthsDuration: 1,
+    performedBy: ''
+  })
+  const [conversionLogs, setConversionLogs] = useState<any[]>([])
+  const [isConverting, setIsConverting] = useState(false)
   const [replaceData, setReplaceData] = useState({
     email: '',
     password: '',
@@ -719,25 +735,65 @@ export default function InventoryPage() {
     }
   }
 
-  const handleConvertToRenewable = async (acc: Account) => {
-    const defaultDay = new Date().getDate().toString()
-    const dayInput = prompt(
-      `🔄 CONVERTIR A RENOVABLE (${acc.servicio} - ${acc.email})\n\nEsta cuenta dejará de ser desechable y pasará a gestionarse como Renovable.\n\nIngresa el DÍA DE CORTE mensual con el proveedor (1 al 31):`,
-      defaultDay
-    )
-    if (dayInput === null) return
-    const parsedDay = parseInt(dayInput.trim(), 10)
-    if (isNaN(parsedDay) || parsedDay < 1 || parsedDay > 31) {
-      return toast.error('Día de corte inválido (debe ser entre 1 y 31).')
+  const handleOpenConvertModal = async (acc: Account, targetDisposable?: boolean) => {
+    const nextDisposable = targetDisposable !== undefined ? targetDisposable : !Boolean(acc.is_disposable)
+    const defaultActor = (session?.user as any)?.name || (session?.user as any)?.email || 'Admin'
+
+    setConvertingAccount(acc)
+    setConvertForm({
+      targetDisposable: nextDisposable,
+      cutoffDate: getLocalDateISO(),
+      monthsDuration: 1,
+      performedBy: defaultActor
+    })
+    setShowConvertModal(true)
+
+    const logRes = await getAccountConversionLogs(acc.id, 10)
+    if (logRes.success && logRes.logs && logRes.logs.length > 0) {
+      setConversionLogs(logRes.logs)
+    } else {
+      const globalLogs = await getAccountConversionLogs(undefined, 8)
+      setConversionLogs(globalLogs.logs || [])
+    }
+  }
+
+  const handleConvertToRenewable = (acc: Account) => {
+    handleOpenConvertModal(acc, false)
+  }
+
+  const handleConfirmConversion = async () => {
+    if (!convertingAccount) return
+    if (!convertForm.cutoffDate) {
+      return toast.error('Selecciona la nueva fecha de corte con el proveedor.')
     }
 
-    const res = await convertDisposableToRenewable(acc.id, parsedDay)
-    if (res.success) {
-      toast.success(`Cuenta ${acc.email} convertida a Renovable (Corte día ${parsedDay})`)
-      setExpiredWithClients(prev => prev.filter(a => a.id !== acc.id))
-      fetchInventory()
-    } else {
-      toast.error((res as any).error || 'Error al convertir cuenta')
+    setIsConverting(true)
+    try {
+      const res = await convertAccountType({
+        accountId: convertingAccount.id,
+        targetDisposable: convertForm.targetDisposable,
+        cutoffDate: convertForm.cutoffDate,
+        monthsDuration: convertForm.monthsDuration,
+        performedBy: convertForm.performedBy || 'Admin'
+      })
+
+      if (res.success) {
+        const targetLabel = convertForm.targetDisposable ? 'Desechable' : 'Renovable'
+        toast.success(`Cuenta ${convertingAccount.email} convertida a ${targetLabel}. Perfiles y clientes intactos.`)
+        setShowConvertModal(false)
+        if (!convertForm.targetDisposable) {
+          setExpiredAccounts(prev => prev.filter(a => a.id !== convertingAccount.id))
+          setExpiredWithClients(prev => prev.filter(a => a.id !== convertingAccount.id))
+        }
+        fetchInventory()
+      } else {
+        toast.error((res as any).error || 'Error al convertir la cuenta')
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error('Error al procesar la conversión')
+    } finally {
+      setIsConverting(false)
     }
   }
 
@@ -1315,9 +1371,8 @@ export default function InventoryPage() {
           console.log('Active Tab:', activeTab)
           // FILTERING
           const filteredAccounts = accounts.filter(account => {
-            // 1. Tab Filter
-            const isDisposable = (account.tipo?.toUpperCase() === 'DESECHABLE') || (account.is_disposable === true)
-            // console.log(`ID: ${account.id}, Tipo: ${account.tipo}, IsDisp: ${isDisposable}`) 
+            // 1. Tab Filter (is_disposable es la fuente de verdad)
+            const isDisposable = Boolean(account.is_disposable)
 
             if (activeTab === 'RENEWABLE' && isDisposable) return false
             if (activeTab === 'DISPOSABLE' && !isDisposable) return false
@@ -1551,17 +1606,38 @@ export default function InventoryPage() {
                             </div>
 
                             { /* Full Account Actions */}
-                            <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-2">
-                              {/* Botón Garantía Cuenta Madre (Bloquea toda la cuenta) */}
-                              <button
-                                onClick={() => handleAccountWarranty(account.id, account.servicio)}
-                                title="Garantía de Cuenta Madre: marca TODA la cuenta en Garantía (NO queda disponible para venta)"
-                                className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1.5 transition-colors bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1.5 rounded-lg border border-rose-500/20"
-                              >
-                                <ShieldAlert size={14} /> Garantía Cuenta Madre
-                              </button>
+                            <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-2">
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                {/* Botón Garantía Cuenta Madre (Bloquea toda la cuenta) */}
+                                <button
+                                  onClick={() => handleAccountWarranty(account.id, account.servicio)}
+                                  title="Garantía de Cuenta Madre: marca TODA la cuenta en Garantía (NO queda disponible para venta)"
+                                  className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1.5 transition-colors bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1.5 rounded-lg border border-rose-500/20"
+                                >
+                                  <ShieldAlert size={14} /> Garantía Cuenta Madre
+                                </button>
 
-                              <div className="flex items-center gap-2">
+                                {/* Convertir Tipo de Cuenta (Desechable <-> Renovable) */}
+                                {(account as any).is_disposable ? (
+                                  <button
+                                    onClick={() => handleOpenConvertModal(account, false)}
+                                    title="Convertir cuenta desechable a renovable conservando perfiles y clientes"
+                                    className="text-xs font-bold text-amber-300 hover:text-white flex items-center gap-1.5 transition-colors bg-amber-500/15 hover:bg-amber-500/30 px-2.5 py-1.5 rounded-lg border border-amber-500/30"
+                                  >
+                                    <RefreshCw size={13} /> Convertir a renovable
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => handleOpenConvertModal(account, true)}
+                                    title="Convertir cuenta renovable a desechable conservando perfiles y clientes"
+                                    className="text-xs font-medium text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors bg-slate-800/70 hover:bg-slate-800 px-2.5 py-1.5 rounded-lg border border-white/5"
+                                  >
+                                    <RefreshCw size={12} /> Convertir a desechable
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap items-center justify-between gap-2">
                                 <button
                                   onClick={() => toggleFullAccountSelection(account)}
                                   className={`text-xs font-bold flex items-center gap-1 transition-colors ${selectedItems.some(i => i.accountId === account.id && i.type === 'FULL_ACCOUNT')
@@ -1626,7 +1702,22 @@ export default function InventoryPage() {
                               {account.perfiles.filter(p => p.estado === 'LIBRE').length}
                             </span>
                           </td>
-                          <td className="p-4 text-right pr-6">
+                          <td className="p-4 text-right pr-6 space-x-3">
+                            {(account as any).is_disposable ? (
+                              <button
+                                onClick={() => handleOpenConvertModal(account, false)}
+                                className="text-amber-400 hover:text-amber-300 font-bold text-xs"
+                              >
+                                Convertir a renovable
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleOpenConvertModal(account, true)}
+                                className="text-slate-400 hover:text-slate-200 font-medium text-xs"
+                              >
+                                A desechable
+                              </button>
+                            )}
                             <button
                               onClick={() => {
                                 setEditingAccount({
@@ -2494,6 +2585,184 @@ export default function InventoryPage() {
                 className="flex-1 p-3 rounded-xl bg-violet-600 text-white font-bold disabled:opacity-50"
               >
                 Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CONVERT ACCOUNT TYPE MODAL (DESECHABLE <-> RENOVABLE) */}
+      {showConvertModal && convertingAccount && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 text-left animate-in fade-in">
+          <div className="glass-panel p-5 md:p-6 rounded-3xl w-full max-w-lg border border-white/10 shadow-2xl bg-slate-900 max-h-[90vh] flex flex-col overflow-y-auto custom-scrollbar">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full mb-1 ${
+                  convertForm.targetDisposable
+                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                    : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                }`}>
+                  {convertForm.targetDisposable ? 'Renovable → Desechable' : 'Desechable → Renovable'}
+                </span>
+                <h3 className="text-xl font-bold text-white">
+                  {convertForm.targetDisposable ? 'Convertir Cuenta a Desechable' : 'Convertir Cuenta a Renovable'}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowConvertModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Account Summary */}
+            <div className="bg-slate-950/80 border border-white/10 rounded-2xl p-3.5 mb-4 space-y-1.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-white text-sm">
+                  #{convertingAccount.id} · {convertingAccount.servicio}
+                </span>
+                <span className="text-slate-400">
+                  Proveedor: <strong className="text-slate-200">{convertingAccount.provider?.nombre || 'Sin proveedor'}</strong>
+                </span>
+              </div>
+              <div className="font-mono text-slate-300">{convertingAccount.email}</div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                  Tipo actual: <strong>{convertingAccount.is_disposable ? 'Desechable' : 'Renovable'}</strong>
+                </span>
+                <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                  Corte/Activación anterior:{' '}
+                  <strong>
+                    {convertingAccount.fecha_activacion
+                      ? new Date(convertingAccount.fecha_activacion).toISOString().slice(0, 10)
+                      : 'N/A'}
+                    {convertingAccount.dia_corte ? ` (Día ${convertingAccount.dia_corte})` : ''}
+                  </strong>
+                </span>
+                <span className="bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded">
+                  {(convertingAccount.perfiles || []).filter(p => p.estado === 'OCUPADO').length} ocupados / {(convertingAccount.perfiles || []).length} perfiles
+                </span>
+              </div>
+            </div>
+
+            {/* Integrity Guarantee Banner */}
+            <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3 mb-4 flex items-start gap-2.5">
+              <Shield className="text-emerald-400 shrink-0 mt-0.5" size={18} />
+              <div className="text-xs text-emerald-200 leading-relaxed">
+                <strong className="text-emerald-300 block mb-0.5">Garantía de integridad de perfiles y clientes:</strong>
+                Al confirmar, <strong>solo</strong> se actualizan el tipo de la cuenta y su fecha de corte con el proveedor.{' '}
+                <strong>NO se tocan</strong> <code className="text-emerald-300">SalesProfile.estado</code>, los PIN, las <code className="text-emerald-300">Transaction</code> ni los clientes asignados.
+              </div>
+            </div>
+
+            {/* Form Inputs */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                  Nueva fecha de corte con el proveedor *
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="date"
+                    value={convertForm.cutoffDate}
+                    onChange={(e) => setConvertForm(prev => ({ ...prev, cutoffDate: e.target.value }))}
+                    className="flex-1 bg-slate-800 border border-white/10 rounded-xl p-2.5 text-white text-sm outline-none focus:border-violet-500"
+                  />
+                  {!convertForm.targetDisposable && convertForm.cutoffDate && (
+                    <div className="bg-violet-500/15 border border-violet-500/30 text-violet-300 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap">
+                      Día de corte: {Number(convertForm.cutoffDate.split('-')[2]) || 1}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                  Duración contratada con el proveedor (Opcional)
+                </label>
+                <div className="grid grid-cols-5 gap-2">
+                  {[1, 2, 3, 6, 12].map(m => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setConvertForm(prev => ({ ...prev, monthsDuration: m }))}
+                      className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                        convertForm.monthsDuration === m
+                          ? 'bg-violet-600 border-violet-500 text-white shadow-lg shadow-violet-600/20'
+                          : 'bg-slate-800 border-white/5 text-slate-400 hover:text-white hover:bg-slate-700'
+                      }`}
+                    >
+                      {m} {m === 1 ? 'mes' : 'meses'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1.5">
+                  Registrado en log por (Operador)
+                </label>
+                <input
+                  type="text"
+                  value={convertForm.performedBy}
+                  onChange={(e) => setConvertForm(prev => ({ ...prev, performedBy: e.target.value }))}
+                  placeholder="Ej: Kerwin / Eduardo / Juan"
+                  className="w-full bg-slate-800 border border-white/10 rounded-xl p-2.5 text-white text-sm outline-none focus:border-violet-500"
+                />
+              </div>
+            </div>
+
+            {/* Conversion History Log */}
+            {conversionLogs.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-white/10">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Clock size={12} /> Historial reciente de conversiones (Log)
+                </div>
+                <div className="max-h-28 overflow-y-auto custom-scrollbar space-y-1.5 pr-1">
+                  {conversionLogs.map((log: any) => (
+                    <div key={log.id} className="bg-slate-950/90 border border-white/5 rounded-lg p-2 text-[11px] text-slate-300">
+                      <div className="flex justify-between items-center font-bold text-white">
+                        <span>#{log.accountId} {log.email} ({log.previousType} → {log.newType})</span>
+                        <span className="text-[10px] text-violet-400">{log.performedBy}</span>
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">
+                        Antes: {log.previousCutoff} | Nuevo: {log.newCutoff}
+                      </div>
+                      <div className="text-[9px] text-slate-500">
+                        {log.createdAt ? new Date(log.createdAt).toLocaleString('es-CO', { timeZone: 'America/Bogota' }) : ''}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3 mt-5 pt-4 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setShowConvertModal(false)}
+                className="flex-1 p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-sm transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isConverting || !convertForm.cutoffDate}
+                onClick={handleConfirmConversion}
+                className={`flex-1 p-3 rounded-xl text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2 ${
+                  convertForm.targetDisposable
+                    ? 'bg-rose-600 hover:bg-rose-500 shadow-lg shadow-rose-600/20'
+                    : 'bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/20'
+                }`}
+              >
+                <Check size={16} />
+                {isConverting
+                  ? 'Guardando...'
+                  : convertForm.targetDisposable
+                    ? 'Confirmar a Desechable'
+                    : 'Confirmar a Renovable'}
               </button>
             </div>
           </div>

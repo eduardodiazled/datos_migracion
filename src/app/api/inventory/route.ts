@@ -12,11 +12,18 @@ export async function GET() {
           orderBy: { id: 'asc' },
           include: {
             transactions: {
+              where: { supersededAt: null },
               orderBy: { fecha_vencimiento: 'desc' },
               take: 1,
               include: { client: true }
             }
           }
+        },
+        transactions: {
+          where: { supersededAt: null, perfilId: null },
+          orderBy: { fecha_vencimiento: 'desc' },
+          take: 1,
+          include: { client: true }
         },
         provider: true
       },
@@ -24,17 +31,31 @@ export async function GET() {
 
     // Transform to include 'cliente' property for frontend compatibility
     // Rule: If profile is LIBRE (or not OCUPADO), NEVER rehydrate previous client from transaction history!
-    const formattedAccounts = accounts.map(account => ({
-      ...account,
-      perfiles: account.perfiles.map(profile => {
-        const isOccupied = profile.estado === 'OCUPADO'
-        return {
-          ...profile,
-          cliente: isOccupied ? (profile.transactions[0]?.client || null) : null,
-          transactions: undefined // Optional: cleanup to reduce payload
-        }
-      })
-    }))
+    const formattedAccounts = accounts.map(account => {
+      const directTx = account.transactions?.[0] || null
+      return {
+        ...account,
+        transactions: undefined,
+        perfiles: account.perfiles.map(profile => {
+          const isOccupied = profile.estado === 'OCUPADO'
+          const profileTx = profile.transactions?.[0] || null
+          let activeClient = profileTx?.client || null
+
+          // Fallback for 1-profile / full-account sales or renewals where perfilId was null
+          if (isOccupied && directTx?.client) {
+            if (!profileTx || new Date(directTx.fecha_vencimiento) > new Date(profileTx.fecha_vencimiento)) {
+              activeClient = directTx.client
+            }
+          }
+
+          return {
+            ...profile,
+            cliente: isOccupied ? activeClient : null,
+            transactions: undefined // Optional: cleanup to reduce payload
+          }
+        })
+      }
+    })
 
     return NextResponse.json(formattedAccounts)
   } catch (error) {
