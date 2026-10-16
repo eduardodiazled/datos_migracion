@@ -41,7 +41,7 @@ export async function sendToBot(phone: string, message: string, media?: string) 
 
     try {
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s Timeout
+        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5s Timeout (el bot apagado no debe bloquear la venta)
 
         const response = await fetch(`${BOT_URL}/send-notification`, {
             method: 'POST',
@@ -89,7 +89,7 @@ export async function sendToBot(phone: string, message: string, media?: string) 
         const isTimeout = error?.name === 'AbortError'
         const rawMsg = error?.message || String(error)
         const friendlyReason = isTimeout
-            ? `El Bot de WhatsApp (${BOT_URL}) no respondió después de 15 segundos. Copia y pega el mensaje manualmente en WhatsApp B.`
+            ? `El Bot de WhatsApp (${BOT_URL}) no respondió después de 5 segundos. Copia y pega el mensaje manualmente en WhatsApp B.`
             : `No se pudo conectar con el servicio del Bot (${BOT_URL}). Es posible que el Bot esté apagado o inaccesible desde este navegador. Copia y pega el mensaje manualmente en WhatsApp B.`
 
         console.error('[WhatsAppBot][NETWORK_ERROR]', {

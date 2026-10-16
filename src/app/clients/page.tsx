@@ -852,15 +852,22 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
             setSuccessData({ message: res.message, phone: client.phone })
             setShowSuccessModal(true)
 
+            // Copia automática: funciona aunque el Bot esté apagado (pegar en WhatsApp B)
+            try { await navigator.clipboard.writeText(res.message) } catch { /* el modal tiene botón Copiar */ }
+
             if (isWhatsAppUsernameOnly(client.phone)) {
-                toast.info(`Cliente registrado con @usuario (${client.phone}). Copia y pega el mensaje manualmente en WhatsApp B.`)
+                toast.info(`Mensaje copiado. Cliente con @usuario (${client.phone}): pégalo en WhatsApp B.`)
                 return
             }
 
             await sendToBot(client.phone, res.message)
             toast.success('Mensaje enviado al bot con credenciales y fecha de corte actualizadas')
         } catch (e: any) {
-            toast.warning(e?.message || 'No se pudo enviar automáticamente por el Bot. Puedes copiar el mensaje desde la ventana.')
+            if (['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(e?.code)) {
+                toast.info('Bot apagado: el mensaje ya está copiado, pégalo en WhatsApp B (o usa "Enviar").')
+            } else {
+                toast.warning(e?.message || 'No se pudo enviar automáticamente por el Bot. El mensaje ya está copiado.')
+            }
         } finally {
             setIsProcessing(false)
         }

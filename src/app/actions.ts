@@ -1003,9 +1003,11 @@ export async function createSale(clientId: string, clientName: string, profileId
             const isUsernameOnly = isWhatsAppUsernameOnly(tx.client.celular)
 
             // 1. Welcome Message (solo si tiene número telefónico válido)
+            let botOfflineErr: any = null
             if (!isUsernameOnly) {
                 try {
-                    await sendWelcomeMessage(tx.client.celular, tx.client.nombre)
+                    const w: any = await sendWelcomeMessage(tx.client.celular, tx.client.nombre)
+                    if (['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(w?.error?.code)) botOfflineErr = w.error
                 } catch (err) {
                     console.error('Auto Welcome Error', err)
                 }
@@ -1050,7 +1052,9 @@ export async function createSale(clientId: string, clientName: string, profileId
                             })
                             generatedMsg = msg
 
-                            if (!isUsernameOnly) {
+                            if (!isUsernameOnly && botOfflineErr) {
+                                botStatus = { ok: false, code: botOfflineErr.code, reason: botOfflineErr.message }
+                            } else if (!isUsernameOnly) {
                                 try {
                                     await sendToBot(tx.client.celular, msg)
                                     botStatus = { ok: true, code: 'SENT' }
@@ -1185,9 +1189,11 @@ export async function createComboSale(
 
         // AUTO-SEND BOT MESSAGE (Unified Combo Message)
         const isUsernameOnly = isWhatsAppUsernameOnly(cleanId)
+        let botOfflineErr: any = null
         if (!isUsernameOnly) {
             try {
-                await sendWelcomeMessage(cleanId, clientName)
+                const w: any = await sendWelcomeMessage(cleanId, clientName)
+                if (['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(w?.error?.code)) botOfflineErr = w.error
             } catch (err) {
                 console.error('Auto Welcome Error', err)
             }
@@ -1256,7 +1262,9 @@ export async function createComboSale(
                         expirationDate: cutoffFormatted
                     })
                     comboMsg = msg
-                    if (!isUsernameOnly) {
+                    if (!isUsernameOnly && botOfflineErr) {
+                        botStatus = { ok: false, code: botOfflineErr.code, reason: botOfflineErr.message }
+                    } else if (!isUsernameOnly) {
                         await new Promise(r => setTimeout(r, 800))
                         try {
                             await sendToBot(cleanId, msg)

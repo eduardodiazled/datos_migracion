@@ -140,7 +140,7 @@ export default function InventoryPage() {
   const [sortBy, setSortBy] = useState<'DEFAULT' | 'AVAILABILITY'>('DEFAULT')
   const [groupBy, setGroupBy] = useState<'PROVIDER' | 'SERVICE'>('PROVIDER')
   const [showMenu, setShowMenu] = useState(false)
-  const [autoSendStatus, setAutoSendStatus] = useState<'IDLE' | 'SUCCESS' | 'MANUAL_USERNAME' | 'ERROR'>('IDLE')
+  const [autoSendStatus, setAutoSendStatus] = useState<'IDLE' | 'SUCCESS' | 'MANUAL_USERNAME' | 'BOT_OFFLINE' | 'ERROR'>('IDLE')
   const [autoSendDetail, setAutoSendDetail] = useState<string>('')
 
   const loadExpiredDisposables = () => {
@@ -557,6 +557,17 @@ export default function InventoryPage() {
           saleData.months
         )
 
+        // Ítems para el modal de éxito y el recibo del combo (antes no estaba definido → ReferenceError)
+        const validationItems = selectedItems.map((i, idx) => {
+          const acc = accounts.find(a => a.id === i.accountId)
+          const prof = acc?.perfiles.find(p => p.id === i.profileId)
+          return {
+            service: i.serviceName || acc?.servicio || 'Servicio',
+            profile: i.type === 'FULL_ACCOUNT' ? 'Cuenta Completa' : (prof?.nombre_perfil || ''),
+            price: payloadItems[idx]?.price
+          }
+        })
+
         if (res.success) {
           toast.success('Venta Exitosa (Combo)')
           setShowSellModal(false)
@@ -592,6 +603,9 @@ export default function InventoryPage() {
             } else if (serverBotStatus?.ok) {
               setAutoSendStatus('SUCCESS')
               setAutoSendDetail('')
+            } else if (['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(serverBotStatus?.code)) {
+              setAutoSendStatus('BOT_OFFLINE')
+              setAutoSendDetail('El Bot automático está apagado o no responde. La venta quedó registrada: usa "Copiar" y pégalo en WhatsApp B.')
             } else {
               sendToBot(saleData.phone, res.message)
                 .then(() => {
@@ -599,7 +613,8 @@ export default function InventoryPage() {
                   setAutoSendDetail('')
                 })
                 .catch((err: any) => {
-                  setAutoSendStatus('ERROR')
+                  const offline = ['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(err?.code)
+                  setAutoSendStatus(offline ? 'BOT_OFFLINE' : 'ERROR')
                   setAutoSendDetail(err?.message || serverBotStatus?.reason || 'No se pudo conectar con el Bot de WhatsApp. Copia y pega el mensaje manualmente.')
                 })
             }
@@ -676,6 +691,9 @@ export default function InventoryPage() {
         } else if (serverBotStatus?.ok) {
           setAutoSendStatus('SUCCESS')
           setAutoSendDetail('')
+        } else if (['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(serverBotStatus?.code)) {
+          setAutoSendStatus('BOT_OFFLINE')
+          setAutoSendDetail('El Bot automático está apagado o no responde. La venta quedó registrada: usa "Copiar" y pégalo en WhatsApp B.')
         } else {
           sendToBot(saleData.phone, res.message)
             .then(() => {
@@ -683,7 +701,8 @@ export default function InventoryPage() {
               setAutoSendDetail('')
             })
             .catch((err: any) => {
-              setAutoSendStatus('ERROR')
+              const offline = ['BOT_UNREACHABLE', 'BOT_TIMEOUT', 'BOT_URL_MISSING'].includes(err?.code)
+              setAutoSendStatus(offline ? 'BOT_OFFLINE' : 'ERROR')
               setAutoSendDetail(err?.message || serverBotStatus?.reason || 'No se pudo conectar con el Bot de WhatsApp. Copia y pega el mensaje manualmente.')
             })
         }
@@ -2836,22 +2855,29 @@ export default function InventoryPage() {
                     Envío manual (@usuario) 📋
                   </span>
                 )}
+                {autoSendStatus === 'BOT_OFFLINE' && (
+                  <span className="text-amber-300 text-xs font-bold bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                    Bot apagado · envío manual 📋
+                  </span>
+                )}
                 {autoSendStatus === 'ERROR' && (
                   <span className="text-rose-400 text-xs font-bold bg-rose-400/10 px-2.5 py-0.5 rounded-full border border-rose-400/20">
                     Fallo envío Bot (usar Copiar) ⚠️
                   </span>
                 )}
               </div>
-              {(autoSendStatus === 'MANUAL_USERNAME' || autoSendStatus === 'ERROR') && autoSendDetail && (
+              {(autoSendStatus === 'MANUAL_USERNAME' || autoSendStatus === 'BOT_OFFLINE' || autoSendStatus === 'ERROR') && autoSendDetail && (
                 <div className={`mt-3 text-left text-[11px] leading-relaxed p-3 rounded-xl border ${
-                  autoSendStatus === 'MANUAL_USERNAME'
-                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
-                    : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+                  autoSendStatus === 'ERROR'
+                    ? 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
                 }`}>
                   <strong className="block mb-0.5">
                     {autoSendStatus === 'MANUAL_USERNAME'
                       ? 'ℹ️ Envío manual requerido (@usuario):'
-                      : '⚠️ Diagnóstico de envío automático:'}
+                      : autoSendStatus === 'BOT_OFFLINE'
+                        ? 'ℹ️ Modo manual (Bot apagado):'
+                        : '⚠️ Diagnóstico de envío automático:'}
                   </strong>
                   {autoSendDetail}
                 </div>
