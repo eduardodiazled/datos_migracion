@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath, unstable_noStore as noStore } from 'next/cache'
 import { MessageGenerator } from '@/lib/messageGenerator'
-import { sendToBot } from '@/services/whatsapp'
+import { sendToBot, isWhatsAppUsernameOnly } from '@/services/whatsapp'
 import { cleanContactString } from '@/lib/whatsappUtils'
 import { findSellableProfiles, validateProfileIsSellable, validateAccountIsSellable } from '@/lib/inventoryValidation'
 import {
@@ -13,6 +13,7 @@ import {
     toBogotaStartOfDay,
     toBogotaEndOfDay,
     formatBogotaDateISO,
+    formatBogotaDateDDMMYYYY,
     BOGOTA_TZ
 } from '@/lib/dateUtils'
 
@@ -175,6 +176,7 @@ export async function getDashboardStats(year?: number, month?: number) {
                 cycleStatus,
                 price: lastTx.monto,
                 lastTxId: lastTx.id,
+                cutoffDate: formatBogotaDateDDMMYYYY(lastTx.fecha_vencimiento),
                 renewed: isRenewed,
                 // Pass ALL items for the frontend to use in "Reenviar Datos"
                 items: activeItems,
@@ -303,13 +305,16 @@ export async function triggerBatchReminders() {
 
         let sentCount = 0
         for (const client of botTargets) {
-            // Avoid spamming if already sent today - simplified for now: just send.
-            // In a real app we'd check a "lastRemindedAt" field.
+            if (isWhatsAppUsernameOnly(client.phone)) {
+                continue
+            }
 
             const message = MessageGenerator.generate('REMINDER', {
                 clientName: client.name,
                 service: client.service,
-                daysLeft: client.daysLeft
+                daysLeft: client.daysLeft,
+                date: client.cutoffDate,
+                price: client.price
             })
 
             try {
@@ -357,7 +362,7 @@ export async function renewService(clientId: string, previousTxId: number, custo
         }
 
         // Atomic transaction: create renewal transaction and lock profile/account as OCUPADO
-        const { newTx, profile, client } = await prisma.$transaction(async (txClient) => {
+        const { newTx, profile, fullAccount, client } = await prisma.$transaction(async (txClient) => {
             const createdTx = await txClient.transaction.create({
                 data: {
                     clienteId: clientId,
@@ -372,6 +377,7 @@ export async function renewService(clientId: string, previousTxId: number, custo
             })
 
             let updatedProfile = null
+            let targetAccount = null
             if (prevTx.perfilId) {
                 updatedProfile = await txClient.salesProfile.update({
                     where: { id: prevTx.perfilId },
@@ -386,16 +392,20 @@ export async function renewService(clientId: string, previousTxId: number, custo
                     where: { accountId: prevTx.accountId },
                     data: { estado: 'OCUPADO' }
                 })
+                targetAccount = await txClient.inventoryAccount.findUnique({
+                    where: { id: prevTx.accountId }
+                })
             }
 
             const c = await txClient.client.findUnique({ where: { celular: clientId } })
 
-            return { newTx: createdTx, profile: updatedProfile, client: c }
+            return { newTx: createdTx, profile: updatedProfile, fullAccount: targetAccount, client: c }
         })
 
         // AUTO-SEND BOT MESSAGE (Credentials)
         let generatedMsg: string | null = null
         let credWarning: string | null = null
+        const cutoffFormatted = formatBogotaDateDDMMYYYY(newTx.fecha_vencimiento)
 
         if (profile && client) {
             const hasPassword = Boolean(profile.account?.password && profile.account.password.trim().length > 0)
@@ -411,14 +421,37 @@ export async function renewService(clientId: string, previousTxId: number, custo
                     generatedMsg = MessageGenerator.generate('RENEWAL', {
                         clientName: client.nombre,
                         service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
-                        daysLeft: months * 30, // Approx
+                        daysLeft: months * 30,
                         email: profile.account.email,
                         password: profile.account.password,
                         pin: profile.pin,
                         profileName: profile.nombre_perfil,
-                        date: new Date(endTs).toLocaleDateString('es-CO')
+                        date: cutoffFormatted
                     })
-                    sendToBot(clientId, generatedMsg).catch(e => console.error("Auto Renew Bot Error", e))
+                    if (!isWhatsAppUsernameOnly(clientId)) {
+                        sendToBot(clientId, generatedMsg).catch(e => console.error("Auto Renew Bot Error", e))
+                    }
+                } catch (genErr: any) {
+                    credWarning = genErr?.message || 'Error al generar texto de renovación.'
+                }
+            }
+        } else if (fullAccount && client) {
+            const hasPassword = Boolean(fullAccount.password && fullAccount.password.trim().length > 0)
+            if (!hasPassword) {
+                credWarning = 'Renovación registrada, pero NO se generó el texto: la cuenta no tiene contraseña en el inventario.'
+            } else {
+                try {
+                    generatedMsg = MessageGenerator.generate('RENEWAL', {
+                        clientName: client.nombre,
+                        service: `${fullAccount.servicio} (Cuenta Completa)`,
+                        daysLeft: months * 30,
+                        email: fullAccount.email,
+                        password: fullAccount.password,
+                        date: cutoffFormatted
+                    })
+                    if (!isWhatsAppUsernameOnly(clientId)) {
+                        sendToBot(clientId, generatedMsg).catch(e => console.error("Auto Renew Bot Error", e))
+                    }
                 } catch (genErr: any) {
                     credWarning = genErr?.message || 'Error al generar texto de renovación.'
                 }
@@ -428,6 +461,7 @@ export async function renewService(clientId: string, previousTxId: number, custo
         return {
             success: true,
             transactionId: newTx.id,
+            cutoffDate: cutoffFormatted,
             message: generatedMsg,
             warning: credWarning
         }
@@ -797,7 +831,7 @@ export async function getSaleMessage(transactionId: number) {
                 }
             })
 
-            const items: { service: string, email: string, password: string, profile: string, pin?: string | null }[] = []
+            const items: { service: string, email: string, password: string, profile: string, pin?: string | null, expirationDate?: string }[] = []
 
             for (const item of groupTxs) {
                 const service = item.profile?.account?.servicio || item.account?.servicio || 'Servicio'
@@ -822,20 +856,28 @@ export async function getSaleMessage(transactionId: number) {
                     }
                 }
 
-                items.push({ service, email, password, profile, pin })
+                items.push({
+                    service,
+                    email,
+                    password,
+                    profile,
+                    pin,
+                    expirationDate: item.fecha_vencimiento ? formatBogotaDateDDMMYYYY(item.fecha_vencimiento) : undefined
+                })
             }
 
             if (items.length === 0) {
                 return { success: false, error: 'No se encontraron servicios con credenciales válidas en este combo.' }
             }
 
+            const comboCutoff = tx.fecha_vencimiento ? formatBogotaDateDDMMYYYY(tx.fecha_vencimiento) : '—'
             const message = MessageGenerator.generate('COMBO', {
                 clientName: tx.client.nombre,
                 items,
-                expirationDate: tx.fecha_vencimiento ? new Date(tx.fecha_vencimiento).toLocaleDateString('es-CO') : '—'
+                expirationDate: comboCutoff
             })
 
-            return { success: true, message }
+            return { success: true, message, cutoffDate: comboCutoff }
         }
 
         // Simple sale or Full Account sale:
@@ -864,9 +906,10 @@ export async function getSaleMessage(transactionId: number) {
             }
         }
 
+        // SIEMPRE usar fecha_vencimiento de la Transaction en zona America/Bogota (NUNCA fecha_inicio ni creación)
         const saleDate = tx.fecha_vencimiento
-            ? new Date(tx.fecha_vencimiento).toLocaleDateString('es-CO')
-            : new Date(tx.fecha_inicio).toLocaleDateString('es-CO')
+            ? formatBogotaDateDDMMYYYY(tx.fecha_vencimiento)
+            : '—'
 
         let message = ''
         if (isFullAccount) {
@@ -890,7 +933,7 @@ export async function getSaleMessage(transactionId: number) {
             })
         }
 
-        return { success: true, message }
+        return { success: true, message, cutoffDate: saleDate }
     } catch (e: any) {
         console.error('getSaleMessage error:', e)
         return { success: false, error: 'Error al generar el mensaje: ' + e.message }
@@ -909,6 +952,7 @@ export async function createSale(clientId: string, clientName: string, profileId
 
         const cleanId = cleanContactString(clientId)
         const { startDate: now, dueDate: end } = calculateBogotaCutoff(date, months)
+        const cutoffFormatted = formatBogotaDateDDMMYYYY(end)
 
         // Atomic transaction: client upsert + transaction creation + profile lock as OCUPADO
         const tx = await prisma.$transaction(async (txClient) => {
@@ -954,19 +998,29 @@ export async function createSale(clientId: string, clientName: string, profileId
             return createdTx
         })
 
-        // Welcome Bot Trigger (Async, don't block)
-        // Rule: ALWAYS SEND (No restriction)
+        // Welcome Bot Trigger & Credentials Message
         if (tx.client) {
-            // 1. Welcome Message (Must be first)
-            try {
-                await sendWelcomeMessage(tx.client.celular, tx.client.nombre)
-            } catch (err) {
-                console.error('Auto Welcome Error', err)
+            const isUsernameOnly = isWhatsAppUsernameOnly(tx.client.celular)
+
+            // 1. Welcome Message (solo si tiene número telefónico válido)
+            if (!isUsernameOnly) {
+                try {
+                    await sendWelcomeMessage(tx.client.celular, tx.client.nombre)
+                } catch (err) {
+                    console.error('Auto Welcome Error', err)
+                }
             }
 
-            // 2. Credentials Message (After Welcome)
+            // 2. Credentials Message (con fecha de corte = tx.fecha_vencimiento en America/Bogota)
             let generatedMsg: string | null = null
             let credWarning: string | null = null
+            let botStatus: { ok: boolean, code: string, reason?: string } = isUsernameOnly
+                ? {
+                    ok: false,
+                    code: 'USERNAME_NOT_SUPPORTED',
+                    reason: `El cliente está registrado con usuario (${tx.client.celular}) sin número telefónico. Copia y pega el mensaje manualmente en WhatsApp B.`
+                }
+                : { ok: false, code: 'PENDING' }
 
             if (profileId) {
                 const profile = await prisma.salesProfile.findUnique({
@@ -992,10 +1046,30 @@ export async function createSale(clientId: string, clientName: string, profileId
                                 password: profile.account.password,
                                 pin: profile.pin,
                                 profileName: profile.nombre_perfil,
-                                date: now.toLocaleDateString('es-CO')
+                                date: formatBogotaDateDDMMYYYY(tx.fecha_vencimiento)
                             })
                             generatedMsg = msg
-                            sendToBot(tx.client.celular, msg).catch(e => console.error('Auto Bot Error', e))
+
+                            if (!isUsernameOnly) {
+                                try {
+                                    await sendToBot(tx.client.celular, msg)
+                                    botStatus = { ok: true, code: 'SENT' }
+                                } catch (botErr: any) {
+                                    console.error('Auto Bot Error', botErr)
+                                    botStatus = {
+                                        ok: false,
+                                        code: botErr?.code || 'BOT_ERROR',
+                                        reason: botErr?.message || 'No se pudo enviar automáticamente por el Bot. Copia y pega el mensaje manualmente.'
+                                    }
+                                }
+                            } else {
+                                console.warn('[CreateSale][SKIP_BOT_USERNAME]', {
+                                    txId: tx.id,
+                                    clienteId: tx.client.celular,
+                                    service: `${profile.account.servicio} - ${profile.nombre_perfil}`,
+                                    reason: botStatus.reason
+                                })
+                            }
                         } catch (genErr: any) {
                             credWarning = genErr?.message || 'Error al generar texto de venta.'
                         }
@@ -1003,10 +1077,17 @@ export async function createSale(clientId: string, clientName: string, profileId
                 }
             }
 
-            return { success: true, transaction: tx, message: generatedMsg, warning: credWarning }
+            return {
+                success: true,
+                transaction: tx,
+                cutoffDate: cutoffFormatted,
+                message: generatedMsg,
+                warning: credWarning,
+                botStatus
+            }
         }
 
-        return { success: true, transaction: tx }
+        return { success: true, transaction: tx, cutoffDate: cutoffFormatted }
     } catch (e: any) {
         console.error("Create Sale Error", e)
         return { success: false, error: e?.message || String(e) }
@@ -1037,6 +1118,7 @@ export async function createComboSale(
         const cleanId = cleanContactString(clientId)
         const groupId = globalThis.crypto.randomUUID()
         const { startDate: now, dueDate: end } = calculateBogotaCutoff(date, months)
+        const cutoffFormatted = formatBogotaDateDDMMYYYY(end)
 
         // Atomic transaction: client upsert + all combo transactions + all profile locks
         const transactions = await prisma.$transaction(async (txClient) => {
@@ -1102,91 +1184,113 @@ export async function createComboSale(
         })
 
         // AUTO-SEND BOT MESSAGE (Unified Combo Message)
-        // Rule: ALWAYS SEND (No restriction)
-        if (true) {
-            // 1. Welcome Message (Must be first)
+        const isUsernameOnly = isWhatsAppUsernameOnly(cleanId)
+        if (!isUsernameOnly) {
             try {
-                await sendWelcomeMessage(clientId, clientName)
+                await sendWelcomeMessage(cleanId, clientName)
             } catch (err) {
                 console.error('Auto Welcome Error', err)
             }
+        }
 
-            // 2. Prepare Unified Credential List
-            const validationItems = []
-            for (const item of items) {
-                // Fetch credentials for each item
-                // Optimized: We could have fetched this earlier, but loop is fine for few items
-                const sourceAccount = await prisma.inventoryAccount.findUnique({
-                    where: { id: item.accountId },
-                    include: { perfiles: true }
-                })
+        // 2. Prepare Unified Credential List
+        const validationItems = []
+        for (const item of items) {
+            const sourceAccount = await prisma.inventoryAccount.findUnique({
+                where: { id: item.accountId },
+                include: { perfiles: true }
+            })
 
-                if (sourceAccount) {
-                    if (item.type === 'FULL_ACCOUNT') {
+            if (sourceAccount) {
+                if (item.type === 'FULL_ACCOUNT') {
+                    validationItems.push({
+                        service: sourceAccount.servicio,
+                        email: sourceAccount.email,
+                        password: sourceAccount.password,
+                        profile: 'Cuenta Completa',
+                        pin: null,
+                        expirationDate: cutoffFormatted
+                    })
+                } else {
+                    const profile = sourceAccount.perfiles.find(p => p.id === item.profileId)
+                    if (profile) {
                         validationItems.push({
                             service: sourceAccount.servicio,
                             email: sourceAccount.email,
                             password: sourceAccount.password,
-                            profile: 'Cuenta Completa',
-                            pin: null
+                            profile: profile.nombre_perfil,
+                            pin: profile.pin,
+                            expirationDate: cutoffFormatted
                         })
-                    } else {
-                        const profile = sourceAccount.perfiles.find(p => p.id === item.profileId)
-                        if (profile) {
-                            validationItems.push({
-                                service: sourceAccount.servicio,
-                                email: sourceAccount.email,
-                                password: sourceAccount.password,
-                                profile: profile.nombre_perfil,
-                                pin: profile.pin
-                            })
-                        }
                     }
                 }
-            }
-
-            // 3. Send Unified Combo Message
-            let comboMsg: string | null = null
-            let comboWarning: string | null = null
-
-            if (validationItems.length > 0) {
-                // Check that every item has password and required PIN
-                const invalidItem = validationItems.find(i => {
-                    if (!i.password || i.password.trim() === '') return true
-                    const isNetflix = i.service.toLowerCase().includes('netflix')
-                    if (isNetflix && i.profile !== 'Cuenta Completa' && (!i.pin || i.pin.trim() === '')) return true
-                    return false
-                })
-
-                if (invalidItem) {
-                    comboWarning = `Venta registrada, pero no se generó el texto del combo: faltan contraseña o PIN para ${invalidItem.service} en el inventario.`
-                } else {
-                    try {
-                        const msg = MessageGenerator.generate('COMBO', {
-                            clientName: clientName,
-                            items: validationItems,
-                            expirationDate: new Date(endTs).toLocaleDateString()
-                        })
-                        comboMsg = msg
-                        // Wait a tiny bit (after welcome)
-                        await new Promise(r => setTimeout(r, 1000))
-                        sendToBot(clientId, msg).catch(e => console.error('Auto Bot Combo Error', e))
-                    } catch (genErr: any) {
-                        comboWarning = genErr?.message || 'Error al generar texto del combo.'
-                    }
-                }
-            }
-
-            return {
-                success: true,
-                transaction: transactions[0],
-                groupId,
-                message: comboMsg,
-                warning: comboWarning
             }
         }
 
-        return { success: true, transaction: transactions[0], groupId }
+        // 3. Send Unified Combo Message
+        let comboMsg: string | null = null
+        let comboWarning: string | null = null
+        let botStatus: { ok: boolean, code: string, reason?: string } = isUsernameOnly
+            ? {
+                ok: false,
+                code: 'USERNAME_NOT_SUPPORTED',
+                reason: `El cliente está registrado con usuario (${cleanId}) sin número telefónico. Copia y pega el mensaje manualmente en WhatsApp B.`
+            }
+            : { ok: false, code: 'PENDING' }
+
+        if (validationItems.length > 0) {
+            const invalidItem = validationItems.find(i => {
+                if (!i.password || i.password.trim() === '') return true
+                const isNetflix = i.service.toLowerCase().includes('netflix')
+                if (isNetflix && i.profile !== 'Cuenta Completa' && (!i.pin || i.pin.trim() === '')) return true
+                return false
+            })
+
+            if (invalidItem) {
+                comboWarning = `Venta registrada, pero no se generó el texto del combo: faltan contraseña o PIN para ${invalidItem.service} en el inventario.`
+            } else {
+                try {
+                    const msg = MessageGenerator.generate('COMBO', {
+                        clientName: clientName,
+                        items: validationItems,
+                        expirationDate: cutoffFormatted
+                    })
+                    comboMsg = msg
+                    if (!isUsernameOnly) {
+                        await new Promise(r => setTimeout(r, 800))
+                        try {
+                            await sendToBot(cleanId, msg)
+                            botStatus = { ok: true, code: 'SENT' }
+                        } catch (botErr: any) {
+                            console.error('Auto Bot Combo Error', botErr)
+                            botStatus = {
+                                ok: false,
+                                code: botErr?.code || 'BOT_ERROR',
+                                reason: botErr?.message || 'No se pudo enviar automáticamente por el Bot. Copia y pega el mensaje manualmente.'
+                            }
+                        }
+                    } else {
+                        console.warn('[CreateComboSale][SKIP_BOT_USERNAME]', {
+                            groupId,
+                            clienteId: cleanId,
+                            reason: botStatus.reason
+                        })
+                    }
+                } catch (genErr: any) {
+                    comboWarning = genErr?.message || 'Error al generar texto del combo.'
+                }
+            }
+        }
+
+        return {
+            success: true,
+            transaction: transactions[0],
+            groupId,
+            cutoffDate: cutoffFormatted,
+            message: comboMsg,
+            warning: comboWarning,
+            botStatus
+        }
     } catch (e: any) {
         console.error("Create Combo Sale Error", e)
         return { success: false, error: e?.message || String(e) }
@@ -1729,9 +1833,35 @@ export async function applyWarrantySwap(currentProfileId: number, targetProfileI
         ])
 
 
+        let warrantyMessage: string | null = null
+        const cutoffFormatted = transaction?.fecha_vencimiento
+            ? formatBogotaDateDDMMYYYY(transaction.fecha_vencimiento)
+            : undefined
+
+        if (transaction?.client && newProfile?.account?.password) {
+            try {
+                warrantyMessage = MessageGenerator.generate('WARRANTY', {
+                    clientName: transaction.client.nombre,
+                    service: newProfile.account.servicio,
+                    email: newProfile.account.email,
+                    password: newProfile.account.password,
+                    profileName: newProfile.nombre_perfil,
+                    pin: newProfile.pin,
+                    date: cutoffFormatted
+                })
+                if (!isWhatsAppUsernameOnly(transaction.client.celular)) {
+                    sendToBot(transaction.client.celular, warrantyMessage).catch(console.error)
+                }
+            } catch (err) {
+                console.error('Warranty message generation error:', err)
+            }
+        }
+
         return {
             success: true,
             message: `Cambio exitoso. Nuevo perfil: ${newProfile.nombre_perfil}`,
+            warrantyMessage,
+            cutoffDate: cutoffFormatted,
             newProfile
         }
 
@@ -3538,24 +3668,38 @@ export async function migrateProfile(oldProfileId: number, newProfileId: number,
         })
 
         // 3. Send Bot Notification
-        if (activeTransaction.client?.celular) {
-            const msg = MessageGenerator.generate('MIGRATION', {
+        const cutoffFormatted = activeTransaction.fecha_vencimiento
+            ? formatBogotaDateDDMMYYYY(activeTransaction.fecha_vencimiento)
+            : undefined
+        let generatedMsg: string | null = null
+
+        if (activeTransaction.client) {
+            generatedMsg = MessageGenerator.generate('MIGRATION', {
                 clientName: activeTransaction.client.nombre,
                 service: newProfile.account.servicio,
                 email: newProfile.account.email,
                 password: newProfile.account.password,
                 profileName: newProfile.nombre_perfil,
                 pin: newProfile.pin,
+                date: cutoffFormatted,
                 reason: reason
             })
 
-            // Send Async
-            sendToBot(activeTransaction.client.celular, msg).catch(console.error)
+            // Send Async if recipient has numeric phone
+            if (activeTransaction.client.celular && !isWhatsAppUsernameOnly(activeTransaction.client.celular)) {
+                sendToBot(activeTransaction.client.celular, generatedMsg).catch(console.error)
+            }
         }
 
         revalidatePath('/inventory')
         revalidatePath('/sales')
-        return { success: true }
+        return {
+            success: true,
+            message: generatedMsg,
+            cutoffDate: cutoffFormatted,
+            clientName: activeTransaction.client?.nombre || 'Cliente',
+            clientPhone: activeTransaction.client?.celular || ''
+        }
 
     } catch (error) {
         console.error('Migration Error:', error)

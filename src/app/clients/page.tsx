@@ -5,7 +5,7 @@ import { AlertCircle, Clock, CheckCircle, MessageCircle, FileText, UserPlus, X, 
 import { toast } from 'sonner'
 import { MessageGenerator, MessageType } from '@/lib/messageGenerator'
 import { getDashboardStats, renewService, releaseService, updateDueDate, createSale, getAssignInventory, getSynchronizationAlerts, blastWelcomeMessages, resendWelcomeCorrection, applyWarrantySwap, sendReceiptAction, mergeClients, getDuplicateClients, searchClients, getSaleMessage } from '../actions'
-import { sendToBot } from '@/services/whatsapp'
+import { sendToBot, isWhatsAppUsernameOnly } from '@/services/whatsapp'
 import { signOut } from 'next-auth/react'
 import { getLocalDateTimeISO } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
@@ -162,8 +162,8 @@ export default function ClientsPage() {
         }
     }
 
-    const handleWhatsApp = (phone: string, name: string, days: number, service: string) => {
-        const message = MessageGenerator.generate('REMINDER', { clientName: name, service, daysLeft: days })
+    const handleWhatsApp = (phone: string, name: string, days: number, service: string, cutoffDate?: string, price?: number) => {
+        const message = MessageGenerator.generate('REMINDER', { clientName: name, service, daysLeft: days, date: cutoffDate, price })
         window.open(getWhatsAppUrl(phone, message), '_blank')
     }
 
@@ -849,10 +849,18 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
                 return
             }
 
+            setSuccessData({ message: res.message, phone: client.phone })
+            setShowSuccessModal(true)
+
+            if (isWhatsAppUsernameOnly(client.phone)) {
+                toast.info(`Cliente registrado con @usuario (${client.phone}). Copia y pega el mensaje manualmente en WhatsApp B.`)
+                return
+            }
+
             await sendToBot(client.phone, res.message)
-            toast.success('Mensaje enviado al bot con credenciales actualizadas')
+            toast.success('Mensaje enviado al bot con credenciales y fecha de corte actualizadas')
         } catch (e: any) {
-            toast.error(`Error enviando bot: ${e.message}`)
+            toast.warning(e?.message || 'No se pudo enviar automáticamente por el Bot. Puedes copiar el mensaje desde la ventana.')
         } finally {
             setIsProcessing(false)
         }
@@ -948,7 +956,7 @@ function ClientCard({ client, status, onAction, onReceipt, onOpenMerge }: { clie
                 </div>
 
                 <div className={`flex gap-2 transition-opacity relative ${showMenu ? 'opacity-100' : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'}`}>
-                    <button onClick={() => onAction(client.phone, client.name, client.daysLeft, client.service)} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400" title="Enviar Recordatorio">
+                    <button onClick={() => onAction(client.phone, client.name, client.daysLeft, client.service, client.cutoffDate, client.price)} className="w-10 h-10 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 flex items-center justify-center transition-colors text-slate-400" title="Enviar Recordatorio">
                         <MessageCircle size={18} />
                     </button>
 

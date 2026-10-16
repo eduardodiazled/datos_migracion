@@ -1,4 +1,15 @@
+import { formatBogotaDateDDMMYYYY } from './dateUtils'
+
 export type MessageType = 'SALE' | 'WARRANTY' | 'ROTATION' | 'REMINDER' | 'FULL_ACCOUNT_SALE' | 'WELCOME_BOT' | 'COMBO' | 'RENEWAL' | 'MIGRATION'
+
+export type ComboMessageItem = {
+    service: string
+    email: string
+    password: string
+    profile: string
+    pin?: string | null
+    expirationDate?: string | Date | null
+}
 
 type MessageData = {
     clientName: string
@@ -7,14 +18,20 @@ type MessageData = {
     password?: string
     profileName?: string
     pin?: string | null
-    date?: string
+    date?: string | Date | null
     price?: number
     daysLeft?: number
     phone?: string
     magicLink?: string
-    items?: { service: string, email: string, password: string, profile: string, pin?: string | null }[]
-    expirationDate?: string
+    items?: ComboMessageItem[]
+    expirationDate?: string | Date | null
     reason?: 'FALLA_PIN' | 'CAIDA_PAGO' | 'MES_FINALIZADO' | 'OTRO' | 'FALLA_CODIGO'
+}
+
+function normalizeCutoff(raw?: string | Date | null): string {
+    if (!raw) return '—'
+    if (typeof raw === 'string' && (raw.trim() === '' || raw.trim() === '—')) return '—'
+    return formatBogotaDateDDMMYYYY(raw)
 }
 
 export const MessageGenerator = {
@@ -23,6 +40,7 @@ export const MessageGenerator = {
         const hasPin = Boolean(data.pin && data.pin.trim().length > 0)
         const hasProfile = Boolean(data.profileName && data.profileName.trim().length > 0)
         const netflixHelpNote = `📌 *NOTA IMPORTANTE:* Si te pide código al iniciar sesión, por favor dale a la opción *Obtener ayuda* y luego a la opción *Usar contraseña*.`
+        const cutoffDate = normalizeCutoff(data.expirationDate ?? data.date)
 
         // Validaciones estrictas de credenciales requeridas
         if (['SALE', 'RENEWAL', 'FULL_ACCOUNT_SALE', 'WARRANTY', 'ROTATION'].includes(type)) {
@@ -54,7 +72,7 @@ Aquí tienes los datos de tu cuenta completa de ${data.service}:
 👤 Usuario: ${data.email}
 🔑 Clave: ${data.password}
 
-🗓️ Corte: ${data.date}
+🗓️ Corte: ${cutoffDate}
 
 ${isNetflix ? `${netflixHelpNote}\n\n` : ''}⚠️ REGLAS DE USO:
 - Puedes administrar los perfiles como desees.
@@ -66,7 +84,7 @@ ${isNetflix ? `${netflixHelpNote}\n\n` : ''}⚠️ REGLAS DE USO:
             case 'SALE':
                 return `¡Hola ${data.clientName}! 🚀 Gracias por tu pago.
 
-Tu servicio de ${data.service} ha sido activado/renovado con éxito. ✅ 🗓️ Corte: ${data.date}
+Tu servicio de ${data.service} ha sido activado/renovado con éxito. ✅ 🗓️ Corte: ${cutoffDate}
 
 ${buildCredentials()}
 
@@ -89,7 +107,7 @@ Hemos actualizado tu cuenta por garantía técnica. 🛠️ Aquí tienes tus nue
 
 ${buildCredentials()}
 
-Tu fecha de vencimiento se mantiene igual.
+${cutoffDate !== '—' ? `🗓️ Corte: ${cutoffDate}\n` : ''}Tu fecha de vencimiento se mantiene igual.
 
 ${isNetflix ? `${netflixHelpNote}\n\n📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw` : ''}`
 
@@ -99,7 +117,7 @@ ${isNetflix ? `${netflixHelpNote}\n\n📺 IMPORTANTE: Para poner la cuenta nueva
 Para que no esperes, te he movido temporalmente a otro perfil que está activo ya mismo. Úsalo con estos datos:
 
 ${buildCredentials()}
-
+${cutoffDate !== '—' ? `\n🗓️ Corte: ${cutoffDate}\n` : ''}
 Avísame si ya lograste entrar. 👍
 
 ${isNetflix ? `${netflixHelpNote}\n\n📺 Recuerda cerrar la sesión anterior así: https://youtu.be/l5FGGCbZLbw` : ''}`
@@ -107,7 +125,7 @@ ${isNetflix ? `${netflixHelpNote}\n\n📺 Recuerda cerrar la sesión anterior as
             case 'RENEWAL':
                 return `¡Hola ${data.clientName}! 🚀 Gracias por renovar tu servicio.
                 
-Tu cuenta de ${data.service} ha sido extendida con éxito. ✅ 🗓️ Nuevo corte: ${data.date}
+Tu cuenta de ${data.service} ha sido extendida con éxito. ✅ 🗓️ Corte: ${cutoffDate}
 
 ${buildCredentials()}
 
@@ -151,7 +169,7 @@ ${isNetflix ? `${netflixHelpNote}\n\n` : ''}⚠️ RECUERDA:
                 
 ${timeText}
 
-📅 Fecha de corte: ${data.date} 💲 Valor: $${data.price?.toLocaleString() || '...'}
+📅 Fecha de corte: ${cutoffDate} 💲 Valor: $${data.price?.toLocaleString() || '...'}
 ${showPayments ? paymentMethods : '\nQuedo atento a tu comprobante para renovarte sin interrupciones. ¡Gracias! 🙏'}
 
 ⚠️ _Nota: Envía el pago al número de siempre 📱. Yo solo soy un Bot 🤖 que da recordatorios._`
@@ -182,14 +200,31 @@ ${data.magicLink || `${appUrl}/portal?phone=${data.phone}`}
                     }
                 }
 
+                const itemCutoffs = data.items
+                    .map(i => (i.expirationDate ? normalizeCutoff(i.expirationDate) : null))
+                    .filter((d): d is string => Boolean(d && d !== '—'))
+                const uniqueItemCutoffs = Array.from(new Set(itemCutoffs))
+                const hasMultipleCutoffs = uniqueItemCutoffs.length > 1
+                const groupCutoff = uniqueItemCutoffs.length === 1
+                    ? uniqueItemCutoffs[0]
+                    : cutoffDate
+
                 const itemsList = data.items.map(i => {
                     const itemIsNetflix = i.service.toLowerCase().includes('netflix')
+                    const itemDate = i.expirationDate ? normalizeCutoff(i.expirationDate) : groupCutoff
                     let itemText = `📺 *${i.service}*: ${i.email}\n🔑: ${i.password}\n📌 Perfil: ${i.profile} ${i.pin ? `(PIN: ${i.pin})` : ''}`
+                    if (hasMultipleCutoffs && itemDate !== '—') {
+                        itemText += `\n🗓️ Corte: ${itemDate}`
+                    }
                     if (itemIsNetflix) {
                         itemText += `\n${netflixHelpNote}`
                     }
                     return itemText
                 }).join('\n\n------------------\n\n')
+
+                const comboCutoffFooter = hasMultipleCutoffs
+                    ? `🗓️ Corte por servicio: ${data.items.map(i => `${i.service}: ${normalizeCutoff(i.expirationDate ?? groupCutoff)}`).join(' | ')}`
+                    : `🗓️ Corte: ${groupCutoff}`
 
                 return `¡Hola ${data.clientName}! 🚀 Gracias por tu compra del Combo.
                 
@@ -197,7 +232,7 @@ Aquí tienes tus servicios activos:
 
 ${itemsList}
 
-🗓️ Corte General: ${data.expirationDate}
+${comboCutoffFooter}
 
 ⚠️ REGLAS:
 - No cambiar claves ni correos.
@@ -231,7 +266,7 @@ Hemos migrado tu servicio de ${data.service} a este nuevo perfil activo ✅:
 
 ${buildCredentials()}
 
-Tu fecha de vencimiento y días restantes se mantienen intactos. 🗓️
+${cutoffDate !== '—' ? `🗓️ Corte: ${cutoffDate}\n` : ''}Tu fecha de vencimiento y días restantes se mantienen intactos. 🗓️
 
 ${isNetflix ? `${netflixHelpNote}\n\n📺 IMPORTANTE: Para poner la cuenta nueva, primero debes cerrar sesión correctamente en tu TV. Mira cómo hacerlo en 30 segundos aquí: https://youtu.be/l5FGGCbZLbw` : ''}
 

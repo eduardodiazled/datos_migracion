@@ -38,13 +38,22 @@ export function parseBogotaDateParts(dateInput?: string | Date | null): BogotaDa
 
     if (typeof dateInput === 'string') {
         const trimmed = dateInput.trim()
-        // Si viene en formato YYYY-MM-DD (común de inputs <input type="date">)
-        const matchYMD = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})/)
+        // Si viene en formato YYYY-MM-DD puro (común de <input type="date">) o medianoche UTC exacta
+        const matchYMD = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})(?:T00:00:00(?:\.000)?Z?)?$/)
         if (matchYMD) {
             return {
                 year: parseInt(matchYMD[1], 10),
                 month: parseInt(matchYMD[2], 10),
                 day: parseInt(matchYMD[3], 10)
+            }
+        }
+        // Si viene ya formateado como dd/mm/yyyy
+        const matchDMY = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+        if (matchDMY) {
+            return {
+                 day: parseInt(matchDMY[1], 10),
+                 month: parseInt(matchDMY[2], 10),
+                 year: parseInt(matchDMY[3], 10)
             }
         }
     }
@@ -156,6 +165,17 @@ export function formatBogotaDateISO(dateInput?: string | Date | null): string {
     const mm = String(month).padStart(2, '0')
     const dd = String(day).padStart(2, '0')
     return `${year}-${mm}-${dd}`
+}
+
+/**
+ * Formatea una fecha como dd/mm/aaaa en la zona horaria America/Bogota,
+ * sin corrimientos por UTC. Ideal para plantillas de WhatsApp ("Corte: dd/mm/aaaa").
+ */
+export function formatBogotaDateDDMMYYYY(dateInput?: string | Date | null): string {
+    const { year, month, day } = parseBogotaDateParts(dateInput)
+    const dd = String(day).padStart(2, '0')
+    const mm = String(month).padStart(2, '0')
+    return `${dd}/${mm}/${year}`
 }
 
 /**

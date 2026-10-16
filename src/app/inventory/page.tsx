@@ -6,9 +6,9 @@ import { toast } from 'sonner'
 import { signOut, useSession } from 'next-auth/react'
 import { MessageGenerator } from '@/lib/messageGenerator'
 import { createInventoryAccount, deleteInventoryAccount, updateInventoryAccount, createSale, assignProfile, reassignProfileClient, setAccountWarranty, replaceInventoryAccount, updateProfileStatus, releaseService, getAllProviders, createProvider, createComboSale, sellFullAccount, searchClients, deleteInventoryProfile, migrateProfile, sendReceiptAction, getExpiredDisposables, archiveAccount, archiveAllExpiredDisposables, convertDisposableToRenewable, convertAccountType, getAccountConversionLogs, getArchivedInventory, sendTestReminder } from '../actions'
-import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO } from '@/lib/dateUtils'
+import { calculateSafeEndDate, getLocalDateISO, getLocalDateTimeISO, formatBogotaDateDDMMYYYY } from '@/lib/dateUtils'
 import html2canvas from 'html2canvas'
-import { sendToBot } from '@/services/whatsapp'
+import { sendToBot, isWhatsAppUsernameOnly } from '@/services/whatsapp'
 import { getWhatsAppUrl, cleanContactString } from '@/lib/whatsappUtils'
 
 // Types
@@ -140,7 +140,8 @@ export default function InventoryPage() {
   const [sortBy, setSortBy] = useState<'DEFAULT' | 'AVAILABILITY'>('DEFAULT')
   const [groupBy, setGroupBy] = useState<'PROVIDER' | 'SERVICE'>('PROVIDER')
   const [showMenu, setShowMenu] = useState(false)
-  const [autoSendStatus, setAutoSendStatus] = useState<'IDLE' | 'SUCCESS' | 'ERROR'>('IDLE')
+  const [autoSendStatus, setAutoSendStatus] = useState<'IDLE' | 'SUCCESS' | 'MANUAL_USERNAME' | 'ERROR'>('IDLE')
+  const [autoSendDetail, setAutoSendDetail] = useState<string>('')
 
   const loadExpiredDisposables = () => {
     getExpiredDisposables().then(res => {
@@ -565,23 +566,43 @@ export default function InventoryPage() {
             toast.warning(res.warning)
           }
 
+          const comboCutoff = (res as any).cutoffDate
+            || (res.transaction?.fecha_vencimiento ? formatBogotaDateDDMMYYYY(res.transaction.fecha_vencimiento) : formatBogotaDateDDMMYYYY(calculateSafeEndDate(saleData.date, saleData.months)))
+
           if (res.message) {
             setSuccessData({
               message: res.message,
               clientName: saleData.name,
               service: 'Combo / Selección',
               price: parseInt(saleData.price),
-              date: new Date().toLocaleDateString(),
+              date: comboCutoff,
               paymentMethod: saleData.paymentMethod,
               months: saleData.months,
-              items: validationItems // Save items in successData too for reference
+              items: validationItems
             })
             setShowSuccessModal(true)
 
-            // AUTO-SEND TEXT TO BOT
-            sendToBot(saleData.phone, res.message)
-              .then(() => setAutoSendStatus('SUCCESS'))
-              .catch(() => setAutoSendStatus('ERROR'))
+            const serverBotStatus = (res as any).botStatus
+            if (isWhatsAppUsernameOnly(saleData.phone) || serverBotStatus?.code === 'USERNAME_NOT_SUPPORTED') {
+              setAutoSendStatus('MANUAL_USERNAME')
+              setAutoSendDetail(
+                serverBotStatus?.reason ||
+                `El cliente está registrado con usuario (${saleData.phone}) sin número telefónico. Copia y pega el mensaje manualmente en WhatsApp B.`
+              )
+            } else if (serverBotStatus?.ok) {
+              setAutoSendStatus('SUCCESS')
+              setAutoSendDetail('')
+            } else {
+              sendToBot(saleData.phone, res.message)
+                .then(() => {
+                  setAutoSendStatus('SUCCESS')
+                  setAutoSendDetail('')
+                })
+                .catch((err: any) => {
+                  setAutoSendStatus('ERROR')
+                  setAutoSendDetail(err?.message || serverBotStatus?.reason || 'No se pudo conectar con el Bot de WhatsApp. Copia y pega el mensaje manualmente.')
+                })
+            }
           } else {
             toast.error(res.warning || 'Venta registrada, pero no se pudo generar el texto: faltan credenciales en el inventario.')
           }
@@ -630,23 +651,42 @@ export default function InventoryPage() {
         toast.warning(res.warning)
       }
 
+      const saleCutoff = (res as any).cutoffDate || formatBogotaDateDDMMYYYY(res.transaction.fecha_vencimiento)
+
       if (res.message) {
         setSuccessData({
           message: res.message,
           receiptId: res.transaction.id,
           clientName: saleData.name,
           service: serviceName,
-          date: new Date((saleData.date || new Date().toISOString().split('T')[0]) + 'T12:00:00').toLocaleDateString(),
+          date: saleCutoff,
           price: parseInt(saleData.price),
           paymentMethod: saleData.paymentMethod,
           months: saleData.months
         })
         setShowSuccessModal(true)
 
-        // AUTO-SEND TEXT TO BOT
-        sendToBot(saleData.phone, res.message)
-          .then(() => setAutoSendStatus('SUCCESS'))
-          .catch(() => setAutoSendStatus('ERROR'))
+        const serverBotStatus = (res as any).botStatus
+        if (isWhatsAppUsernameOnly(saleData.phone) || serverBotStatus?.code === 'USERNAME_NOT_SUPPORTED') {
+          setAutoSendStatus('MANUAL_USERNAME')
+          setAutoSendDetail(
+            serverBotStatus?.reason ||
+            `El cliente está registrado con usuario (${saleData.phone}) sin número telefónico. Copia y pega el mensaje manualmente en WhatsApp B.`
+          )
+        } else if (serverBotStatus?.ok) {
+          setAutoSendStatus('SUCCESS')
+          setAutoSendDetail('')
+        } else {
+          sendToBot(saleData.phone, res.message)
+            .then(() => {
+              setAutoSendStatus('SUCCESS')
+              setAutoSendDetail('')
+            })
+            .catch((err: any) => {
+              setAutoSendStatus('ERROR')
+              setAutoSendDetail(err?.message || serverBotStatus?.reason || 'No se pudo conectar con el Bot de WhatsApp. Copia y pega el mensaje manualmente.')
+            })
+        }
       } else {
         toast.error(res.warning || 'Venta registrada, pero no se pudo generar el texto de acceso: faltan contraseña o PIN en el inventario.')
       }
@@ -2547,27 +2587,30 @@ export default function InventoryPage() {
                       setShowMigrateModal(false)
                       fetchInventory()
 
-                      // Generate Migration Message
+                      // Generate Migration Message (prefer server message with real clientName & fecha_vencimiento)
                       const targetAccount = accounts.find(a => a.perfiles.some(p => p.id === targetProfileId))
                       const targetProfile = targetAccount?.perfiles.find(p => p.id === targetProfileId)
+                      const serverMsg = (res as any).message
+                      const serverCutoff = (res as any).cutoffDate
 
-                      if (targetAccount && targetProfile) {
-                        const msg = MessageGenerator.generate('MIGRATION', {
-                          clientName: 'Cliente', // Ideally fetch from DB or previous profile, simplified
+                      if (serverMsg || (targetAccount && targetProfile)) {
+                        const msg = serverMsg || MessageGenerator.generate('MIGRATION', {
+                          clientName: (res as any).clientName || 'Cliente',
                           service: profileToMigrate.serviceName,
-                          email: targetAccount.email,
-                          password: targetAccount.password,
-                          profileName: targetProfile.nombre_perfil,
-                          pin: targetProfile.pin,
+                          email: targetAccount!.email,
+                          password: targetAccount!.password,
+                          profileName: targetProfile!.nombre_perfil,
+                          pin: targetProfile!.pin,
+                          date: serverCutoff,
                           reason: migrationReason
                         })
                         setSuccessData({
                           message: msg,
-                          clientName: 'Migración',
+                          clientName: (res as any).clientName || 'Migración',
                           service: profileToMigrate.serviceName,
                           price: 0,
-                          date: new Date().toLocaleDateString(),
-                          paymentMethod: 'TRANSFERENCIA', // Irrelevant for migration
+                          date: serverCutoff || '—',
+                          paymentMethod: 'TRANSFERENCIA',
                           months: 1
                         })
                         setShowSuccessModal(true)
@@ -2776,16 +2819,43 @@ export default function InventoryPage() {
             className="glass-panel p-6 rounded-3xl w-full max-w-md border border-white/10 shadow-2xl bg-slate-900 flex flex-col max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="text-center mb-6">
+            <div className="text-center mb-4">
               <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                 <Check size={32} />
               </div>
               <h3 className="text-2xl font-bold text-white">¡Venta Exitosa!</h3>
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <p className="text-slate-400 text-sm">El servicio ha sido activado correctament.</p>
-                {autoSendStatus === 'SUCCESS' && <span className="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">Enviado por Bot ✅</span>}
-                {autoSendStatus === 'ERROR' && <span className="text-rose-400 text-xs font-bold bg-rose-400/10 px-2 py-0.5 rounded-full border border-rose-400/20">Fallo envío Bot ⚠️</span>}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+                <p className="text-slate-400 text-sm">El servicio ha sido activado correctamente.</p>
+                {autoSendStatus === 'SUCCESS' && (
+                  <span className="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2.5 py-0.5 rounded-full border border-emerald-400/20">
+                    Enviado por Bot ✅
+                  </span>
+                )}
+                {autoSendStatus === 'MANUAL_USERNAME' && (
+                  <span className="text-amber-300 text-xs font-bold bg-amber-500/15 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                    Envío manual (@usuario) 📋
+                  </span>
+                )}
+                {autoSendStatus === 'ERROR' && (
+                  <span className="text-rose-400 text-xs font-bold bg-rose-400/10 px-2.5 py-0.5 rounded-full border border-rose-400/20">
+                    Fallo envío Bot (usar Copiar) ⚠️
+                  </span>
+                )}
               </div>
+              {(autoSendStatus === 'MANUAL_USERNAME' || autoSendStatus === 'ERROR') && autoSendDetail && (
+                <div className={`mt-3 text-left text-[11px] leading-relaxed p-3 rounded-xl border ${
+                  autoSendStatus === 'MANUAL_USERNAME'
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                    : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+                }`}>
+                  <strong className="block mb-0.5">
+                    {autoSendStatus === 'MANUAL_USERNAME'
+                      ? 'ℹ️ Envío manual requerido (@usuario):'
+                      : '⚠️ Diagnóstico de envío automático:'}
+                  </strong>
+                  {autoSendDetail}
+                </div>
+              )}
             </div>
 
             <div className="bg-slate-950 rounded-xl p-4 border border-white/10 mb-4 overflow-y-auto custom-scrollbar flex-1">
